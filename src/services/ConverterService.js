@@ -15,12 +15,25 @@ function updateConverter (newConverter) {
     latestConverter = newConverter;
 }
 
-function getLatestConverter () {
-    return latestConverter;
+function getStopMonitoringResponse (params) {
+    var smr = latestConverter.getStopMonitoringResponse(params);
+
+    smr.timestamper.stamp();
+    return smr.response;
 }
+
+
+function getVehicleMonitoringResponse (params) {
+    var smr = latestConverter.getVehicleMonitoringResponse(params);
+
+    smr.timestamper.stamp();
+    return smr.response;
+}
+
 
 stream.start();
 
 module.exports = {
-    getLatestConverter : getLatestConverter ,
+    getStopMonitoringResponse    : getStopMonitoringResponse    ,
+    getVehicleMonitoringResponse : getVehicleMonitoringResponse ,
 };

@@ -21,8 +21,12 @@
   "main": "app.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/availabs/MTA_Subway_API_Server.git"
+    "url": "git://github.com/availabs/MTA_Subway_Server.git"
   },
   "author": "paultomchik",
-  "license": ""
+  "license": "",
+  "devDependencies": {
+    "jest": "^0.1.40",
+    "jest-cli": "^0.4.x"
+  }
 }
