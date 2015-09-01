@@ -21,7 +21,7 @@
   "main": "app.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/availabs/MTA_Subway_Server.git"
+    "url": "git://github.com/availabs/MTA_Subway_SIRI_Server.git"
   },
   "author": "paultomchik",
   "license": "",
