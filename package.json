@@ -1,0 +1,28 @@
+{
+  "name": "MTA_Subway_SIRI_Server",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Serves the MTA Subway GTFS-Realtime data in SIRI format, following as closely as possible the MTA SIRI API.",
+  "keywords": [
+    "NYC",
+    "MTA",
+    "Subway",
+    "Realtime",
+    "SIRI"
+  ],
+  "dependencies": {
+    "MTA_Subway_GTFS-Realtime_to_SIRI_Converter": "https://github.com/availabs/MTA_Subway_GTFS-Realtime_to_SIRI_Converter/tarball/master",
+    "body-parser": "^1.13.3",
+    "express": "^4.13.3"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/availabs/MTA_Subway_API_Server.git"
+  },
+  "author": "paultomchik",
+  "license": ""
+}
