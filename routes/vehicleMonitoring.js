@@ -17,7 +17,8 @@ router.get('/', function(req, res) {
         res.json(smr);
     } catch (e) { 
          res.status(500)
-            .send((process.env === 'development') ?  e.stack : 'Error while serving request.');
+            //.send((process.env === 'development') ?  e.stack : 'Error while serving request.');
+            .send(e.stack);
     }
 });
 

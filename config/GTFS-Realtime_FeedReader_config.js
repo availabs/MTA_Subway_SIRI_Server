@@ -8,7 +8,7 @@ var key           = require('./keys/GTFS-Realtime_API_Key'),
 
 
 module.exports = {
-    feedUrl       : url           ,
+    feedURL       : url           ,
     readInterval  : 30 /*sec*/    ,
     protofilePath : protofilePath ,
 };

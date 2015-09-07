@@ -1,18 +1,18 @@
 'use strict';
 
-var GTFSrtFeedReader = require('MTA_Subway_GTFS-Realtime_to_SIRI_Converter').MTA_Subway_GTFS_Realtime_Toolkit.FeedReader,
-    ConverterStream  = require('MTA_Subway_GTFS-Realtime_to_SIRI_Converter').ConverterStream,
-    feedReaderConfig = require('../../config/GTFS-Realtime_FeedReader_config'),
-    gtfsConfig       = require('../../config/GTFS_config');
 
+var ConverterStream  = require('MTA_Subway_GTFS-Realtime_to_SIRI_Converter').ConverterStream,
+    gtfsFeed         = require('./GTFS_Feed'),
+    gtfsrtFeed       = require('./GTFS-Realtime_Feed'),
+    converterStream  = new ConverterStream(gtfsFeed, gtfsrtFeed, updateConverter);
 
-var feedReader = new GTFSrtFeedReader(feedReaderConfig),
-    stream     = new ConverterStream(feedReader, gtfsConfig.gtfsDataDir, updateConverter);
 
 var latestConverter = null;
 
-function updateConverter (newConverter) {
-    latestConverter = newConverter;
+
+// Callback passed to MTA_Subway_GTFS-Realtime_to_SIRI.ConverterStream
+function updateConverter (converterUpdate) {
+    latestConverter = converterUpdate;
 }
 
 function getStopMonitoringResponse (params) {
@@ -31,7 +31,7 @@ function getVehicleMonitoringResponse (params) {
 }
 
 
-stream.start();
+converterStream.start();
 
 module.exports = {
     getStopMonitoringResponse    : getStopMonitoringResponse    ,
