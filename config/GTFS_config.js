@@ -8,16 +8,16 @@ var path           = require('path'),
     dataDirPath    = path.normalize(path.join(__dirname, '../data/GTFS/'));
 
 module.exports = {
-    gtfsConfigFilePath          : __filename                        ,
+    gtfsConfigFilePath          : __filename                                                           ,
 
-    latestDataURL               : undefined                         ,
+    latestDataURL               : "http://web.mta.info/developers/data/nyct/subway/google_transit.zip" ,
 
-    tripKeyBuilder              : tripKeyBuilder                    ,
+    tripKeyBuilder              : tripKeyBuilder                                                       ,
 
-    dataDirPath                 : dataDirPath                       ,
-    tmpDirPath                  : path.join(dataDirPath, 'tmp')     ,
+    dataDirPath                 : dataDirPath                                                          ,
+    tmpDirPath                  : path.join(dataDirPath, 'tmp')                                        ,
 
-    indexedScheduleDataFileName : 'indexedScheduleData.json'        ,
-    indexedSpatialDataFileName  : 'indexedSpatialData.json'         ,
-    indexingStatisticsFileName  : 'indexingStatistics.json'         ,
+    indexedScheduleDataFileName : 'indexedScheduleData.json'                                           ,
+    indexedSpatialDataFileName  : 'indexedSpatialData.json'                                            ,
+    indexingStatisticsFileName  : 'indexingStatistics.json'                                            ,
 };

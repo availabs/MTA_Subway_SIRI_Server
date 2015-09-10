@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 
+// For more complex command-line arguments (file path or url)
+// https://www.npmjs.com/package/minimist
+
 'use strict';
 
 var path     = require('path')                   ,
