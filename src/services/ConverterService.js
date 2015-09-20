@@ -4,7 +4,9 @@
 var ConverterStream  = require('MTA_Subway_GTFS-Realtime_to_SIRI_Converter').ConverterStream,
     gtfsFeed         = require('./GTFS_Feed'),
     gtfsrtFeed       = require('./GTFS-Realtime_Feed'),
-    converterStream  = new ConverterStream(gtfsFeed, gtfsrtFeed, updateConverter);
+    converterConfig  = require('../../config/ConverterConfig'),
+
+    converterStream  = new ConverterStream(gtfsFeed, gtfsrtFeed, converterConfig, updateConverter);
 
 
 var latestConverter = null;

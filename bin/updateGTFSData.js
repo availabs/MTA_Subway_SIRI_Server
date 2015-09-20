@@ -29,12 +29,18 @@ if ( ! gtfsLatestDataURL ) {
 execFile(scriptAbsPath, [gtfsConfigFilePath, gtfsLatestDataURL], outputResults);
 
 
-function outputResults (err) {
+function outputResults (err, stdout, stderr) {
     if (err) {
         console.error('An error occurred while updating the GTFS data:');
         console.error(err);
         process.exit(1);
     }
+
+    console.log('STDOUT :');
+    console.log(stdout);
+
+    console.log('STDERR :');
+    console.log(stderr);
 
     console.log('========== GTFS data update complete. ==========');
 }
