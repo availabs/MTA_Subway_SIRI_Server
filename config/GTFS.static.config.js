@@ -10,8 +10,6 @@ var path           = require('path'),
 module.exports = {
     gtfsConfigFilePath          : __filename                                                           ,
 
-    latestDataURL               : "http://web.mta.info/developers/data/nyct/subway/google_transit.zip" ,
-
     tripKeyBuilder              : tripKeyBuilder                                                       ,
 
     dataDirPath                 : dataDirPath                                                          ,

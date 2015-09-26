@@ -1,8 +1,15 @@
 'use strict';
 
 
-var gtfsConfig = require('../config/GTFS_config')     ,
-    gtfsFeed   = require('../src/services/GTFS_Feed') ;
+
+    // Merge the static and hot config files.
+var ConfigService = require('../src/services/ConfigsService') ,
+    gtfsConfig    = ConfigService.getGTFSConfig() ,
+
+    latestDataURL = gtfsConfig.latestDataURL ,
+
+    gtfsFeed      = require('../src/services/GTFS_Feed') ;
+
 
 var express  = require('express') ,
     router   = express.Router()   ;
@@ -15,15 +22,14 @@ var express  = require('express') ,
  
 router.post('/update', function(req, res) {
     var postBody = req.body,
-        dataUrl  = postBody.url || gtfsConfig.latestDataURL; // ??? Case-sensitive ???
-
+        dataUrl  = postBody.url || latestDataURL; // ??? Case-sensitive ???
 
     if ( ! dataUrl ) {
         res.status(422).send('The url query parameter is required.');
         return;
     } 
 
-    //FIXME: Need to extend time-out.
+    //TODO: Return 'processing', then have client poll for status.
     gtfsFeed.update(dataUrl, function (err, stdout, stderr) {
         res.status((err) ? 500 : 200);
 
@@ -38,4 +44,3 @@ router.post('/update', function(req, res) {
 
        
 module.exports = router;
-

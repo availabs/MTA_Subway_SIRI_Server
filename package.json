@@ -13,7 +13,8 @@
   "dependencies": {
     "MTA_Subway_GTFS-Realtime_to_SIRI_Converter": "https://github.com/availabs/MTA_Subway_GTFS-Realtime_to_SIRI_Converter/tarball/master",
     "body-parser": "^1.13.3",
-    "express": "^4.13.3"
+    "express": "^4.13.3",
+    "merge": "^1.2.0"
   },
   "scripts": {
     "start": "node server.js"

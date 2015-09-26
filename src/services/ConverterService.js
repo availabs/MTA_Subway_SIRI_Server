@@ -1,10 +1,12 @@
 'use strict';
 
 
-var ConverterStream  = require('MTA_Subway_GTFS-Realtime_to_SIRI_Converter').ConverterStream,
-    gtfsFeed         = require('./GTFS_Feed'),
-    gtfsrtFeed       = require('./GTFS-Realtime_Feed'),
-    converterConfig  = require('../../config/ConverterConfig'),
+var ConverterStream  = require('MTA_Subway_GTFS-Realtime_to_SIRI_Converter').ConverterStream ,
+    gtfsFeed         = require('./GTFS_Feed')                                                ,
+    gtfsrtFeed       = require('./GTFS-Realtime_Feed')                                       ,
+
+    ConfigService    = require('./ConfigsService') ,
+    converterConfig  = ConfigService.getConverterConfig() ,
 
     converterStream  = new ConverterStream(gtfsFeed, gtfsrtFeed, converterConfig, updateConverter);
 
