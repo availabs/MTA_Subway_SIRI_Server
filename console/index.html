@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>MTA Subway GTFS-Realtime to SIRI Configuration Dashboard</title>
+
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link href="css/sb-admin.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+        <!-- Navigation -->
+        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+            <div>
+                <h3>MTA Subway GTFS-Realtime to SIRI Configuration Dashboard</h3>
+            </div>
+            <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
+            <div class="collapse navbar-collapse navbar-ex1-collapse">
+                <ul class="nav navbar-nav side-nav nav-pills">
+                    <li id="GTFS_selector" role="presentation"><a href="#"><i class="fa fa-fw fa-train"></i>GTFS</a></li>
+                    <li id="GTFS-Realtime_selector" role="presentation"><a href="#"><i class="fa fa-fw fa-table"></i>GTFS-Realtime</a></li>
+                    <li id="Converter_selector" role="presentation"><a href="#"><i class="fa fa-fw fa-table"></i>Converter</a></li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </nav>
+
+
+        <div id="page-wrapper">
+
+            <div class="container-fluid">
+
+                <div id="GTFS_config_div" class="row">
+                    <div class="col-lg-6">
+
+                        <form role="form">
+
+                            <div class="form-group">
+                                <label>Static GTFS Data URL</label>
+                                <input id="GTFS_URL" class="form-control">
+                            </div>
+
+                            <button type="reset" class="btn btn-primary btn-sm">Reset</button>
+                            <button id="update_GTFS_config_btn" type="submit" class="btn btn-primary btn-sm">Update GTFS Config</button>
+                            <button id="update_GTFS_data_btn" type="button" class="btn btn-warning btn-sm">Update GTFS Data</button>
+
+                        </form>
+
+                    </div>
+                </div>
+                <!-- /.row -->
+
+                <div id="GTFS-Realtime_config_div" class="row">
+                    <div class="col-lg-6">
+
+                        <form role="form">
+
+                            <div class="form-group">
+                                <label>GTFS-Realtime Feed URL</label>
+                                <!--Set the placeholder to the current config value-->
+                                <!--<input class="form-control" placeholder="Enter text">-->
+                                <input id="GTFS-Realtime_URL" class="form-control">
+
+                                <label>API Key</label>
+                                <input id="GTFS-Realtime_API_Key" class="form-control">
+
+                                <label>Read Frequency (seconds)</label>
+                                <input id="GTFS-Realtime_Read_Interval" class="form-control">
+
+                                <label>Retry Frequency (seconds)</label>
+                                <input id="GTFS-Realtime_Retry_Interval" class="form-control">
+
+                                <label>Max number of retries</label>
+                                <input id="GTFS-Realtime_Max_Num_Retries" class="form-control">
+
+                            </div>
+
+                            <button type="reset" class="btn btn-primary btn-sm">Reset</button>
+                            <button id="update_GTFS-Realtime_config_btn" type="submit" class="btn btn-primary btn-sm">Update Config</button>
+
+                        </form>
+
+                    </div>
+                </div>
+                <!-- /.row -->
+
+                <div id="Converter_config_div" class="row">
+                    <div class="col-lg-6">
+
+                        <form role="form">
+
+                            <div class="form-group">
+                                <label>Converter Logging Flags</label>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" id="converterLogTrainLocations" value="">Train Locations
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" id="converterLogTrainTrackingErrors" value="">Train Tracking Errors
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" id="converterLogTrainTrackingStats" value="">Train Tracking Statistics
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" id="converterLogUnscheduledTrips" value="">Unscheduled Trips
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" id="converterLogNoSpatialDataTrips" value="">No Spatial Data Trips
+                                    </label>
+                                </div>
+                            </div>
+
+                            <button type="reset" class="btn btn-primary btn-sm">Reset</button>
+                            <button id="update_Converter_config_btn" type="submit" class="btn btn-primary btn-sm">Update Config</button>
+
+                        </form>
+
+                    </div>
+                </div>
+                <!-- /.row -->
+
+            </div>
+            <!-- /.container-fluid -->
+
+        </div>
+        <!-- /#page-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+    <script src="js/code.js"></script>
+
+</body>
+
+</html>

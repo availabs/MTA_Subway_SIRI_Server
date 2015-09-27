@@ -3,8 +3,11 @@
 var GTFSFeedHandler = require ('MTA_Subway_GTFS-Realtime_to_SIRI_Converter').MTA_Subway_GTFS_Toolkit.FeedHandler ,
 
     ConfigService = require('./ConfigsService') ,
-    gtfsConfig    = ConfigService.getGTFSConfig() ;
+    gtfsConfig    = ConfigService.getGTFSConfig() ,
 
-//TODO: The GTFSFeedHandler will need an `updateConfig` method.
+    feedHandler = new GTFSFeedHandler(gtfsConfig); 
 
-module.exports = new GTFSFeedHandler(gtfsConfig);
+ConfigService.addGTFSConfigUpdateListener(feedHandler.updateConfig);
+
+
+module.exports = feedHandler;

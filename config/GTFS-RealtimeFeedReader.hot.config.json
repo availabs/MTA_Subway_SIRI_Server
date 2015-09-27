@@ -1,6 +1,7 @@
 {
-    "baseURL"      : "http://datamine.mta.info/mta_esi.php" ,
-    "feedURL"     : "<This property should be set to the baseURL with the API key appended.>" ,
-    "readInterval" : 30
+    "baseURL": "http://datamine.mta.info/mta_esi.php",
+    "apiKey": "5dadd04378cc60cc4ae447da5756ddaa",
+    "readInterval": 30,
+    "retryInterval": 0.5,
+    "maxRetries": 5
 }
-

@@ -5,22 +5,20 @@ var fs    = require('fs')    ,
     merge = require('merge') ;
 
 var gtfsHotConfigPath = path.join(__dirname, '../../config/GTFS.hot.config.json') ,
-    gtfsStaticConfig  = require('../../config/GTFS.static.config') , 
-    gtfsHotConfig     = JSON.parse(fs.readFileSync(gtfsHotConfigPath)) ,
-    gtfsConfig        = merge(gtfsStaticConfig, gtfsHotConfig) ,
+    gtfsHotConfig     = JSON.parse(fs.readFileSync(gtfsHotConfigPath)),
+    gtfsConfig        = require('../../config/GTFS.config') , 
 
     gtfsrtHotConfigPath  = path.join(__dirname, '../../config/GTFS-RealtimeFeedReader.hot.config.json') ,
-    gtfsrtAPIKeyPath     = path.join(__dirname, '../../config/GTFS-RealtimeAPI.key.json') ,
-    gtfsrtStaticConfig   = require('../../config/GTFS-RealtimeFeedReader.static.config.js') ,
-    gtfsrtHotConfig      = JSON.parse(fs.readFileSync(gtfsrtHotConfigPath)) ,
-    gtfsrtConfig         = merge(gtfsrtStaticConfig, gtfsrtHotConfig) ,
-    gtfsrtAPIKey         = JSON.parse(fs.readFileSync(gtfsrtAPIKeyPath)).key,
-
+    gtfsrtHotConfig      = JSON.parse(fs.readFileSync(gtfsrtHotConfigPath)),
+    gtfsrtConfig         = require('../../config/GTFS-RealtimeFeedReader.config') ,
 
     converterHotConfigPath  = path.join(__dirname, '../../config/Converter.hot.config.json'),
-    converterStaticConfig   = require('../../config/Converter.static.config.js') ,
-    converterHotConfig      = JSON.parse(fs.readFileSync(converterHotConfigPath)) ,
-    converterConfig         = merge(converterStaticConfig, converterHotConfig) ;
+    converterHotConfig      = JSON.parse(fs.readFileSync(converterHotConfigPath)),
+    converterConfig         = require('../../config/Converter.config') ,
+
+    gtfsConfigUpdateListeners      = [] ,
+    gtfsrtConfigUpdateListeners    = [] ,
+    converterConfigUpdateListeners = [] ;
 
 
 
@@ -31,21 +29,145 @@ var api = {
         return gtfsConfig;
     },
 
-    getGTFSRealtimeConfig : function () {
-        gtfsrtConfig.feedURL = gtfsrtConfig.baseURL + gtfsrtAPIKey;
+    getGTFSHotConfig : function () {
+        return gtfsHotConfig;
+    },
 
+    updateGTFSConfig : function (newHotConfig, callback) {
+        gtfsHotConfig = newHotConfig;
+
+        merge(gtfsConfig, gtfsHotConfig);
+
+        fs.writeFile(gtfsHotConfigPath, JSON.stringify(newHotConfig, null, '    ') + '\n', function (err) {
+            if (err) {
+                callback(err);
+                return;
+            }
+
+            for (var i = 0; i < gtfsConfigUpdateListeners.length; ++i) {
+                gtfsConfigUpdateListeners[i](gtfsConfig);
+            }
+            callback();
+        });
+    },
+
+    addGTFSConfigUpdateListener : function (listener) {
+        if ((typeof listener) === "function") {
+            gtfsConfigUpdateListeners.push(listener);
+        } else {
+            throw new Error('Listeners must be functions..');
+        }
+    },
+
+    removeGTFSConfigUpdateListener : function (listener) {
+        for (var i = 0; i < gtfsConfigUpdateListeners.length; ++i) {
+            if (gtfsConfigUpdateListeners[i] === listener) {
+                gtfsConfigUpdateListeners.splice(i, 1);
+                return;
+            }
+        }
+    },
+
+
+
+    getGTFSRealtimeConfig : function () {
         return gtfsrtConfig;
     },
 
+    getGTFSRealtimeHotConfig : function () {
+        return gtfsrtHotConfig;
+    },
+
+    // The caller of this function must handle creating 
+    // the complete feedURL which includes the API key.
+    updateGTFSRealtimeConfig : function (newHotConfig, callback) {
+        gtfsrtHotConfig = newHotConfig;
+
+        merge(gtfsrtConfig, newHotConfig);
+
+        gtfsrtConfig.feedURL = gtfsrtHotConfig.baseURL + '?key=' + gtfsrtHotConfig.apiKey;
+
+        fs.writeFile(gtfsrtHotConfigPath, JSON.stringify(newHotConfig, null, '    ') + '\n', function (err) {
+            if (err) {
+                callback(err);
+                return;
+            }
+            
+            for (var i = 0; i < gtfsrtConfigUpdateListeners.length; ++i) {
+                gtfsrtConfigUpdateListeners[i](gtfsrtConfig);
+            }
+            callback();
+        });
+    },
+
+    addGTFSRealtimeConfigUpdateListener : function (listener) {
+        if ((typeof listener) === "function") {
+            gtfsrtConfigUpdateListeners.push(listener);
+        } else {
+            throw new Error('Listeners must be functions..');
+        }
+    },
+
+    removeGTFSrtConfigUpdateListener : function (listener) {
+        for (var i = 0; i < gtfsrtConfigUpdateListeners.length; ++i) {
+            if (gtfsrtConfigUpdateListeners[i] === listener) {
+                gtfsrtConfigUpdateListeners.splice(i, 1);
+                return;
+            }
+        }
+    },
+
+
+
     getConverterConfig : function () {
-        console.log(converterConfig);
+        converterConfig.gtfsConfig = gtfsConfig;
+        converterConfig.gtfsrtConfig = gtfsrtConfig;
 
         return converterConfig;
+    },
+
+    getConverterHotConfig : function () {
+        return converterHotConfig;
+    },
+
+    updateConverterConfig : function (newHotConfig, callback) {
+        converterHotConfig = newHotConfig;
+
+        merge(converterConfig, newHotConfig);
+
+        fs.writeFile(converterHotConfigPath, JSON.stringify(newHotConfig, null, '    ') + '\n', function (err) {
+            if (err) {
+                callback(err);
+                return;
+            }
+
+            for (var i = 0; i < converterConfigUpdateListeners.length; ++i) {
+                converterConfigUpdateListeners[i](converterConfig);
+            }
+            callback();
+        });
+    },
+
+
+    addConverterConfigUpdateListener : function (listener) {
+        if ((typeof listener) === "function") {
+            converterConfigUpdateListeners.push(listener);
+        } else {
+            throw new Error('Listeners must be functions..');
+        }
+    },
+
+    removeConverterConfigUpdateListener : function (listener) {
+        for (var i = 0; i < converterConfigUpdateListeners.length; ++i) {
+            if (converterConfigUpdateListeners[i] === listener) {
+                converterConfigUpdateListeners.splice(i, 1);
+                return;
+            }
+        }
     },
 
 };
 
 
 module.exports = api;
-
 

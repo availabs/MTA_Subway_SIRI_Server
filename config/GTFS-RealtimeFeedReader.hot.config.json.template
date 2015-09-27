@@ -1,0 +1,6 @@
+{
+    "baseURL"     : "http://datamine.mta.info/mta_esi.php" ,
+    "apiKey"      : "Get your API key here: http://datamine.mta.info/user/register",
+    "feedURL"     : "<The app will set this at runtime to the baseURL + API key appended.>" ,
+    "readInterval" : 30
+}

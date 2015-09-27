@@ -4,6 +4,7 @@
 
 var express    = require('express')     ,
     app        = express()              ,
+    //morgan     = require('morgan')      ,
     bodyParser = require('body-parser') ;
 
 var router = express.Router(),
@@ -12,7 +13,7 @@ var router = express.Router(),
 
 // ROUTE HANDLERS
 // =============================================================================
-var gtfsAdmin        = require('./routes/gtfsAdmin'),
+var admin        = require('./routes/admin'),
 
     vehicleMonitoring = require('./routes/vehicleMonitoring'),
     stopMonitoring    = require('./routes/stopMonitoring');
@@ -22,6 +23,7 @@ var gtfsAdmin        = require('./routes/gtfsAdmin'),
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+//app.use(morgan('dev'));
 
 // ROUTES 
 // =============================================================================
@@ -29,7 +31,7 @@ app.use(bodyParser.json());
 router.get('/', function(req, res) {
     res.json( { 
         routes: { 
-            '/gtfs-admin'         : 'Administrative functionality for loading new GTFS data.' ,
+            '/admin'              : 'Administrative functionality.'                           ,
 
             '/vehicle-monitoring' : 'The SIRI VehicleMonitoring ("SIRI VM") call '            +
                                     'allows the developer to request information about '      +
@@ -49,10 +51,13 @@ router.get('/', function(req, res) {
 
 // REGISTER THE ROUTES -------------------------------
 app.use('/', router);
-app.use('/gtfs-admin', gtfsAdmin);
+app.use('/admin', admin);
 app.use('/vehicle-monitoring', vehicleMonitoring);
 app.use('/stop-monitoring', stopMonitoring);
 
+// THE STATIC ADMIN CONSOLE FILE
+
+app.use('/console', express.static('console'));
 
 
 // START THE SERVER

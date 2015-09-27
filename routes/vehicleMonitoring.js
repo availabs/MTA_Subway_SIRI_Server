@@ -14,10 +14,12 @@ router.get('/', function(req, res) {
 
     try {
         smr = ConverterService.getVehicleMonitoringResponse(req.query);
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-        res.json(smr);
+        //res.setHeader('Access-Control-Allow-Origin', '*');
+        //res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+        //res.send(smr);
+        res.send(smr);
     } catch (e) { 
+        console.log(e.stack);
          res.status(500)
             //.send((process.env === 'development') ?  e.stack : 'Error while serving request.');
             .send(e.stack);
