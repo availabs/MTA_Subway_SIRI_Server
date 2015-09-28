@@ -11,7 +11,6 @@ var ConverterStream  = require('MTA_Subway_GTFS-Realtime_to_SIRI_Converter').Con
     converterStream  = new ConverterStream(gtfsFeed, gtfsrtFeed, converterConfig, updateConverter);
 
 
-//TODO: Converter stream needs an updateconfig method.
 
 var latestConverter = null;
 
@@ -34,7 +33,7 @@ function getStopMonitoringResponse (params) {
 function getVehicleMonitoringResponse (params) {
     var smr = latestConverter.getVehicleMonitoringResponse(params);
 
-    //smr.timestamper.stamp(); //FIXME
+    smr.timestamper.stamp();
     return smr.response;
 }
 
