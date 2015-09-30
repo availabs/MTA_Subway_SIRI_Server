@@ -28,7 +28,7 @@ var fs    = require('fs'),
 
         noSpatialDataTripsLogPath  : path.join(logsDir, 'noSpatialDataTrips.log') ,
 
-        trainTrackingErrorsLogPath : path.join(logsDir, 'lostTrains.log')         ,
+        trainTrackingErrorsLogPath : path.join(logsDir, 'trainTrackingErrors.log'),
     };
 
     

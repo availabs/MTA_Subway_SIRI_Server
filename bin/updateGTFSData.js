@@ -8,7 +8,7 @@
 var path     = require('path')                   ,
     execFile = require('child_process').execFile ,
 
-    gtfsConfig         = require('../config/GTFS_config.js')         ,
+    gtfsConfig         = require('../config/GTFS.config.js')         ,
     gtfsConfigFilePath = gtfsConfig.gtfsConfigFilePath               ,
     gtfsLatestDataURL  = process.argv[2] || gtfsConfig.latestDataURL ,
 

@@ -2,6 +2,6 @@
     "baseURL": "http://datamine.mta.info/mta_esi.php",
     "apiKey": "5dadd04378cc60cc4ae447da5756ddaa",
     "readInterval": 30,
-    "retryInterval": 0.5,
-    "maxRetries": 5
+    "retryInterval": 1,
+    "maxRetries": 7
 }

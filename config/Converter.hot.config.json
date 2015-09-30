@@ -1,7 +1,7 @@
 {
     "logTrainLocations": true,
-    "logTrainTrackingErrors": false,
-    "logTrainTrackingStats": false,
+    "logTrainTrackingErrors": true,
+    "logTrainTrackingStats": true,
     "logUnscheduledTrips": true,
     "logNoSpatialDataTrips": true
 }
