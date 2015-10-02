@@ -14,6 +14,10 @@
     $("#GTFS-Realtime_config_div").hide();
     $("#Converter_config_div").hide();
 
+    function notify(message) {
+        $('#GTFS-Realtime_config_div').prepend('<div class="alert alert-success"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + message + '</div>');
+    }
+
     function switchActiveConfigDiv (newActiveDivSelector) {
         $(activeConfigDiv + '_config_div').hide();
         $(newActiveDivSelector + '_config_div').show();
@@ -65,6 +69,7 @@
             success: function (response) {
                 gtfsConfig = config;
                 console.log(response);
+                notify(response);
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log(textStatus);
@@ -91,6 +96,7 @@
             success: function (response) {
                 gtfsrtConfig = config;
                 console.log(response);
+                notify(response);
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log(textStatus);
@@ -119,6 +125,7 @@
             success: function (response) {
                 converterConfig = config;
                 console.log(response);
+                notify(response);
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log(textStatus);
@@ -135,6 +142,7 @@
             url: 'http://localhost:16180/admin/update/GTFS/data',
             success: function (response) {
                 console.log(response);
+                notify(response);
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log(textStatus);
