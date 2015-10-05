@@ -1,0 +1,2 @@
+http://localhost:16180/vehicle-monitoring
+http://localhost:16180/vehicle-monitoring/?VehicleMonitoringDetailLevel=calls

@@ -64,7 +64,7 @@
 
         $.ajax({
             type: "POST",
-            url: 'http://localhost:16180/admin/update/GTFS/config',
+            url: '/admin/update/GTFS/config',
             data: config,
             success: function (response) {
                 gtfsConfig = config;
@@ -91,7 +91,7 @@
 
         $.ajax({
             type: "POST",
-            url: 'http://localhost:16180/admin/update/GTFS-Realtime/config',
+            url: '/admin/update/GTFS-Realtime/config',
             data: config,
             success: function (response) {
                 gtfsrtConfig = config;
@@ -120,7 +120,7 @@
 
         $.ajax({
             type: "POST",
-            url: 'http://localhost:16180/admin/update/GTFS-Realtime_to_SIRI_Converter/config',
+            url: '/admin/update/GTFS-Realtime_to_SIRI_Converter/config',
             data: config,
             success: function (response) {
                 converterConfig = config;
@@ -139,7 +139,7 @@
     function sendUpdateGTFSDataPostRequest () {
          $.ajax({
             type: "POST",
-            url: 'http://localhost:16180/admin/update/GTFS/data',
+            url: '/admin/update/GTFS/data',
             success: function (response) {
                 console.log(response);
                 notify(response);
@@ -154,21 +154,21 @@
     $('#update_GTFS_data_btn').bind('click', sendUpdateGTFSDataPostRequest);
 
      $.ajax({
-         url: 'http://localhost:16180/admin/get/GTFS/config',
+         url: '/admin/get/GTFS/config',
          success: function(data) {
             gtfsConfig = data;
             setGTFSConfigFormPlaceholders();
          }
      });
      $.ajax({
-         url: 'http://localhost:16180/admin/get/GTFS-Realtime/config',
+         url: '/admin/get/GTFS-Realtime/config',
          success: function(data) {
             gtfsrtConfig = data;
             setGTFSRealtimeConfigFormPlaceholders();
          }
      });
      $.ajax({
-         url: 'http://localhost:16180/admin/get/GTFS-Realtime_to_SIRI_Converter/config',
+         url: '/admin/get/GTFS-Realtime_to_SIRI_Converter/config',
          dataType : 'json',
          success: function(data) {
              console.log('*****************');
