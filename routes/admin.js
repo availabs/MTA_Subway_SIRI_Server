@@ -2,14 +2,15 @@
 
 
 
-var express  = require('express') ,
-    router   = express.Router()   ;
-
+var express = require('express') ,
+    router  = express.Router()   ,
+    util    = require('util')    ;
 
     // Merge the static and hot config files.
-var ConverterService = require('../src/services/ConverterService') ,
-    ConfigsService = require('../src/services/ConfigsService') ,
-    gtfsConfig    = ConfigsService.getGTFSConfig() ,
+var ConverterService  = require('../src/services/ConverterService') ,
+    ConfigsService    = require('../src/services/ConfigsService') ,
+    GTFSRealtime_Feed = require('../src/services/GTFS-Realtime_Feed'),
+    gtfsConfig        = ConfigsService.getGTFSConfig() ,
 
     latestDataURL = gtfsConfig.latestDataURL ,
 
@@ -33,9 +34,12 @@ router.get('/get/GTFS-Realtime_to_SIRI_Converter/config', function (req, res) {
     res.send(ConfigsService.getConverterHotConfig());
 });
 
-router.get('/get/currentGTFSRealtimeTimestamp', function (req, res) {
-    console.log(ConverterService.getCurrentGTFSRealtimeTimestamp().toString());
+router.get('/get/GTFS-Realtime/currentTimestamp', function (req, res) {
     res.send(JSON.stringify(ConverterService.getCurrentGTFSRealtimeTimestamp()));
+});
+
+router.get('/get/GTFS-Realtime/feedReaderState', function (req, res) {
+    res.send(util.inspect(GTFSRealtime_Feed.getState()) + '\n');
 });
 
 //================ Config POST endpoints ================\\
@@ -51,8 +55,6 @@ router.post('/update/GTFS/config', function(req, res) {
             res.status(500);
             res.send(err);
         } else {
-            res.header("Access-Control-Allow-Origin", "*");
-            res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 
             res.status(200);
             res.send('Update successful.');
