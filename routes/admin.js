@@ -7,7 +7,8 @@ var express  = require('express') ,
 
 
     // Merge the static and hot config files.
-var ConfigsService = require('../src/services/ConfigsService') ,
+var ConverterService = require('../src/services/ConverterService') ,
+    ConfigsService = require('../src/services/ConfigsService') ,
     gtfsConfig    = ConfigsService.getGTFSConfig() ,
 
     latestDataURL = gtfsConfig.latestDataURL ,
@@ -21,25 +22,20 @@ var lastGTFSDataUpdateResults = null;
 //================ Config GET endpoints ================\\
 
 router.get('/get/GTFS/config', function (req, res) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-
     res.send(ConfigsService.getGTFSHotConfig());
 });
 
 router.get('/get/GTFS-Realtime/config', function (req, res) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-
     res.send(ConfigsService.getGTFSRealtimeHotConfig());
 });
 
 router.get('/get/GTFS-Realtime_to_SIRI_Converter/config', function (req, res) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    res.header('Content-Type', 'application/json');
-
     res.send(ConfigsService.getConverterHotConfig());
+});
+
+router.get('/get/currentGTFSRealtimeTimestamp', function (req, res) {
+    console.log(ConverterService.getCurrentGTFSRealtimeTimestamp().toString());
+    res.send(JSON.stringify(ConverterService.getCurrentGTFSRealtimeTimestamp()));
 });
 
 //================ Config POST endpoints ================\\

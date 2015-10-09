@@ -22,25 +22,24 @@ function updateConverter (converterUpdate) {
     latestConverter = converterUpdate;
 }
 
-function getStopMonitoringResponse (params) {
-    var smr = latestConverter.getStopMonitoringResponse(params);
 
-    smr.timestamper.stamp();
-    return smr.response;
+function getStopMonitoringResponse (params, resp, callback) {
+    latestConverter.getStopMonitoringResponse(params, resp, callback);
 }
 
+function getVehicleMonitoringResponse (params, resp, callback) {
+    latestConverter.getVehicleMonitoringResponse(params, resp, callback);
+}
 
-function getVehicleMonitoringResponse (params) {
-    var smr = latestConverter.getVehicleMonitoringResponse(params);
-
-    smr.timestamper.stamp();
-    return smr.response;
+function getCurrentGTFSRealtimeTimestamp () {
+    return latestConverter.getCurrentGTFSRealtimeTimestamp();
 }
 
 
 converterStream.start();
 
 module.exports = {
-    getStopMonitoringResponse    : getStopMonitoringResponse    ,
-    getVehicleMonitoringResponse : getVehicleMonitoringResponse ,
+    getStopMonitoringResponse       : getStopMonitoringResponse       ,
+    getVehicleMonitoringResponse    : getVehicleMonitoringResponse    ,
+    getCurrentGTFSRealtimeTimestamp : getCurrentGTFSRealtimeTimestamp ,
 };
