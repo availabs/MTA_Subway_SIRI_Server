@@ -2,9 +2,10 @@
 
 'use strict';
 
-var express    = require('express')     ,
+var fs         = require('fs')          , 
+    express    = require('express')     ,
     app        = express()              ,
-    //morgan     = require('morgan')      ,
+    morgan     = require('morgan')      ,
     bodyParser = require('body-parser') ;
 
 var router = express.Router(),
@@ -23,7 +24,12 @@ var admin        = require('./routes/admin'),
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-//app.use(morgan('dev'));
+// create a write stream (in append mode)
+var accessLogStream = fs.createWriteStream(__dirname + '/logs/server-access.log', {flags: 'a'})
+
+// setup the logger
+app.use(morgan('combined', {stream: accessLogStream}))
+
 
 // ROUTES 
 // =============================================================================
