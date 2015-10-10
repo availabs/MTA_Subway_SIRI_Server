@@ -18,7 +18,6 @@ require('./src/logging/initWinston');
 require('./src/services/MemoryMonitoringService');
 
 
-
 // ROUTE HANDLERS
 // =============================================================================
 var admin        = require('./routes/admin'),

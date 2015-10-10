@@ -17,7 +17,7 @@
     "merge": "^1.2.0",
     "morgan": "^1.6.1",
     "memwatch": "~0.2.2",
-    "winston": "~1.1.0"
+    "winston": "^1.1.0"
   },
   "scripts": {
     "start": "node server.js"

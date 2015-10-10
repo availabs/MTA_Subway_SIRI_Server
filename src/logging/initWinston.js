@@ -6,23 +6,21 @@ var winston = require('winston');
 var ConfigsService = require('../services/ConfigsService'),
 
     gtfsrtConfig    = ConfigsService.getGTFSRealtimeConfig(),
-    converterConfig = ConfigsService.getConverterConfig(),
+
+    //converterConfig = ConfigsService.getConverterConfig(),
 
     memwatchConfig  = ConfigsService.getMemwatchConfig();
 
 
-
-
-//winston.loggers.add('gtfsrt_feed_reader', {
-    //file: {
-        //filename    : gtfsrtConfig.feedReaderLogPath,
-        ////stringify   : feedReaderStringifier,
-        //level       : gtfsrtConfig.feedReaderLoggingLevel,
-        //colorize    : true,
-        //label       : 'Feed Reader Logging'
-    //}
-//});
-////}).remove(winston.transports.Console);
+winston.loggers.add('gtfsrt_feed_reader', {
+    file: {
+        filename    : gtfsrtConfig.feedReaderLogPath,
+        //stringify   : feedReaderStringifier,
+        level       : gtfsrtConfig.feedReaderLoggingLevel,
+        colorize    : true,
+        label       : 'Feed Reader Logging'
+    }
+}).remove(winston.transports.Console);
 
 
 //winston.loggers.add('converter_train_locations', {
@@ -85,7 +83,6 @@ winston.loggers.add('memwatch', {
         label    : 'Memory Usage',
     }
 }).remove(winston.transports.Console);
-
 
 
 
