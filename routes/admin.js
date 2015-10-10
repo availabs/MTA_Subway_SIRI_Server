@@ -42,6 +42,10 @@ router.get('/get/GTFS-Realtime/feedReaderState', function (req, res) {
     res.send(util.inspect(GTFSRealtime_Feed.getState()) + '\n');
 });
 
+router.get('/get/server/memory-usage', function (req, res) {
+    res.send(process.memoryUsage());
+});
+
 //================ Config POST endpoints ================\\
  
 router.post('/update/GTFS/config', function(req, res) {
