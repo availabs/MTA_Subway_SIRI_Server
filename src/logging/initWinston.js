@@ -14,7 +14,7 @@ var ConfigsService = require('../services/ConfigsService'),
 winston.loggers.add('gtfsrt_feed_reader', {
     file: {
         filename    : gtfsrtConfig.feedReaderLogPath,
-        prettyPrint : true,
+        //stringify   : feedReaderStringifier,
         level       : gtfsrtConfig.feedReaderLoggingLevel,
         colorize    : true,
         label       : 'Feed Reader Logging'
@@ -89,4 +89,11 @@ function simpleString (options) {
     return (options.data) ? options.data.toString() : '';
 }
 
+function feedReaderStringifier (options) {
+    try {
+        console.log(JSON.stringify(options, null, '    '));
+    } catch (e) {
+        console.log(e);
+    }
+}
 
