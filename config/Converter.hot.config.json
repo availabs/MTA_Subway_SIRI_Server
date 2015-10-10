@@ -3,5 +3,11 @@
     "logTrainTrackingErrors": true,
     "logTrainTrackingStats": true,
     "logUnscheduledTrips": true,
-    "logNoSpatialDataTrips": true
+    "logNoSpatialDataTrips": true,
+
+    "trainLocationsLoggingLevel": "debug",
+    "trainTrackingStatsLoggingLevel": "debug",
+    "noSpatialDataTripsLoggingLevel": "debug",
+    "unscheduledTripsLoggingLevel": "debug",
+    "trainTrackingErrorsLoggingLevel": "debug"
 }

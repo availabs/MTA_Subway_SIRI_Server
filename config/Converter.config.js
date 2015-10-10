@@ -5,7 +5,7 @@ var fs    = require('fs'),
     merge = require('merge'), 
 
     gtfsConfig   = require('./GTFS.config'),
-    gtfsrtConfig = require('./GTFS-RealtimeFeedReader.config.js'),
+    gtfsrtConfig = require('./GTFS-Realtime.config.js'),
 
     logsDir = path.normalize(path.join(__dirname, '../logs/')) ,
 
@@ -20,7 +20,7 @@ var fs    = require('fs'),
 
         logsDir                    : logsDir                                      ,
 
-        locationsLogPath           : path.join(logsDir, 'locations.csv')          ,
+        trainLocationsLogPath      : path.join(logsDir, 'trainLocations.csv')     ,
 
         trainTrackingStatsLogPath  : path.join(logsDir, 'trainTrackingStats.csv') ,
 

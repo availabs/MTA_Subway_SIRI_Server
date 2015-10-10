@@ -8,6 +8,7 @@ var ConverterStream  = require('MTA_Subway_GTFS-Realtime_to_SIRI_Converter').Con
     ConfigService    = require('./ConfigsService') ,
     converterConfig  = ConfigService.getConverterConfig() ,
 
+
     converterStream  = new ConverterStream(gtfsFeed, gtfsrtFeed, converterConfig, updateConverter);
 
 

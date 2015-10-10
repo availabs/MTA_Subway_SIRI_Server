@@ -1,16 +1,17 @@
 'use strict';
 
-var fs    = require('fs')    ,
-    path  = require('path')  ,
-    merge = require('merge') ;
+var fs      = require('fs')      ,
+    path    = require('path')    ,
+    winston = require('winston') ,
+    merge   = require('merge')   ;
 
 var gtfsHotConfigPath = path.join(__dirname, '../../config/GTFS.hot.config.json') ,
     gtfsHotConfig     = JSON.parse(fs.readFileSync(gtfsHotConfigPath)),
     gtfsConfig        = require('../../config/GTFS.config') , 
 
-    gtfsrtHotConfigPath  = path.join(__dirname, '../../config/GTFS-RealtimeFeedReader.hot.config.json') ,
+    gtfsrtHotConfigPath  = path.join(__dirname, '../../config/GTFS-Realtime.hot.config.json') ,
     gtfsrtHotConfig      = JSON.parse(fs.readFileSync(gtfsrtHotConfigPath)),
-    gtfsrtConfig         = require('../../config/GTFS-RealtimeFeedReader.config') ,
+    gtfsrtConfig         = require('../../config/GTFS-Realtime.config') ,
 
     converterHotConfigPath  = path.join(__dirname, '../../config/Converter.hot.config.json'),
     converterHotConfig      = JSON.parse(fs.readFileSync(converterHotConfigPath)),
@@ -21,7 +22,14 @@ var gtfsHotConfigPath = path.join(__dirname, '../../config/GTFS.hot.config.json'
     converterConfigUpdateListeners = [] ;
 
 
+gtfsConfig.winston      = winston;
+gtfsrtConfig.winston    = winston;
+converterConfig.winston = winston;
 
+
+//console.log('************************');
+//console.log(JSON.stringify(gtfsrtConfig, null, '    '));
+//console.log('************************');
 
 var api = {
 

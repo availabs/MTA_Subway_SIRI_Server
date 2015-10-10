@@ -11,6 +11,9 @@ var fs         = require('fs')          ,
 var router = express.Router(),
     port   = process.env.PORT || 16180;
 
+// init winston logging
+require('./src/logging/initWinston');
+
 
 // ROUTE HANDLERS
 // =============================================================================
@@ -25,10 +28,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 // create a write stream (in append mode)
-var accessLogStream = fs.createWriteStream(__dirname + '/logs/server-access.log', {flags: 'a'})
+var accessLogStream = fs.createWriteStream(__dirname + '/logs/server-access.log', {flags: 'a'});
 
 // setup the logger
-app.use(morgan('combined', {stream: accessLogStream}))
+app.use(morgan('combined', {stream: accessLogStream}));
 
 
 // ROUTES 
