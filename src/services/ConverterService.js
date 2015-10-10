@@ -8,10 +8,10 @@ var ConverterStream  = require('MTA_Subway_GTFS-Realtime_to_SIRI_Converter').Con
     ConfigService    = require('./ConfigsService') ,
     converterConfig  = ConfigService.getConverterConfig() ,
 
-
     converterStream  = new ConverterStream(gtfsFeed, gtfsrtFeed, converterConfig, updateConverter);
 
 
+//TODO: Converter stream needs an updateconfig method.
 
 var latestConverter = null;
 
@@ -23,24 +23,25 @@ function updateConverter (converterUpdate) {
     latestConverter = converterUpdate;
 }
 
+function getStopMonitoringResponse (params) {
+    var smr = latestConverter.getStopMonitoringResponse(params);
 
-function getStopMonitoringResponse (params, resp, callback) {
-    latestConverter.getStopMonitoringResponse(params, resp, callback);
+    smr.timestamper.stamp();
+    return smr.response;
 }
 
-function getVehicleMonitoringResponse (params, resp, callback) {
-    latestConverter.getVehicleMonitoringResponse(params, resp, callback);
-}
 
-function getCurrentGTFSRealtimeTimestamp () {
-    return latestConverter.getCurrentGTFSRealtimeTimestamp();
+function getVehicleMonitoringResponse (params) {
+    var smr = latestConverter.getVehicleMonitoringResponse(params);
+
+    smr.timestamper.stamp(); //FIXME
+    return smr.response;
 }
 
 
 converterStream.start();
 
 module.exports = {
-    getStopMonitoringResponse       : getStopMonitoringResponse       ,
-    getVehicleMonitoringResponse    : getVehicleMonitoringResponse    ,
-    getCurrentGTFSRealtimeTimestamp : getCurrentGTFSRealtimeTimestamp ,
+    getStopMonitoringResponse    : getStopMonitoringResponse    ,
+    getVehicleMonitoringResponse : getVehicleMonitoringResponse ,
 };
