@@ -38,8 +38,12 @@ router.get('/get/GTFS-Realtime/currentTimestamp', function (req, res) {
     res.send(JSON.stringify(ConverterService.getCurrentGTFSRealtimeTimestamp()));
 });
 
-router.get('/get/GTFS-Realtime/feedReaderState', function (req, res) {
+router.get('/get/GTFS-Realtime/feed-reader/state', function (req, res) {
     res.send(util.inspect(GTFSRealtime_Feed.getState()) + '\n');
+});
+
+router.get('/get/GTFS-Realtime/feed-reader/lastReadTimestamp', function (req, res) {
+    res.send(GTFSRealtime_Feed.getLastReadTimestamp().toString());
 });
 
 router.get('/get/server/memory-usage', function (req, res) {
