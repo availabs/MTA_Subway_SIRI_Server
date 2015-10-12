@@ -20,6 +20,8 @@ var fs    = require('fs'),
 
         logsDir                    : logsDir                                      ,
 
+        converterLogPath           : path.join(logsDir, 'converter.log')          ,
+
         trainLocationsLogPath      : path.join(logsDir, 'trainLocations.csv')     ,
 
         trainTrackingStatsLogPath  : path.join(logsDir, 'trainTrackingStats.csv') ,

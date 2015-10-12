@@ -1,10 +1,12 @@
 {
+    "logConverter": true,
     "logTrainLocations": true,
     "logTrainTrackingErrors": true,
     "logTrainTrackingStats": true,
     "logUnscheduledTrips": true,
     "logNoSpatialDataTrips": true,
 
+    "converterLoggingLevel" : "silly",
     "trainLocationsLoggingLevel": "debug",
     "trainTrackingStatsLoggingLevel": "debug",
     "noSpatialDataTripsLoggingLevel": "debug",

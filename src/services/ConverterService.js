@@ -20,7 +20,9 @@ ConfigService.addConverterConfigUpdateListener(converterStream.updateConfig);
 
 // Callback passed to MTA_Subway_GTFS-Realtime_to_SIRI.ConverterStream
 function updateConverter (converterUpdate) {
-    latestConverter = converterUpdate;
+    if (converterUpdate) {
+        latestConverter = converterUpdate;
+    }
 }
 
 

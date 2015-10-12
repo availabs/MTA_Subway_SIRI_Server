@@ -7,7 +7,7 @@ var ConfigsService = require('../services/ConfigsService'),
 
     gtfsrtConfig    = ConfigsService.getGTFSRealtimeConfig(),
 
-    //converterConfig = ConfigsService.getConverterConfig(),
+    converterConfig = ConfigsService.getConverterConfig(),
 
     memwatchConfig  = ConfigsService.getMemwatchConfig();
 
@@ -21,6 +21,19 @@ winston.loggers.add('gtfsrt_feed_reader', {
         label       : 'Feed Reader Logging'
     }
 }).remove(winston.transports.Console);
+
+
+winston.loggers.add('converter', {
+    file: {
+        filename    : converterConfig.converterLogPath,
+        level       : converterConfig.converterLoggingLevel,
+        colorize    : true,
+        label       : 'Converter Logging'
+    }
+}).remove(winston.transports.Console);
+
+
+
 
 
 //winston.loggers.add('converter_train_locations', {
