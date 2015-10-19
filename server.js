@@ -20,10 +20,9 @@ require('./src/services/MemoryMonitoringService');
 
 // ROUTE HANDLERS
 // =============================================================================
-var admin        = require('./routes/admin'),
+var admin = require('./routes/admin'),
 
-    vehicleMonitoring = require('./routes/vehicleMonitoring'),
-    stopMonitoring    = require('./routes/stopMonitoring');
+    monitoringCallHandler = require('./routes/monitoringCallHandler');
 
 
 
@@ -43,8 +42,6 @@ app.use(morgan('combined', {stream: accessLogStream}));
 router.get('/', function(req, res) {
     res.json( { 
         routes: { 
-            '/admin'              : 'Administrative functionality.'                           ,
-
             '/vehicle-monitoring' : 'The SIRI VehicleMonitoring ("SIRI VM") call '            +
                                     'allows the developer to request information about '      +
                                     'one, some, or all trains monitored by the '              +
@@ -57,18 +54,34 @@ router.get('/', function(req, res) {
     } );   
 });
 
+// Hand-off the requests.
+// NOTE: Because of the extensions on the routes, we need to use res.redirect.
+//
+router.get('/stop-monitoring.json', function (req, res) {
+    res.redirect('monitoringCallHandler/StopMonitoringResponse/json');
+});
 
-// more routes for our API will happen here
+router.get('/stop-monitoring.xml', function (req, res) {
+    res.redirect('monitoringCallHandler/StopMonitoringResponse/xml');
+});
+
+router.get('/vehicle-monitoring.json', function (req, res) {
+    res.redirect('monitoringCallHandler/VehicleMonitoringResponse/json');
+});
+
+router.get('/vehicle-monitoring.xml', function (req, res) {
+    res.redirect('monitoringCallHandler/VehicleMonitoringResponse/xml');
+});
 
 
 // REGISTER THE ROUTES -------------------------------
 app.use('/', router);
 app.use('/admin', admin);
-app.use('/vehicle-monitoring', vehicleMonitoring);
-app.use('/stop-monitoring', stopMonitoring);
+
+app.use('/monitoringCallHandler', monitoringCallHandler);
+
 
 // THE STATIC ADMIN CONSOLE FILE
-
 app.use('/console', express.static('console'));
 
 

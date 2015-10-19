@@ -26,27 +26,12 @@ function updateConverter (converterUpdate) {
 }
 
 
-//function getStopMonitoringResponse (params, resp, callback) {
-    //latestConverter.getStopMonitoringResponse(params, resp, callback);
-//}
-
-//function getVehicleMonitoringResponse (params, resp, callback) {
-    //latestConverter.getVehicleMonitoringResponse(params, resp, callback);
-//}
-
-function getStopMonitoringResponse (params) {
-    var smr = latestConverter.getStopMonitoringResponse(params);
-
-    smr.timestamper.stamp();
-    return smr.response;
+function getStopMonitoringResponse (params, extension, callback) {
+    latestConverter.getStopMonitoringResponse(params, extension, callback);
 }
 
-
-function getVehicleMonitoringResponse (params) {
-    var smr = latestConverter.getVehicleMonitoringResponse(params);
-
-    smr.timestamper.stamp(); 
-    return smr.response;
+function getVehicleMonitoringResponse (params, extension, callback) {
+    latestConverter.getVehicleMonitoringResponse(params, extension, callback);
 }
 
 
