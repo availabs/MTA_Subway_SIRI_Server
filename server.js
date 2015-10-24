@@ -5,6 +5,7 @@
 var fs         = require('fs')          , 
     express    = require('express')     ,
     app        = express()              ,
+    toobusy    = require('toobusy')     ,
     morgan     = require('morgan')      ,
     bodyParser = require('body-parser') ;
 
@@ -58,19 +59,35 @@ router.get('/', function(req, res) {
 // NOTE: Because of the extensions on the routes, we need to use res.redirect.
 //
 router.get('/stop-monitoring.json', function (req, res) {
-    res.redirect('monitoringCallHandler/StopMonitoringResponse/json');
+    if (toobusy()) {
+        res.send(503);
+    } else {
+        res.redirect('monitoringCallHandler/StopMonitoringResponse/json');
+   } 
 });
 
 router.get('/stop-monitoring.xml', function (req, res) {
-    res.redirect('monitoringCallHandler/StopMonitoringResponse/xml');
+    if (toobusy()) {
+        res.send(503);
+    } else {
+        res.redirect('monitoringCallHandler/StopMonitoringResponse/xml');
+    }
 });
 
 router.get('/vehicle-monitoring.json', function (req, res) {
-    res.redirect('monitoringCallHandler/VehicleMonitoringResponse/json');
+    if (toobusy()) {
+        res.send(503);
+    } else {
+        res.redirect('monitoringCallHandler/VehicleMonitoringResponse/json');
+    }
 });
 
 router.get('/vehicle-monitoring.xml', function (req, res) {
-    res.redirect('monitoringCallHandler/VehicleMonitoringResponse/xml');
+    if (toobusy()) {
+        res.send(503);
+    } else {
+        res.redirect('monitoringCallHandler/VehicleMonitoringResponse/xml');
+    }
 });
 
 

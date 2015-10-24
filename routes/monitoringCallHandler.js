@@ -33,8 +33,6 @@ router.get('/:monitoringCallType/:extension', function(req, res) {
         contentType = (extension === 'xml') ? 'application/xml' : 'application/json',
         callback    = sendReponse.bind(null, res, contentType);
 
-    req.setTimeout(10000); //FIXME
-
     if ( (monitoringCallType === 'StopMonitoringResponse') && (! req.query.MonitoringRef )) {
         res.status(422).send('The MonitoringRef parameter is required.');
         return;
