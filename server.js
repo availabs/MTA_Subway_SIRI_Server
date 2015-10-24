@@ -5,7 +5,7 @@
 var fs         = require('fs')          , 
     express    = require('express')     ,
     app        = express()              ,
-    toobusy    = require('toobusy')     ,
+    toobusy    = require('toobusy-js')  ,
     morgan     = require('morgan')      ,
     bodyParser = require('body-parser') ;
 
