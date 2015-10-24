@@ -1,0 +1,17 @@
+** Preparing 500 concurrent users for battle.
+The server is now under siege...^C
+Lifting the server siege...      done.
+
+Transactions:               34944720 hits
+Availability:                 100.00 %
+Elapsed time:               35196.31 secs
+Data transferred:          874048.00 MB
+Response time:                  0.00 secs
+Transaction rate:             992.85 trans/sec
+Throughput:                    24.83 MB/sec
+Concurrency:                    3.47
+Successful transactions:    34944720
+Failed transactions:               0
+Longest transaction:            1.14
+Shortest transaction:           0.00
+

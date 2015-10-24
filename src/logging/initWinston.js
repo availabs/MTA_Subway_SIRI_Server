@@ -7,9 +7,9 @@ var ConfigsService = require('../services/ConfigsService'),
 
     gtfsrtConfig    = ConfigsService.getGTFSRealtimeConfig(),
 
-    converterConfig = ConfigsService.getConverterConfig(),
+    converterConfig = ConfigsService.getConverterConfig();
 
-    memwatchConfig  = ConfigsService.getMemwatchConfig();
+    //memwatchConfig  = ConfigsService.getMemwatchConfig();
 
 
 winston.loggers.add('gtfsrt_feed_reader', {
@@ -88,14 +88,14 @@ winston.loggers.add('converter', {
 
 
 
-winston.loggers.add('memwatch', {
-    file: {
-        filename : memwatchConfig.logFilePath,
-        level    : 'silly',
-        colorize : false,
-        label    : 'Memory Usage',
-    }
-}).remove(winston.transports.Console);
+//winston.loggers.add('memwatch', {
+    //file: {
+        //filename : memwatchConfig.logFilePath,
+        //level    : 'silly',
+        //colorize : false,
+        //label    : 'Memory Usage',
+    //}
+//}).remove(winston.transports.Console);
 
 
 

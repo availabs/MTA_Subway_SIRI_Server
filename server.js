@@ -15,7 +15,7 @@ var router = express.Router(),
 require('./src/logging/initWinston');
 
 // fire up memwatch
-require('./src/services/MemoryMonitoringService');
+//require('./src/services/MemoryMonitoringService');
 
 
 // ROUTE HANDLERS

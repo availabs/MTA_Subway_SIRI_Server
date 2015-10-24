@@ -19,7 +19,7 @@ var gtfsHotConfigPath = path.join(__dirname, '../../config/GTFS.hot.config.json'
 
     //memwatchHotConfigPath  = path.join(__dirname, '../../config/Memwatch.hot.config.json'),
     //memwatchHotConfig      = JSON.parse(fs.readFileSync(memwatchHotConfigPath)),
-    memwatchConfig         = require('../../config/Memwatch.config'),
+    //memwatchConfig         = require('../../config/Memwatch.config'),
 
     gtfsConfigUpdateListeners      = [] ,
     gtfsrtConfigUpdateListeners    = [] ,
@@ -179,9 +179,9 @@ var api = {
     },
 
 
-    getMemwatchConfig : function () {
-        return memwatchConfig;
-    },
+    //getMemwatchConfig : function () {
+        //return memwatchConfig;
+    //},
 
 
 };

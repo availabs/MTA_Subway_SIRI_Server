@@ -16,7 +16,6 @@
     "express": "^4.13.3",
     "merge": "^1.2.0",
     "morgan": "^1.6.1",
-    "memwatch": "~0.2.2",
     "winston": "^1.1.0"
   },
   "scripts": {
