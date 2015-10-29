@@ -11,6 +11,8 @@ var fs         = require('fs')          ,
 var router = express.Router(),
     port   = process.env.PORT || 16180;
 
+require('toobusy-js').maxLag(500); //Set toobusy maximum lag to 500ms.
+
 // init winston logging
 require('./src/logging/initWinston');
 
