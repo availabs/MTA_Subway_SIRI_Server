@@ -1,6 +1,7 @@
 'use strict';
 
-var util = require('util');
+var util    = require('util'),
+    toobusy = require('toobusy-js');
 
 var ConverterService = require('../src/services/ConverterService');
 
@@ -27,10 +28,44 @@ function sendReponse (res, contentType, error, callResponse) {
 }
 
 
-router.get('/:monitoringCallType/:extension', function(req, res) {
-    var monitoringCallType = req.params.monitoringCallType,
-        extension   = req.params.extension,
-        contentType = (extension === 'xml') ? 'application/xml' : 'application/json',
+// Hand-off the requests.
+// NOTE: Because of the extensions on the routes, we need to use res.redirect.
+//
+router.get('/stop-monitoring.json', function (req, res) {
+    if (toobusy()) {
+        res.send(503);
+    } else {
+        handleRequest(req, res, 'StopMonitoringResponse', 'json');
+   } 
+});
+
+router.get('/stop-monitoring.xml', function (req, res) {
+    if (toobusy()) {
+        res.send(503);
+    } else {
+        handleRequest(req, res, 'StopMonitoringResponse', 'xml');
+    }
+});
+
+router.get('/vehicle-monitoring.json', function (req, res) {
+    if (toobusy()) {
+        res.send(503);
+    } else {
+        handleRequest(req, res, 'VehicleMonitoringResponse', 'json');
+    }
+});
+
+router.get('/vehicle-monitoring.xml', function (req, res) {
+    if (toobusy()) {
+        res.send(503);
+    } else {
+        handleRequest(req, res, 'VehicleMonitoringResponse', 'xml');
+    }
+});
+
+
+function handleRequest (req, res, monitoringCallType, extension) {
+    var contentType = (extension === 'xml') ? 'application/xml' : 'application/json',
         callback    = sendReponse.bind(null, res, contentType);
 
     if ( (monitoringCallType === 'StopMonitoringResponse') && (! req.query.MonitoringRef )) {
@@ -45,7 +80,7 @@ router.get('/:monitoringCallType/:extension', function(req, res) {
     } else {
         res.status(500).send('Unrecognized monitoring call type.');
     }
-});
+}
 
 
 module.exports = router;
