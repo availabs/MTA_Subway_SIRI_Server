@@ -23,8 +23,7 @@ function sendReponse (res, contentType, error, callResponse) {
         'Content-Type'  : contentType,
     });
 
-    res.write(callResponse);
-    res.end();
+    res.end(callResponse);
 }
 
 
@@ -33,7 +32,7 @@ function sendReponse (res, contentType, error, callResponse) {
 //
 router.get('/stop-monitoring.json', function (req, res) {
     if (toobusy()) {
-        res.send(503);
+        res.sendStatus(503);
     } else {
         handleRequest(req, res, 'StopMonitoringResponse', 'json');
    } 
@@ -41,7 +40,7 @@ router.get('/stop-monitoring.json', function (req, res) {
 
 router.get('/stop-monitoring.xml', function (req, res) {
     if (toobusy()) {
-        res.send(503);
+        res.sendStatus(503);
     } else {
         handleRequest(req, res, 'StopMonitoringResponse', 'xml');
     }
@@ -49,7 +48,7 @@ router.get('/stop-monitoring.xml', function (req, res) {
 
 router.get('/vehicle-monitoring.json', function (req, res) {
     if (toobusy()) {
-        res.send(503);
+        res.sendStatus(503);
     } else {
         handleRequest(req, res, 'VehicleMonitoringResponse', 'json');
     }
@@ -57,7 +56,7 @@ router.get('/vehicle-monitoring.json', function (req, res) {
 
 router.get('/vehicle-monitoring.xml', function (req, res) {
     if (toobusy()) {
-        res.send(503);
+        res.sendStatus(503);
     } else {
         handleRequest(req, res, 'VehicleMonitoringResponse', 'xml');
     }

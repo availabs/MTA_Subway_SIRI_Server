@@ -8,10 +8,11 @@ var fs         = require('fs')          ,
     morgan     = require('morgan')      ,
     bodyParser = require('body-parser') ;
 
+
 var router = express.Router(),
     port   = process.env.PORT || 16180;
 
-require('toobusy-js').maxLag(500); //Set toobusy maximum lag to 500ms.
+require('toobusy-js').maxLag(100); //Set toobusy maximum lag to 100ms.
 
 // init winston logging
 require('./src/logging/initWinston');
@@ -58,9 +59,9 @@ router.get('/', function(req, res) {
 
 // REGISTER THE ROUTES -------------------------------
 app.use('/', router);
-app.use('/admin', admin);
+app.use('/admin', adminController);
 
-app.use('/api/siri', monitoringCallHandler);
+app.use('/api/siri', monitoringCallController);
 
 
 // THE STATIC ADMIN CONSOLE FILE
