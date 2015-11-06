@@ -23,9 +23,9 @@ require('./src/logging/initWinston');
 
 // ROUTE HANDLERS
 // =============================================================================
-var admin = require('./routes/admin'),
+var adminController = require('./routes/adminController'),
 
-    monitoringCallHandler = require('./routes/monitoringCallHandler');
+    monitoringCallController = require('./routes/monitoringCallController');
 
 
 
