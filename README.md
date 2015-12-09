@@ -7,4 +7,4 @@
 ## To deploy on AWS
 1. Create a base Ubuntu 12.04 LTS Server
 //UNTESTED
-2. `wget -O - https://raw.githubusercontent.com/availabs/MTA_Subway_SIRI_Server/master/aws/init-script.sh | bash`
+2. `wget -O - https://github.com/availabs/MTA_Subway_SIRI_Server/blob/master/aws/init-script.sh | bash`
