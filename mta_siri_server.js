@@ -45,12 +45,12 @@ app.use(morgan('combined', {stream: accessLogStream}));
 router.get('/', function(req, res) {
     res.json( { 
         routes: { 
-            '/api/siri/vehicle-monitoring' : 'The SIRI VehicleMonitoring ("SIRI VM") call '            +
+            '/api/siri/vehicle-monitoring.json' : 'The SIRI VehicleMonitoring ("SIRI VM") call '            +
                                     'allows the developer to request information about '      +
                                     'one, some, or all trains monitored by the '              +
                                     'NYCT Subway System.'                                     ,
 
-            '/api/siri/stop-monitoring'    : 'The SIRI StopMonitoring ("SIRI SM") call allows the '    +
+            '/api/siri/stop-monitoring.json'    : 'The SIRI StopMonitoring ("SIRI SM") call allows the '    +
                                     'developer to request information about the vehicles '    +
                                     'serving a particular stop.'                              ,
         } 
