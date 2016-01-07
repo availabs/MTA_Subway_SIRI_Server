@@ -7,9 +7,9 @@
     "logNoSpatialDataTrips": true,
 
     "converterLoggingLevel" : "silly",
-    "trainLocationsLoggingLevel": "debug",
-    "trainTrackingStatsLoggingLevel": "debug",
-    "noSpatialDataTripsLoggingLevel": "debug",
-    "unscheduledTripsLoggingLevel": "debug",
-    "trainTrackingErrorsLoggingLevel": "debug"
+    "trainLocationsLoggingLevel": "silly",
+    "trainTrackingStatsLoggingLevel": "silly",
+    "noSpatialDataTripsLoggingLevel": "silly",
+    "unscheduledTripsLoggingLevel": "silly",
+    "trainTrackingErrorsLoggingLevel": "silly"
 }

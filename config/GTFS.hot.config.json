@@ -1,3 +1,4 @@
 {
+    "agency_id" : "MTA NYCT",
     "latestDataURL": "http://web.mta.info/developers/data/nyct/subway/google_transit.zip"
 }

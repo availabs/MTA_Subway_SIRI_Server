@@ -23,7 +23,7 @@ var fs    = require('fs'),
 
         indexedScheduleDataFileName : 'indexedScheduleData.json'    ,
         indexedSpatialDataFileName  : 'indexedSpatialData.json'     ,
-        indexingStatisticsFileName  : 'indexingStatistics.json'     ,
+        indexingStatisticsFileName  : 'indexingStatistics.txt'     ,
     };
 
 

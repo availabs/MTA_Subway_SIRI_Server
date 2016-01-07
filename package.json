@@ -10,15 +10,6 @@
     "Realtime",
     "SIRI"
   ],
-  "dependencies": {
-    "MTA_Subway_GTFS-Realtime_to_SIRI_Converter": "https://github.com/availabs/MTA_Subway_GTFS-Realtime_to_SIRI_Converter/tarball/master",
-    "body-parser": "^1.13.3",
-    "express": "^4.13.3",
-    "merge": "^1.2.0",
-    "morgan": "^1.6.1",
-    "toobusy-js": "^0.4.2",
-    "winston": "^1.1.0"
-  },
   "scripts": {
     "start": "node server.js"
   },
@@ -29,8 +20,15 @@
   },
   "author": "paultomchik",
   "license": "",
-  "devDependencies": {
+  "dependencies": {
+    "MTA_Subway_GTFS-Realtime_to_SIRI_Converter": "https://github.com/availabs/MTA_Subway_GTFS-Realtime_to_SIRI_Converter/tarball/master",
+    "body-parser": "^1.14.2",
+    "express": "^4.13.3",
     "jest": "^0.1.40",
-    "jest-cli": "^0.4.x"
+    "jest-cli": "^0.8.2",
+    "merge": "^1.2.0",
+    "morgan": "^1.6.1",
+    "toobusy-js": "^0.4.2",
+    "winston": "^2.1.1"
   }
 }
