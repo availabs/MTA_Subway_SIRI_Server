@@ -26,12 +26,12 @@ function updateConverter (converterUpdate) {
 }
 
 
-function getStopMonitoringResponse (params, extension, callback) {
-    latestConverter.getStopMonitoringResponse(params, extension, callback);
+function getStopMonitoringResponse (query, extension, callback) {
+    latestConverter.getStopMonitoringResponse(query, extension, callback);
 }
 
-function getVehicleMonitoringResponse (params, extension, callback) {
-    latestConverter.getVehicleMonitoringResponse(params, extension, callback);
+function getVehicleMonitoringResponse (query, extension, callback) {
+    latestConverter.getVehicleMonitoringResponse(query, extension, callback);
 }
 
 

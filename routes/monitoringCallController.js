@@ -65,17 +65,38 @@ router.get('/vehicle-monitoring.xml', function (req, res) {
 
 function handleRequest (req, res, monitoringCallType, extension) {
     var contentType = (extension === 'xml') ? 'application/xml' : 'application/json',
-        callback    = sendReponse.bind(null, res, contentType);
+        callback    = sendReponse.bind(null, res, contentType),
 
-    if ( (monitoringCallType === 'StopMonitoringResponse') && (! req.query.MonitoringRef )) {
+        caseInsensitiveQuery = {},
+
+        key, value,
+        queryKeys,
+        i;
+
+    if ((req.query !== null) && (typeof req.query === 'object')) {
+        queryKeys = Object.keys(req.query);
+
+        for ( i = 0; i < queryKeys.length; ++i ) {
+            key   = (queryKeys[i].toLowerCase) ?
+                        queryKeys[i].toLowerCase() : queryKeys[i];
+            value = (req.query[queryKeys[i]].toLowerCase) ? 
+                        req.query[queryKeys[i]].toLowerCase() : req.query[queryKeys[i]];
+
+            caseInsensitiveQuery[key] = value;
+        }
+    } else {
+        caseInsensitiveQuery = req.query;
+    }
+
+    if ( (monitoringCallType === 'StopMonitoringResponse') && (! caseInsensitiveQuery.monitoringref )) {
         res.status(422).send('The MonitoringRef parameter is required.');
         return;
     }
 
     if (monitoringCallType === 'StopMonitoringResponse') {
-        ConverterService.getStopMonitoringResponse(req.query, extension, callback);
+        ConverterService.getStopMonitoringResponse(caseInsensitiveQuery, extension, callback);
     } else if (monitoringCallType === 'VehicleMonitoringResponse') {
-        ConverterService.getVehicleMonitoringResponse(req.query, extension, callback);
+        ConverterService.getVehicleMonitoringResponse(caseInsensitiveQuery, extension, callback);
     } else {
         res.status(500).send('Unrecognized monitoring call type.');
     }
