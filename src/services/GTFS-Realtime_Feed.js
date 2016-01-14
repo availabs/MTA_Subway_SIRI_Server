@@ -8,6 +8,8 @@ var GTFSrtFeedReader = require('MTA_Subway_GTFS-Realtime_to_SIRI_Converter').MTA
 
     feedReader = new GTFSrtFeedReader(feedReaderConfig); 
 
-ConfigService.addGTFSRealtimeConfigUpdateListener(function (config) { feedReader.updateConfig(config); });
+ConfigService.addGTFSRealtimeConfigUpdateListener(function (config, callback) { 
+    feedReader.updateConfig(config, callback); 
+});
 
 module.exports = feedReader;

@@ -37,14 +37,20 @@
         <!-- Navigation -->
         <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
             <div>
-                <h3>MTA Subway GTFS-Realtime to SIRI Configuration Dashboard</h3>
+                <h3>MTA Subway GTFS-Realtime to SIRI Server Configuration Dashboard</h3>
             </div>
             <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
             <div class="collapse navbar-collapse navbar-ex1-collapse">
                 <ul class="nav navbar-nav side-nav nav-pills">
-                    <li id="GTFS_selector" role="presentation"><a href="#"><i class="fa fa-fw fa-train"></i>GTFS</a></li>
-                    <li id="GTFS-Realtime_selector" role="presentation"><a href="#"><i class="fa fa-fw fa-table"></i>GTFS-Realtime</a></li>
-                    <li id="Converter_selector" role="presentation"><a href="#"><i class="fa fa-fw fa-table"></i>Converter</a></li>
+                    <li id="GTFS_selector" role="presentation">
+                        <a href="#"><i class="fa fa-fw fa-train"></i>GTFS</a>
+                    </li>
+                    <li id="GTFS-Realtime_selector" role="presentation">
+                        <a href="#"><i class="fa fa-fw fa-table"></i>GTFS-Realtime</a>
+                    </li>
+                    <li id="Converter_selector" role="presentation">
+                        <a href="#"><i class="fa fa-fw fa-table"></i>Converter</a>
+                    </li>
                 </ul>
             </div>
             <!-- /.navbar-collapse -->
@@ -58,97 +64,319 @@
                 <div id="GTFS_config_div" class="row">
                     <div class="col-lg-6">
 
-                        <form role="form">
+                        <form id="GTFS_form"
+                              enctype="multipart/form-data"
+                              role="form">
 
                             <div class="form-group">
-                                <label>Static GTFS Data URL</label>
-                                <input id="GTFS_URL" class="form-control">
+                                <label id="GTFS_feedURL_label">
+                                    Static GTFS Data URL
+                                </label>
+                                <input id="GTFS_URL" name="feedURL" class="form-control">
+
+                                <label id="GTFS_zipfile_label">
+                                    Upload the GTFS feed's .zip file.
+                                </label>
+                                <input type="file" id="GTFS_data_file" name="zipfile" class="form-control">
                             </div>
 
-                            <button type="reset" class="btn btn-primary btn-sm">Reset</button>
-                            <button id="update_GTFS_config_btn" type="submit" class="btn btn-primary btn-sm">Update GTFS Config</button>
-                            <button id="update_GTFS_data_btn" type="button" class="btn btn-warning btn-sm">Update GTFS Data</button>
+                            <div id="GTFS_form_btn_row" class "row">
+                                <button type="reset" class="btn btn-primary btn-sm">
+                                    Reset
+                                </button>
+
+                                <button id="update_GTFS_config_btn" type="submit" class="btn btn-primary btn-sm">
+                                    Update GTFS Config
+                                </button>
+
+                                <button id="update_GTFS_data_btn" type="button" class="btn btn-warning btn-sm">
+                                    Update GTFS Data
+                                </button>
+                            </div>
 
                         </form>
 
+                        <div id="GTFS_notifications_div"></div>
+
                     </div>
+
+                    <div id="GTFS_descriptions_area" class="col-lg-4">
+                        <div id="GTFS_feedURL_description"
+                             class="displayNone">
+                                <p>
+                                    <b>TODO: write description.</b>
+                                </p>
+                        </div>
+                        <div id="GTFS_zipfile_description"
+                             class="displayNone">
+                                <p>
+                                    <b>TODO: write description.</b>
+                                </p>
+                        </div>
+                    </div>
+
+
                 </div>
                 <!-- /.row -->
 
                 <div id="GTFS-Realtime_config_div" class="row">
                     <div class="col-lg-6">
 
-                        <form role="form">
+                        <form id="GTFS-Realtime_form"
+                              enctype="multipart/form-data"
+                              role="form">
 
                             <div class="form-group">
-                                <label>GTFS-Realtime Feed URL</label>
-                                <!--Set the placeholder to the current config value-->
-                                <!--<input class="form-control" placeholder="Enter text">-->
-                                <input id="GTFS-Realtime_URL" class="form-control">
+                                <label id="GTFS-Realtime_feedURL_label">
+                                    GTFS-Realtime Feed URL (Include the API key, if one is required.)
+                                </label>
+                                <input id="GTFS-Realtime_FeedURL" name="feedURL" class="form-control">
 
-                                <label>API Key</label>
-                                <input id="GTFS-Realtime_API_Key" class="form-control">
+                                <label id="GTFS-Realtime_readInterval_label">
+                                    Read Frequency (seconds)
+                                </label>
+                                <input id="GTFS-Realtime_Read_Interval" name="readInterval" class="form-control">
 
-                                <label>Read Frequency (seconds)</label>
-                                <input id="GTFS-Realtime_Read_Interval" class="form-control">
+                                <label id="GTFS-Realtime_retryInterval_label">
+                                    Retry Frequency (seconds)
+                                </label>
+                                <input id="GTFS-Realtime_Retry_Interval" name="retryInterval" class="form-control">
 
-                                <label>Retry Frequency (seconds)</label>
-                                <input id="GTFS-Realtime_Retry_Interval" class="form-control">
+                                <label id="GTFS-Realtime_maxNumRetries_label">
+                                    Max number of retries
+                                </label>
+                                <input id="GTFS-Realtime_Max_Num_Retries" name="maxNumRetries" class="form-control">
 
-                                <label>Max number of retries</label>
-                                <input id="GTFS-Realtime_Max_Num_Retries" class="form-control">
-
+                                <label id="GTFS-Realtime_protofile_label">
+                                    Upload a .proto file
+                                </label>
+                                <input type="file" id="GTFS-Realtime_Protofile" name="protofile" class="form-control">
                             </div>
 
-                            <button type="reset" class="btn btn-primary btn-sm">Reset</button>
-                            <button id="update_GTFS-Realtime_config_btn" type="submit" class="btn btn-primary btn-sm">Update Config</button>
+                            <button type="reset" class="btn btn-primary btn-sm">
+                                Reset
+                            </button>
+                            <button id="update_GTFS-Realtime_config_btn" type="submit" class="btn btn-primary btn-sm">
+                                Update Config
+                            </button>
 
                         </form>
 
+                        <div id="GTFS-Realtime_notifications_div"></div>
+
                     </div>
+
+                    <div id="GTFS-Realtime_descriptions_area" class="col-lg-4">
+                        <div id="GTFS-Realtime_feedURL_description"
+                             class="displayNone">
+                                <p>
+                                    <b>TODO: write description.</b>
+                                </p>
+                        </div>
+                        <div id="GTFS-Realtime_readInterval_description"
+                             class="displayNone">
+                                <p>
+                                    <b>TODO: write description.</b>
+                                </p>
+                        </div>
+                        <div id="GTFS-Realtime_retryInterval_description"
+                             class="displayNone">
+                                <p>
+                                    <b>TODO: write description.</b>
+                                </p>
+                        </div>
+                        <div id="GTFS-Realtime_maxNumRetries_description"
+                             class="displayNone">
+                                <p>
+                                    <b>TODO: write description.</b>
+                                </p>
+                        </div>
+                        <div id="GTFS-Realtime_protofile_description"
+                             class="displayNone">
+                                <p>
+                                    <b>TODO: write description.</b>
+                                </p>
+                        </div>
+                    </div>
+
                 </div>
                 <!-- /.row -->
 
                 <div id="Converter_config_div" class="row">
                     <div class="col-lg-6">
-
-                        <form role="form">
+                        <h3>Converter Logging</h3>
+                        <form id="Converter_form"
+                              enctype="application/x-www-form-urlencoded"
+                              role="form">
 
                             <div class="form-group">
-                                <label>Converter Logging Flags</label>
-                                <div class="checkbox">
-                                    <label>
-                                        <input type="checkbox" id="converterLogTrainLocations" value="">Train Locations
-                                    </label>
+                                <div class="row separatedRows">
+                                    <div id="Converter_converterLoggingLevel_label" 
+                                         class="col-md-4 text-right">
+                                            Converter
+                                    </div>
+                                    <div class="col-md-3">
+                                        <select id="converterConverterLoggingLevel"
+                                                class="form-control" 
+                                                name="converterLoggingLevel">
+                                          <option>off</option>
+                                          <option>error</option>
+                                          <option>info</option>
+                                          <option>verbose</option>
+                                          <option>debug</option>
+                                          <option>silly</option>
+                                        </select>
+                                    </div>
                                 </div>
-                                <div class="checkbox">
-                                    <label>
-                                        <input type="checkbox" id="converterLogTrainTrackingErrors" value="">Train Tracking Errors
-                                    </label>
+
+
+                                <div class="row separatedRows">
+                                    <div id="Converter_trainLocationsLoggingLevel_label"
+                                         class="col-md-4 text-right">
+                                            Train Locations
+                                    </div>
+                                    <div class="col-md-3">
+                                        <select id="converterTrainLocationsLoggingLevel"
+                                                class="form-control col-md-4" 
+                                                name="trainLocationsLoggingLevel">
+                                          <option>off</option>
+                                          <option>error</option>
+                                          <option>info</option>
+                                          <option>verbose</option>
+                                          <option>debug</option>
+                                          <option>silly</option>
+                                        </select>
+                                    </div>
                                 </div>
-                                <div class="checkbox">
-                                    <label>
-                                        <input type="checkbox" id="converterLogTrainTrackingStats" value="">Train Tracking Statistics
-                                    </label>
+
+                                <div class="row separatedRows">
+                                    <div id="Converter_trainTrackingErrorsLoggingLevel_label"
+                                         class="col-md-4 text-right">
+                                            Train Tracking Errors
+                                    </div>
+                                    <div class="col-md-3">
+                                        <select id="converterTrainTrackingErrorsLoggingLevel"
+                                                class="form-control col-md-4" 
+                                                name="trainTrackingErrorsLoggingLevel">
+                                          <option>off</option>
+                                          <option>error</option>
+                                          <option>info</option>
+                                          <option>verbose</option>
+                                          <option>debug</option>
+                                          <option>silly</option>
+                                        </select>
+                                    </div>
                                 </div>
-                                <div class="checkbox">
-                                    <label>
-                                        <input type="checkbox" id="converterLogUnscheduledTrips" value="">Unscheduled Trips
-                                    </label>
+
+                                <div class="row separatedRows">
+                                    <div id="Converter_trainTrackingStatsLoggingLevel_label"
+                                         class="col-md-4 text-right">
+                                            Train Tracking Statistics
+                                    </div>
+                                    <div class="col-md-3">
+                                        <select id="converterTrainTrackingStatsLoggingLevel"
+                                                class="form-control col-md-4" 
+                                                name="trainTrackingStatsLoggingLevel">
+                                          <option>off</option>
+                                          <option>error</option>
+                                          <option>info</option>
+                                          <option>verbose</option>
+                                          <option>debug</option>
+                                          <option>silly</option>
+                                        </select>
+                                    </div>
                                 </div>
-                                <div class="checkbox">
-                                    <label>
-                                        <input type="checkbox" id="converterLogNoSpatialDataTrips" value="">No Spatial Data Trips
-                                    </label>
+
+                                <div class="row separatedRows">
+                                    <div id="Converter_unscheduledTripsLoggingLevel_label" 
+                                         class="col-md-4 text-right">
+                                            Unscheduled Trips
+                                    </div>
+                                    <div class="col-md-3">
+                                        <select id="converterUnscheduledTripsLoggingLevel"
+                                                class="form-control col-md-4" 
+                                                name="unscheduledTripsLoggingLevel">
+                                          <option>off</option>
+                                          <option>error</option>
+                                          <option>info</option>
+                                          <option>verbose</option>
+                                          <option>debug</option>
+                                          <option>silly</option>
+                                        </select>
+                                    </div>
                                 </div>
+
+                                <div class="row separatedRows">
+                                    <div id="Converter_noSpatialDataTripsLoggingLevel_label" 
+                                         class="col-md-4 text-right">
+                                            Trips Without Spatial Data
+                                    </div>
+                                    <div class="col-md-3">
+                                        <select id="converterNoSpatialDataTripsLoggingLevel"
+                                                class="form-control col-md-4" 
+                                                name="noSpatialDataTripsLoggingLevel">
+                                          <option>off</option>
+                                          <option>error</option>
+                                          <option>info</option>
+                                          <option>verbose</option>
+                                          <option>debug</option>
+                                          <option>silly</option>
+                                        </select>
+                                    </div>
+                                </div>
+
                             </div>
 
                             <button type="reset" class="btn btn-primary btn-sm">Reset</button>
-                            <button id="update_Converter_config_btn" type="submit" class="btn btn-primary btn-sm">Update Config</button>
+                            <button id="update_Converter_config_btn" type="submit" class="btn btn-primary btn-sm">
+                                Update Config
+                            </button>
 
                         </form>
 
+                        <div id="Converter_notifications_div"></div>
+
                     </div>
+
+                    <div id="Converter_descriptions_area" class="col-lg-4">
+                        <div id="Converter_converterLoggingLevel_description"
+                             class="displayNone">
+                                <p>
+                                    <b>TODO: write description.</b>
+                                </p>
+                        </div>
+                        <div id="Converter_trainLocationsLoggingLevel_description"
+                             class="displayNone">
+                                <p>
+                                    <b>TODO: write description.</b>
+                                </p>
+                        </div>
+                        <div id="Converter_trainTrackingErrorsLoggingLevel_description"
+                             class="displayNone">
+                                <p>
+                                    <b>TODO: write description.</b>
+                                </p>
+                        </div>
+                        <div id="Converter_trainTrackingStatsLoggingLevel_description"
+                             class="displayNone">
+                                <p>
+                                    <b>TODO: write description.</b>
+                                </p>
+                        </div>
+                        <div id="Converter_unscheduledTripsLoggingLevel_description"
+                             class="displayNone">
+                                <p>
+                                    <b>TODO: write description.</b>
+                                </p>
+                        </div>
+                        <div id="Converter_noSpatialDataTripsLoggingLevel_description"
+                             class="displayNone">
+                                <p>
+                                    <b>TODO: write description.</b>
+                                </p>
+                        </div>
+                    </div>
+
                 </div>
                 <!-- /.row -->
 
@@ -163,6 +391,9 @@
 
     <!-- jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+    <!-- JQuery Forms -->
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.min.js"></script>
 
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>

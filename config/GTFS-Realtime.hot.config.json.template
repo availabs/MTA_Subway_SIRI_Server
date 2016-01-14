@@ -1,6 +1,7 @@
 {
-    "baseURL"     : "http://datamine.mta.info/mta_esi.php" ,
-    "apiKey"      : "Get your API key here: http://datamine.mta.info/user/register",
-    "feedURL"     : "<The app will set this at runtime to the baseURL + API key appended.>" ,
-    "readInterval" : 30
+    "feedURL"       : "Complete URL endpoint for the feed. Include the API key, if one is required.",
+    "readInterval"  : 30,
+    "retryInterval" : 3,
+    "maxNumRetries" : 7,
+    "protofileName" : "nyct-subway.proto"
 }

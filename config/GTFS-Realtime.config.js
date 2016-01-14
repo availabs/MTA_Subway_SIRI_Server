@@ -1,18 +1,25 @@
 'use strict';
 
-var fs    = require('fs'),
-    path  = require('path'),
-    merge = require('merge'),
+var fs    = require('fs') ,
+    path  = require('path') ,
+    merge = require('merge') ,
 
-    hotConfigPath = path.join(__dirname, './GTFS-Realtime.hot.config.json'),
+    hotConfigPath = path.join(__dirname, './GTFS-Realtime.hot.config.json') ,
 
     hotConfig = JSON.parse(fs.readFileSync(hotConfigPath)) ,
 
-    staticConfig = {
-        protofilePath     : path.join(__dirname, '../proto_files/nyct-subway.proto') ,
-        feedReaderLogPath : path.join(__dirname, '../logs/gtfsrtFeedReader.log')     ,
-    };
+    protofileDirPath = path.join(__dirname, '../proto_files'),
 
-hotConfig.feedURL = hotConfig.baseURL + '?key=' + hotConfig.apiKey;
+    staticConfig = {
+        protofileDirPath  : protofileDirPath ,
+        protofilePath     : path.join(protofileDirPath, hotConfig.protofileName) ,
+        feedReaderLogPath : path.join(__dirname, '../logs/gtfsrtFeedReader.log') ,
+
+        // NOTE: The following two config parameters are developers,
+        //       they are not accessible through the Admin Console
+        //       as they would not make sense to use in a production env.
+        logFeedReader : false,
+        feedReaderLoggingLevel: "debug",
+    };
 
 module.exports = merge(staticConfig, hotConfig);

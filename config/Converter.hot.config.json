@@ -1,15 +1,14 @@
 {
+    "converterLoggingLevel": "silly",
     "logConverter": true,
-    "logTrainLocations": true,
-    "logTrainTrackingErrors": true,
-    "logTrainTrackingStats": true,
-    "logUnscheduledTrips": true,
-    "logNoSpatialDataTrips": true,
-
-    "converterLoggingLevel" : "silly",
     "trainLocationsLoggingLevel": "silly",
+    "logTrainLocations": true,
+    "trainTrackingErrorsLoggingLevel": "silly",
+    "logTrainTrackingErrors": true,
     "trainTrackingStatsLoggingLevel": "silly",
-    "noSpatialDataTripsLoggingLevel": "silly",
+    "logTrainTrackingStats": true,
     "unscheduledTripsLoggingLevel": "silly",
-    "trainTrackingErrorsLoggingLevel": "silly"
+    "logUnscheduledTrips": true,
+    "noSpatialDataTripsLoggingLevel": "silly",
+    "logNoSpatialDataTrips": true
 }

@@ -1,9 +1,7 @@
 {
-    "baseURL": "http://datamine.mta.info/mta_esi.php",
-    "apiKey": "5dadd04378cc60cc4ae447da5756ddaa",
+    "feedURL": "http://datamine.mta.info/mta_esi.php?key=5dadd04378cc60cc4ae447da5756ddaa",
     "readInterval": 30,
-    "retryInterval": 2,
-    "maxRetries":  7,
-    "logFeedReader" : true,
-    "feedReaderLoggingLevel" : "silly"
+    "retryInterval": 4,
+    "maxNumRetries": 7,
+    "protofileName": "nyct-subway.proto"
 }

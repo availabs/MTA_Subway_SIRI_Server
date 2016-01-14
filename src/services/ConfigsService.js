@@ -31,10 +31,6 @@ gtfsrtConfig.winston    = winston;
 converterConfig.winston = winston;
 
 
-//console.log('************************');
-//console.log(JSON.stringify(gtfsrtConfig, null, '    '));
-//console.log('************************');
-
 var api = {
 
     getGTFSConfig : function () {
@@ -59,7 +55,7 @@ var api = {
             for (var i = 0; i < gtfsConfigUpdateListeners.length; ++i) {
                 gtfsConfigUpdateListeners[i](gtfsConfig);
             }
-            callback();
+            callback(null);
         });
     },
 
@@ -93,25 +89,45 @@ var api = {
     // The caller of this function must handle creating 
     // the complete feedURL which includes the API key.
     updateGTFSRealtimeConfig : function (newHotConfig, callback) {
-        gtfsrtHotConfig = newHotConfig;
+        
+        var updatedFields = Object.keys(newHotConfig),
+            i;
 
+        for ( i = 0; i < updatedFields.length; ++i ) {
+            gtfsrtHotConfig[updatedFields[i]] = newHotConfig[updatedFields[i]];
+        }
+            
         merge(gtfsrtConfig, newHotConfig);
 
-        gtfsrtConfig.feedURL = gtfsrtHotConfig.baseURL + '?key=' + gtfsrtHotConfig.apiKey;
+        // Update the path to the protofile as there may have been a new file uploaded.
+        gtfsrtConfig.protofilePath = path.join(gtfsrtConfig.protofileDirPath, gtfsrtConfig.protofileName);
 
         fs.writeFile(gtfsrtHotConfigPath, JSON.stringify(newHotConfig, null, '    ') + '\n', function (err) {
+            var listener_err = null;
+
+            // This function is used as a callback sent to the listeners.
+            // It collects the errors they may send back.
+            function errorChecker (e) { listener_err = e; }
+
             if (err) {
                 callback(err);
                 return;
             }
             
             for (var i = 0; i < gtfsrtConfigUpdateListeners.length; ++i) {
-                gtfsrtConfigUpdateListeners[i](gtfsrtConfig);
+                gtfsrtConfigUpdateListeners[i](gtfsrtConfig, errorChecker);
+
+                // If the listener reported an error, break the loop.
+                if (listener_err) { break; }
             }
-            callback();
+
+            callback(listener_err);
         });
     },
 
+    // listener will be passed two arguments:
+    //      1. a config obj 
+    //      2. a callback
     addGTFSRealtimeConfigUpdateListener : function (listener) {
         if ((typeof listener) === "function") {
             gtfsrtConfigUpdateListeners.push(listener);
@@ -156,7 +172,7 @@ var api = {
             for (var i = 0; i < converterConfigUpdateListeners.length; ++i) {
                 converterConfigUpdateListeners[i](converterConfig);
             }
-            callback();
+            callback(null);
         });
     },
 
@@ -178,11 +194,9 @@ var api = {
         }
     },
 
-
     //getMemwatchConfig : function () {
         //return memwatchConfig;
     //},
-
 
 };
 

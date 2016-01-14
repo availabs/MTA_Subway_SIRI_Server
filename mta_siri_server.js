@@ -4,10 +4,10 @@
 
 var fs         = require('fs')          , 
     express    = require('express')     ,
-    app        = express()              ,
-    morgan     = require('morgan')      ,
-    bodyParser = require('body-parser') ;
+    bodyParser = require('body-parser') ,
+    morgan     = require('morgan')      ;
 
+var app = express() ;
 
 var router = express.Router(),
     port   = process.env.PORT || 16180;
