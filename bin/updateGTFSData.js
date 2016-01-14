@@ -12,9 +12,7 @@ var fs       = require('fs')   ,
     gtfsConfig         = require('../config/GTFS.config.js') ,
     gtfsConfigFilePath = gtfsConfig.gtfsConfigFilePath       ,
 
-    scriptRelPath = '../node_modules/MTA_Subway_GTFS-Realtime_to_SIRI_Converter/'        +
-                                       'node_modules/MTA_Subway_GTFS_Toolkit/'           +
-                                       'node_modules/GTFS_Toolkit/bin/updateGTFSData.js' ,
+    scriptRelPath = '../node_modules/GTFS_Toolkit/bin/updateGTFSData.js' ,
 
     scriptAbsPath = path.join(__dirname, scriptRelPath),
 
