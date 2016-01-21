@@ -12,6 +12,13 @@ var fs    = require('fs'),
     hotConfigPath = path.join(__dirname, './Converter.hot.config.json'),
     hotConfig     = JSON.parse(fs.readFileSync(hotConfigPath)) ,
 
+    //TODO: After admin console supports these, move them to the hot config.
+    fieldMutators = {
+        OriginRef         : [/./, "LIRR_$&"],
+        DestinationRef    : [/./, "LIRR_$&"],
+        StopPointRef      : [/./, "LIRR_$&"],
+    },
+
 
     staticConfig = {
         gtfsConfig                 : gtfsConfig                                   ,
@@ -19,6 +26,8 @@ var fs    = require('fs'),
         gtfsrtConfig               : gtfsrtConfig                                 ,
 
         logsDir                    : logsDir                                      ,
+
+        fieldMutators              : fieldMutators                                ,
 
         converterLogPath           : path.join(logsDir, 'converter.log')          ,
 
@@ -31,6 +40,7 @@ var fs    = require('fs'),
         noSpatialDataTripsLogPath  : path.join(logsDir, 'noSpatialDataTrips.log') ,
 
         trainTrackingErrorsLogPath : path.join(logsDir, 'trainTrackingErrors.log'),
+
     };
 
     
