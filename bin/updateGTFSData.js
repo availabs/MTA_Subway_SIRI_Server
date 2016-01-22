@@ -19,6 +19,7 @@ var fs       = require('fs')   ,
     expectedArgMessage = 
         '\tThis script expects a single command-line argument that specifies where to retrieve\n' +
         '\tthe GTFS feed data. This argument should be either "file" or "url".\n' +
+        '\tIf no argument is given, the default of "url" is used.\n' +
         '\tIf "file" is specified, the GTFS feed data must be in a zip file archive\n' +
         '\tat the path given in the GTFS config\'s feedDataZipFilePath property.\n' +
         '\tIf "url" is specified, the GTFS feed data will be retrieved from the url given\n' + 
@@ -27,16 +28,16 @@ var fs       = require('fs')   ,
     source;
 
 
-if (process.argv.length !== 3) {
-    console.error('USAGE:\n' + expectedArgMessage);
-    process.exit(1);
-} else {
+if (process.argv.length === 3) {
     source = process.argv[2].toLowerCase();
-}
 
-if ( !((source === 'file') || (source === 'url')) ) {
-   console.error("USAGE: An unrecognized GTFS feed source was given.\n" + expectedArgMessage);
-   process.exit(1);
+    if ( !((source === 'file') || (source === 'url')) ) {
+       console.error("USAGE: An unrecognized GTFS feed source was given.\n" + expectedArgMessage);
+       process.exit(1);
+    }
+} else {
+    source = "url";
+    console.log('INFO: Because the feed source ("file"|"url") was not specified, the default of "url" will be used.');
 }
 
 if (source === 'file') {
@@ -52,8 +53,9 @@ if (source === 'file') {
         process.exit(1);
     }
 } else if ((source === 'url')  && (!gtfsConfig.feedURL)) {
-    console.error('Usage: if "url" is specified as the source from which to retrieve the GTFS feed data,\n' +
-                  '       then the feedURL property of the GTFS config object must be provided.');
+    console.error('Usage: if "url" is specified, or used as the default, as the source from which\n' +
+                  'to retrieve the GTFS feed data, then the feedURL property of the GTFS config object\n' +
+                  'must be provided.');
     process.exit(1);
 }
 

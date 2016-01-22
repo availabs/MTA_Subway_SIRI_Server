@@ -4,8 +4,8 @@ var fs    = require('fs'),
     path  = require('path'),
     merge = require('merge'),
 
-    // FIXME: Find a better way.
-    tripKeyBuilder = require('MTA_Subway_GTFS-Realtime_to_SIRI_Converter').MTA_Subway_GTFS_Toolkit.tripKeyBuilder,
+    // To change MTA NYCT GTFS trip_ids to GTFS-Realtime trip_ids, we need to 
+    tripKeyMutator = [/.{9}/, ''],
 
     dataDirPath = path.normalize(path.join(__dirname, '../data/GTFS/')),
     tmpDirPath  = path.join(dataDirPath, 'tmp') ,
@@ -20,7 +20,7 @@ var fs    = require('fs'),
     staticConfig = {
         gtfsConfigFilePath          : __filename                 ,
 
-        tripKeyBuilder              : tripKeyBuilder             ,
+        tripKeyMutator              : tripKeyMutator             ,
 
         dataDirPath                 : dataDirPath                ,
         tmpDirPath                  : tmpDirPath                 ,
