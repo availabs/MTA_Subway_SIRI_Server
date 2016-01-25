@@ -5,7 +5,8 @@ var fs    = require('fs'),
     merge = require('merge'),
 
     // To change MTA NYCT GTFS trip_ids to GTFS-Realtime trip_ids, we need to 
-    tripKeyMutator = [/.{9}/, ''],
+    // TODO: Move this to hot.config so changable through console.
+    //tripKeyMutator = [/.{9}/, ''], 
 
     dataDirPath = path.normalize(path.join(__dirname, '../data/GTFS/')),
     tmpDirPath  = path.join(dataDirPath, 'tmp') ,
@@ -20,7 +21,7 @@ var fs    = require('fs'),
     staticConfig = {
         gtfsConfigFilePath          : __filename                 ,
 
-        tripKeyMutator              : tripKeyMutator             ,
+        //tripKeyMutator              : tripKeyMutator             ,
 
         dataDirPath                 : dataDirPath                ,
         tmpDirPath                  : tmpDirPath                 ,
