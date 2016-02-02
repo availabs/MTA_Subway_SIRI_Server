@@ -11,7 +11,6 @@ var toobusyErrorMessage = "Server is temporarily too busy. Please try again.";
 
 function sendReponse (res, contentType, error, callResponse) {
     if (error) {
-        //res.status(200);
         res.status(500);
         res.write(util.inspect(error));
         res.end();
@@ -94,9 +93,23 @@ function handleRequest (req, res, monitoringCallType, extension) {
     }
 
     if (monitoringCallType === 'StopMonitoringResponse') {
-        ConverterService.getStopMonitoringResponse(caseInsensitiveQuery, extension, callback);
+        try {
+            ConverterService.getStopMonitoringResponse(caseInsensitiveQuery, extension, callback);
+        } catch (e) {
+            if ( ! res.headersSent ) {
+                res.status(500).send({error : "Internal server error." });
+            }
+            console.error(e.stack);
+        }
     } else if (monitoringCallType === 'VehicleMonitoringResponse') {
-        ConverterService.getVehicleMonitoringResponse(caseInsensitiveQuery, extension, callback);
+        try {
+            ConverterService.getVehicleMonitoringResponse(caseInsensitiveQuery, extension, callback);
+        } catch (e) {
+            if ( ! res.headersSent ) {
+                res.status(500).send({error : "Internal server error." });
+            }
+            console.error(e.stack);
+        }
     } else {
         res.status(500).send('Unrecognized monitoring call type.');
     }
