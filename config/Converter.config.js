@@ -41,6 +41,7 @@ var fs    = require('fs'),
 
         trainTrackingErrorsLogPath : path.join(logsDir, 'trainTrackingErrors.log'),
 
+        unscheduledTripIndicator   : '\u262f' ,
     };
 
     

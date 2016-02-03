@@ -6,6 +6,7 @@ var fs    = require('fs'),
 
     // To change MTA NYCT GTFS trip_ids to GTFS-Realtime trip_ids, we need to 
     // TODO: Move this to hot.config so changable through console.
+    
     //tripKeyMutator = [/.{9}/, ''], 
 
     dataDirPath = path.normalize(path.join(__dirname, '../data/GTFS/')),
