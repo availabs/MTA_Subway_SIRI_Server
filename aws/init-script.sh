@@ -5,7 +5,7 @@ sudo apt-get -y upgrade
 sudo apt-get install -y npm git
 
 sudo npm install -g n
-sudo n 0.10.35
+sudo n lts
 
 mkdir -p code
 cd code
