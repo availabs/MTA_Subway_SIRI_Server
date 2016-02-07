@@ -8,6 +8,7 @@
 1. Create a base Ubuntu 12.04 LTS Server
 2. In the home directory, as the regular user, run
     `wget https://raw.githubusercontent.com/availabs/MTA_Subway_SIRI_Server/master/aws/init-script.sh`
-3. `./init-script.sh`
-4. `cd code/MTA_Subway_SIRI_Server`
-5. `node mta_siri_server.js`
+3. `chmod +x init-script.sh`
+4. `./init-script.sh`
+5. `cd code/MTA_Subway_SIRI_Server`
+6. `node mta_siri_server.js`
