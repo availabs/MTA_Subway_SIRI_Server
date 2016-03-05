@@ -14,13 +14,24 @@ var fs    = require('fs'),
 
     //TODO: After admin console supports these, move them to the hot config.
     fieldMutators = {
-        OriginRef         : [/./, "LIRR_$&"],
-        DestinationRef    : [/./, "LIRR_$&"],
-        StopPointRef      : [/./, "LIRR_$&"],
-    },
+        OriginRef         : [/./, "MTA_$&"],
+        DestinationRef    : [/./, "MTA_$&"],
+        StopPointRef      : [/./, "MTA_$&"],
+    } ,
 
+    trainTrackerInitialStateFilePath = '../analysis/trainTrackerInitialState.json' ,
+    trainTrackerInitialState ;
 
-    staticConfig = {
+    try {
+        trainTrackerInitialState = JSON.parse(fs.readFileSync(trainTrackerInitialStateFilePath)) ;
+        console.log(
+            'Starting the server with the trainTrackerInitialState found at ' + trainTrackerInitialStateFilePath
+        );
+    } catch (e) { 
+        trainTrackerInitialState = null;
+    }
+
+    var staticConfig = {
         gtfsConfig                 : gtfsConfig                                   ,
 
         gtfsrtConfig               : gtfsrtConfig                                 ,
@@ -31,7 +42,7 @@ var fs    = require('fs'),
 
         converterLogPath           : path.join(logsDir, 'converter.log')          ,
 
-        trainLocationsLogPath      : path.join(logsDir, 'trainLocations.csv')     ,
+        trainLocationsLogPath      : path.join(logsDir, 'trainLocations.log')     ,
 
         trainTrackingStatsLogPath  : path.join(logsDir, 'trainTrackingStats.csv') ,
 
@@ -40,6 +51,8 @@ var fs    = require('fs'),
         noSpatialDataTripsLogPath  : path.join(logsDir, 'noSpatialDataTrips.log') ,
 
         trainTrackingErrorsLogPath : path.join(logsDir, 'trainTrackingErrors.log'),
+
+        trainTrackerInitialState   : trainTrackerInitialState ,
 
         unscheduledTripIndicator   : '\u262f' ,
     };

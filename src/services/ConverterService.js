@@ -9,11 +9,15 @@ var ConverterStream  = require('MTA_Subway_GTFS-Realtime_to_SIRI_Converter').Con
     converterConfig  = ConfigService.getConverterConfig() ,
 
 
-    converterStream  = new ConverterStream(gtfsFeed, gtfsrtFeed, converterConfig, converterUpdateListener);
-
-
+    converterStream  = new ConverterStream(gtfsFeed, 
+                                           gtfsrtFeed, 
+                                           converterConfig, 
+                                           converterConfig.trainTrackerInitialState, //for testing/debugging
+                                           converterUpdateListener);
 
 var latestConverter = null;
+
+ConfigService.removeTrainTrackerInitialStateFromConverterConfig();
 
 ConfigService.addConverterConfigUpdateListener(converterStream.updateConfig);
 

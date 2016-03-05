@@ -194,6 +194,10 @@ var api = {
         }
     },
 
+    removeTrainTrackerInitialStateFromConverterConfig : function () {
+        converterConfig.trainTrackerInitialState = null; // Let GC take care of this.
+    } ,
+
     //getMemwatchConfig : function () {
         //return memwatchConfig;
     //},

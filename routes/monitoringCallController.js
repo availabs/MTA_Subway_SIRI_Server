@@ -82,7 +82,9 @@ function handleRequest (req, res, monitoringCallType, extension) {
                         req.query[queryKeys[i]].toLowerCase() : req.query[queryKeys[i]];
 
             caseInsensitiveQuery[key] = value;
+            caseInsensitiveQuery['_' + key] = req.query[queryKeys[i]];
         }
+
     } else {
         caseInsensitiveQuery = req.query;
     }

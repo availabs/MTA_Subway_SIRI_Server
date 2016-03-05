@@ -27,6 +27,7 @@ var fs       = require('fs')   ,
 
     source;
 
+console.log(JSON.stringify(gtfsConfig, null, 4));
 
 if (process.argv.length === 3) {
     source = process.argv[2].toLowerCase();
@@ -38,6 +39,7 @@ if (process.argv.length === 3) {
 } else {
     source = "url";
     console.log('INFO: Because the feed source ("file"|"url") was not specified, the default of "url" will be used.');
+    console.log('\tThe GTFS data will be downloaded from ' + gtfsConfig.feedURL);
 }
 
 if (source === 'file') {
