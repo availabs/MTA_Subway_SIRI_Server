@@ -1,3 +1,4 @@
 {
-    "feedURL": "http://transitfeeds.com/p/mta/86/latest/download"
+    "feedURL": "http://transitfeeds.com/p/mta/79/latest/download",
+    "index_stop_times" : false
 }

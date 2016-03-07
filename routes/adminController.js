@@ -68,6 +68,11 @@ router.get('/get/server/memory-usage', function (req, res) {
     res.send(process.memoryUsage());
 });
 
+router.get('/get/server/state', function (req, res) {
+    
+    res.send(ConverterService.getState());
+});
+
 //================ Config POST endpoints ================\\
  
 

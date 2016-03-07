@@ -4,9 +4,6 @@ var fs    = require('fs'),
     path    = require('path') ,
     merge = require('merge'), 
 
-    gtfsConfig   = require('./GTFS.config'),
-    gtfsrtConfig = require('./GTFS-Realtime.config.js'),
-
     logsDir = path.normalize(path.join(__dirname, '../logs/')) ,
 
     hotConfigPath = path.join(__dirname, './Converter.hot.config.json'),
@@ -17,45 +14,30 @@ var fs    = require('fs'),
         OriginRef         : [/./, "MTA_$&"],
         DestinationRef    : [/./, "MTA_$&"],
         StopPointRef      : [/./, "MTA_$&"],
-    } ,
+    } ;
 
-    trainTrackerInitialStateFilePath = '../analysis/trainTrackerInitialState.json' ,
-    trainTrackerInitialState ;
 
-    try {
-        trainTrackerInitialState = JSON.parse(fs.readFileSync(trainTrackerInitialStateFilePath)) ;
-        console.log(
-            'Starting the server with the trainTrackerInitialState found at ' + trainTrackerInitialStateFilePath
-        );
-    } catch (e) { 
-        trainTrackerInitialState = null;
-    }
 
-    var staticConfig = {
-        gtfsConfig                 : gtfsConfig                                   ,
+var staticConfig = {
 
-        gtfsrtConfig               : gtfsrtConfig                                 ,
+    logsDir                    : logsDir                                      ,
 
-        logsDir                    : logsDir                                      ,
+    fieldMutators              : fieldMutators                                ,
 
-        fieldMutators              : fieldMutators                                ,
+    converterLogPath           : path.join(logsDir, 'converter.log')          ,
 
-        converterLogPath           : path.join(logsDir, 'converter.log')          ,
+    trainLocationsLogPath      : path.join(logsDir, 'trainLocations.log')     ,
 
-        trainLocationsLogPath      : path.join(logsDir, 'trainLocations.log')     ,
+    trainTrackingStatsLogPath  : path.join(logsDir, 'trainTrackingStats.csv') ,
 
-        trainTrackingStatsLogPath  : path.join(logsDir, 'trainTrackingStats.csv') ,
+    unscheduledTripsLogPath    : path.join(logsDir, 'unscheduledTrips.log')   ,
 
-        unscheduledTripsLogPath    : path.join(logsDir, 'unscheduledTrips.log')   ,
+    noSpatialDataTripsLogPath  : path.join(logsDir, 'noSpatialDataTrips.log') ,
 
-        noSpatialDataTripsLogPath  : path.join(logsDir, 'noSpatialDataTrips.log') ,
+    trainTrackingErrorsLogPath : path.join(logsDir, 'trainTrackingErrors.log'),
 
-        trainTrackingErrorsLogPath : path.join(logsDir, 'trainTrackingErrors.log'),
-
-        trainTrackerInitialState   : trainTrackerInitialState ,
-
-        unscheduledTripIndicator   : '\u262f' ,
-    };
+    unscheduledTripIndicator   : '\u262f' ,
+};
 
     
 

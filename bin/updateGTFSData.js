@@ -27,7 +27,6 @@ var fs       = require('fs')   ,
 
     source;
 
-console.log(JSON.stringify(gtfsConfig, null, 4));
 
 if (process.argv.length === 3) {
     source = process.argv[2].toLowerCase();

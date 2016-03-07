@@ -12,7 +12,7 @@ var ConverterStream  = require('MTA_Subway_GTFS-Realtime_to_SIRI_Converter').Con
     converterStream  = new ConverterStream(gtfsFeed, 
                                            gtfsrtFeed, 
                                            converterConfig, 
-                                           converterConfig.trainTrackerInitialState, //for testing/debugging
+                                           null, // trainTrackerInitialState
                                            converterUpdateListener);
 
 var latestConverter = null;
@@ -43,6 +43,10 @@ function getCurrentGTFSRealtimeTimestamp () {
     return latestConverter.getCurrentGTFSRealtimeTimestamp();
 }
 
+function getState () {
+    return latestConverter.getState() ;
+}
+
 
 converterStream.start();
 
@@ -50,4 +54,5 @@ module.exports = {
     getStopMonitoringResponse       : getStopMonitoringResponse ,
     getVehicleMonitoringResponse    : getVehicleMonitoringResponse ,
     getCurrentGTFSRealtimeTimestamp : getCurrentGTFSRealtimeTimestamp ,
+    getState                        : getState ,
 };

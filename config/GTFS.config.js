@@ -7,10 +7,12 @@ var fs    = require('fs'),
     // To change MTA NYCT GTFS trip_ids to GTFS-Realtime trip_ids, we need to 
     // TODO: Move this to hot.config so changable through console.
     
-    //tripKeyMutator = [/.{9}/, ''], 
+    tripKeyMutator = [/.{9}/, ''], 
 
     dataDirPath = path.normalize(path.join(__dirname, '../data/GTFS/')),
     tmpDirPath  = path.join(dataDirPath, 'tmp') ,
+    logsDir     = path.normalize(path.join(__dirname, '../logs/')) ,
+    
 
     feedDataZipFileName = 'gtfs.zip',
     feedDataZipFilePath = path.join(tmpDirPath, 'gtfs.zip'),
@@ -22,7 +24,7 @@ var fs    = require('fs'),
     staticConfig = {
         gtfsConfigFilePath          : __filename                 ,
 
-        //tripKeyMutator              : tripKeyMutator             ,
+        tripKeyMutator              : tripKeyMutator             ,
 
         dataDirPath                 : dataDirPath                ,
         tmpDirPath                  : tmpDirPath                 ,
@@ -30,9 +32,9 @@ var fs    = require('fs'),
         feedDataZipFileName         : feedDataZipFileName        ,
         feedDataZipFilePath         : feedDataZipFilePath        ,
 
-        indexedScheduleDataFileName : 'indexedScheduleData.json' ,
-        indexedSpatialDataFileName  : 'indexedSpatialData.json'  ,
-        indexingStatisticsFileName  : 'indexingStatistics.txt'   ,
+        indexedScheduleDataFilePath : path.join(dataDirPath, '/indexedScheduleData.json') ,
+        indexedSpatialDataFilePath  : path.join(dataDirPath, '/indexedSpatialData.json') ,
+        indexingStatisticsLogPath  : path.join(logsDir, '/spatialDataIndexingStats.txt') ,
     };
 
 
