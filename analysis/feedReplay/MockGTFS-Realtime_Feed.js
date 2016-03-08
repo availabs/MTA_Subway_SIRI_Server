@@ -74,6 +74,7 @@ MockFeedReader.prototype.sendNext = function () {
     
     var _this = this;
 
+
     gtfsrtCursor.nextObject(function (err, item) {
         if (err) { 
             throw err;
@@ -89,6 +90,9 @@ MockFeedReader.prototype.sendNext = function () {
             });
             return null; 
         }
+
+//console.log('####################' + (item._id) + '####################');
+//var counter = 0;
 
         var state = restoreKeys(item.state);
 
@@ -106,11 +110,18 @@ MockFeedReader.prototype.sendNext = function () {
 
             if (trip_id === requestedTrainID) {
                 acc.push(entity);
+
+//if (entity && entity.trip_update && entity.trip_update.trip && entity.trip_update.trip.trip_id) {
+//console.log('**************** ' + (++counter) + '****************');
+//console.log(JSON.stringify(entity.trip_update.stop_time_update[0], null, 4));
+//}
             }
 
             return acc;
 
         }, focusedMessage.entity = []);
+
+//console.log('---------------------------------------------------');
 
         if (focusedMessage.entity.length) {
             return listener(focusedMessage);

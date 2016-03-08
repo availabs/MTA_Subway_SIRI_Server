@@ -14,10 +14,7 @@ var ConverterStream  = require('MTA_Subway_GTFS-Realtime_to_SIRI_Converter').Con
 
     MockGTFSrtFeed   = require('./MockGTFS-Realtime_Feed') ,
 
-    //mockGTFSrtFeed   = new MockGTFSrtFeed('006700_3..N42R', 1457245526, 1457245803) ,
-    mockGTFSrtFeed   = new MockGTFSrtFeed() ,
-    //mockGTFSrtFeed   = new MockGTFSrtFeed('013400_4..S13R', 1457248400) ,
-    //mockGTFSrtFeed   = new MockGTFSrtFeed('040700_3..N42R', 1457263029) ,
+    mockGTFSrtFeed = new MockGTFSrtFeed() ,
 
     mockConfigService = require('./MockConfigsService') ,
 
