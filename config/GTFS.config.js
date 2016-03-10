@@ -34,7 +34,7 @@ var fs    = require('fs'),
 
         indexedScheduleDataFilePath : path.join(dataDirPath, '/indexedScheduleData.json') ,
         indexedSpatialDataFilePath  : path.join(dataDirPath, '/indexedSpatialData.json') ,
-        indexingStatisticsLogPath  : path.join(logsDir, '/spatialDataIndexingStats.txt') ,
+        indexingStatisticsLogPath   : path.join(logsDir, '/spatialDataIndexingStats.txt') ,
     };
 
 

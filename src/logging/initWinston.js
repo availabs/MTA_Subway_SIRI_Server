@@ -25,10 +25,10 @@ winston.loggers.add('gtfsrt_feed_reader', {
 
 winston.loggers.add('converter', {
     file: {
-        filename    : converterConfig.converterLogPath,
-        level       : converterConfig.converterLoggingLevel,
-        colorize    : true,
-        label       : 'Converter Logging'
+        filename : converterConfig.converterLogPath,
+        level    : converterConfig.converterLoggingLevel,
+        colorize : true,
+        label    : 'Converter Logging'
     }
 }).remove(winston.transports.Console);
 
@@ -55,21 +55,21 @@ winston.loggers.add('converter_train_tracking_stats', {
 
 winston.loggers.add('converter_no_spatial_data_trips', {
     file: {
-        filename : converterConfig.noSpatialDataTripsLogPath,
-        level    : converterConfig.noSpatialDataTripsLoggingLevel,
-        colorize : false,
+        filename  : converterConfig.noSpatialDataTripsLogPath,
+        level     : converterConfig.noSpatialDataTripsLoggingLevel,
+        colorize  : false,
         stringify : simpleString,
-        label    : 'No Spatial Data Trips',
+        label     : 'No Spatial Data Trips',
     }
 }).remove(winston.transports.Console);
 
 winston.loggers.add('converter_unscheduled_trips', {
     file: {
-        filename : converterConfig.unscheduledTripsLogPath,
-        level    : converterConfig.unscheduledTripsLoggingLevel,
-        colorize : false,
+        filename  : converterConfig.unscheduledTripsLogPath,
+        level     : converterConfig.unscheduledTripsLoggingLevel,
+        colorize  : false,
         stringify : simpleString,
-        label    : 'Unscheduled Trips',
+        label     : 'Unscheduled Trips',
     }
 }).remove(winston.transports.Console);
 
