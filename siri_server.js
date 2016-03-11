@@ -14,9 +14,6 @@ var router = express.Router(),
 
 require('toobusy-js').maxLag(200); //Set toobusy maximum lag (ms).
 
-// init winston logging
-require('./src/logging/initWinston');
-
 // fire up memwatch
 //require('./src/services/MemoryMonitoringService');
 

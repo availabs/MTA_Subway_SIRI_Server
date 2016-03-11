@@ -1,14 +1,7 @@
 {
-    "converterLoggingLevel": "silly",
-    "logConverter": true,
-    "trainLocationsLoggingLevel": "silly",
     "logTrainLocations": true,
-    "trainTrackingErrorsLoggingLevel": "silly",
-    "logTrainTrackingErrors": true,
-    "trainTrackingStatsLoggingLevel": "silly",
     "logTrainTrackingStats": true,
-    "unscheduledTripsLoggingLevel": "silly",
     "logUnscheduledTrips": true,
-    "noSpatialDataTripsLoggingLevel": "silly",
-    "logNoSpatialDataTrips": true
+    "logNoSpatialDataTrips": true ,
+    "logTrainTrackingErrors": true
 }

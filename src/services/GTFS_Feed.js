@@ -5,9 +5,18 @@ var GTFSFeedHandler = require ('MTA_Subway_GTFS-Realtime_to_SIRI_Converter').MTA
     ConfigService = require('./ConfigsService') ,
     gtfsConfig    = ConfigService.getGTFSConfig() ,
 
-    feedHandler = new GTFSFeedHandler(gtfsConfig); 
+    eventHandlingService = require('./EventHandlingService') ,
+
+    feedHandler = new GTFSFeedHandler(gtfsConfig), 
+
+    gtfsToolkitEventEmitter = feedHandler.toolkitEventEmitter ;
+
+
 
 ConfigService.addGTFSConfigUpdateListener(feedHandler.updateConfig);
+
+
+eventHandlingService.registerGTFSToolkitEventListeners(gtfsToolkitEventEmitter) ;
 
 
 module.exports = feedHandler;

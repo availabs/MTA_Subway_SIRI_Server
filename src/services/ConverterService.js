@@ -5,6 +5,8 @@ var ConverterStream  = require('MTA_Subway_GTFS-Realtime_to_SIRI_Converter').Con
     gtfsFeed         = require('./GTFS_Feed') ,
     gtfsrtFeed       = require('./GTFS-Realtime_Feed') ,
 
+    eventHandlingService = require('./EventHandlingService') ,
+
     ConfigService    = require('./ConfigsService') ,
     converterConfig  = ConfigService.getConverterConfig() ,
 
@@ -17,9 +19,14 @@ var ConverterStream  = require('MTA_Subway_GTFS-Realtime_to_SIRI_Converter').Con
 
 var latestConverter = null;
 
+
 ConfigService.removeTrainTrackerInitialStateFromConverterConfig();
 
 ConfigService.addConverterConfigUpdateListener(converterStream.updateConfig);
+
+
+eventHandlingService.registerConverterEventListeners(converterStream.converterEventEmitter) ;
+
 
 
 // Callback passed to MTA_Subway_GTFS-Realtime_to_SIRI.ConverterStream

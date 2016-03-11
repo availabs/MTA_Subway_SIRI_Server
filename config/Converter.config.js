@@ -28,7 +28,7 @@ var staticConfig = {
 
     trainLocationsLogPath      : path.join(logsDir, 'trainLocations.log')     ,
 
-    trainTrackingStatsLogPath  : path.join(logsDir, 'trainTrackingStats.csv') ,
+    trainTrackingStatsLogPath  : path.join(logsDir, 'trainTrackingStats.log') ,
 
     unscheduledTripsLogPath    : path.join(logsDir, 'unscheduledTrips.log')   ,
 

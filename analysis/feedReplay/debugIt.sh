@@ -2,4 +2,4 @@
 
 rm -f logs/*
 
-node debug MockConverterService.js
+node-debug MockConverterService.js
