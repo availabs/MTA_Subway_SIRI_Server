@@ -7,7 +7,8 @@
 
 var fs       = require('fs')   ,
     path     = require('path') ,
-    execFile = require('child_process').execFile ,
+    //execFile = require('child_process').execFile ,
+    fork = require('child_process').fork ,
 
     gtfsConfig         = require('../config/GTFS.config.js') ,
     gtfsConfigFilePath = gtfsConfig.gtfsConfigFilePath       ,
@@ -61,21 +62,13 @@ if (source === 'file') {
 }
 
 
-execFile(scriptAbsPath, [gtfsConfigFilePath, source], outputResults);
+var childProcess = fork(scriptAbsPath, [gtfsConfigFilePath, source]);
 
-
-function outputResults (err, stdout, stderr) {
-    if (err) {
-        console.error('An error occurred while updating the GTFS data:');
-        console.error(err);
-        process.exit(1);
+childProcess.on('message', function (m) { console.log(m); });
+childProcess.on('exit', function (code) { 
+    if (!code) {
+        console.log('GTFS update complete.'); 
+    } else {
+        console.error('GTFS update terminated with non-zero exit code.');
     }
-
-    console.log('STDOUT :');
-    console.log(stdout);
-
-    console.log('STDERR :');
-    console.log(stderr);
-
-    console.log('========== GTFS data update complete. ==========');
-}
+});

@@ -274,10 +274,13 @@ router.get('/get/GTFS/lastUpdateStatus', function (req, res) {
 function gtfsDataUpdateCallback (err, stdout, stderr) {
     lastGTFSDataUpdateResults = {
         status : (!err) ? 'Succeeded' : 'Failed',
-        err    : err    ,
         stdout : stdout ,
         stderr : stderr ,
     };
+
+    if (err) {
+        lastGTFSDataUpdateResults.err = err.stack || err;
+    }
 
     console.log(lastGTFSDataUpdateResults);
 }

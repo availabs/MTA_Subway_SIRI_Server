@@ -9,9 +9,9 @@ var fs    = require('fs'),
     
     tripKeyMutator = [/.{9}/, ''], 
 
-    dataDirPath = path.normalize(path.join(__dirname, '../data/GTFS/')),
-    tmpDirPath  = path.join(dataDirPath, 'tmp') ,
-    logsDir     = path.normalize(path.join(__dirname, '../logs/')) ,
+    dataDirPath = path.join(__dirname, '../data/GTFS/'),
+    tmpDirPath  = path.join(__dirname, '../data/GTFS/tmp') ,
+    logsDir     = path.join(__dirname, '../logs/') ,
     
 
     feedDataZipFileName = 'gtfs.zip',
@@ -32,9 +32,9 @@ var fs    = require('fs'),
         feedDataZipFileName         : feedDataZipFileName        ,
         feedDataZipFilePath         : feedDataZipFilePath        ,
 
-        indexedScheduleDataFilePath : path.join(dataDirPath, '/indexedScheduleData.json') ,
-        indexedSpatialDataFilePath  : path.join(dataDirPath, '/indexedSpatialData.json') ,
-        indexingStatisticsLogPath   : path.join(logsDir, '/spatialDataIndexingStats.txt') ,
+        indexedScheduleDataFilePath : path.resolve(dataDirPath, 'indexedScheduleData.json') ,
+        indexedSpatialDataFilePath  : path.resolve(dataDirPath, 'indexedSpatialData.json') ,
+        indexingStatisticsLogPath   : path.resolve(logsDir, 'spatialDataIndexingStats.txt') ,
     };
 
 
