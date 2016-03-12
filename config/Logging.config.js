@@ -15,6 +15,10 @@ var fs    = require('fs') ,
 var staticConfig = {
     logsDir                    : logsDir ,
 
+    dataAnomaliesLogPath       : path.join(logsDir, 'dataAnomalies.log') ,
+
+    errorsLogPath              : path.join(logsDir, 'errors.log') ,
+
     feedReaderLogPath          : path.join(logsDir, 'gtfsrtFeedReader.log') ,
 
     converterLogPath           : path.join(logsDir, 'converter.log') ,

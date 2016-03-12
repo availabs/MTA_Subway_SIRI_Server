@@ -1,4 +1,6 @@
 {
+    "logDataAnomalies": true,
+    "logErrors": true,
     "logTrainLocations": true,
     "logTrainTrackingStats": true,
     "logUnscheduledTrips": true,

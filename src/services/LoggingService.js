@@ -25,15 +25,13 @@ var binaryLoggingLevels = {
 
 var dataAnomalyLogger = new (winston.Logger)({
     levels : binaryLoggingLevels ,
-    //level  : loggingConfig.logTrainTrackingStats ? 'on' : 'off',
-    level : 'on' ,
+    level  : loggingConfig.logDataAnomalies ? 'on' : 'off',
     exitOnError: false ,
 
     transports : [
         //new (winston.transports.DailyRotateFile)({
         new (DailyRotateFile)({
-            //filename  : loggingConfig.trainTrackingErrorsLogPath,
-            filename  : '/home/paul/AVAIL/LIRR_GTFSrt_to_SIRI/LIRR_SIRI_Server/logs/dataAnomaly.log' ,
+            filename  : loggingConfig.dataAnomaliesLogPath,
             colorize  : false ,
             datePattern : '.yyyy-MM-dd' ,
             stringify : metaDataStringifier ,
@@ -45,15 +43,12 @@ var dataAnomalyLogger = new (winston.Logger)({
 
 var errorLogger = new (winston.Logger)({
     levels : binaryLoggingLevels ,
-    //level  : loggingConfig.logTrainTrackingStats ? 'on' : 'off',
-    level : 'on' ,
+    level  : loggingConfig.logErrors ? 'on' : 'off',
     exitOnError: false ,
 
     transports : [
-        //new (winston.transports.DailyRotateFile)({
         new (DailyRotateFile)({
-            //filename  : loggingConfig.trainTrackingErrorsLogPath,
-            filename  : '/home/paul/AVAIL/LIRR_GTFSrt_to_SIRI/LIRR_SIRI_Server/logs/errors.log' ,
+            filename  : loggingConfig.errorsLogPath,
             colorize  : false ,
             datePattern : '.yyyy-MM-dd' ,
             stringify : metaDataStringifier ,
@@ -70,7 +65,6 @@ var trainLocationsLogger = new (winston.Logger)({
     exitOnError: false ,
 
     transports : [
-        //new (winston.transports.DailyRotateFile)({
         new (DailyRotateFile)({
             filename    : loggingConfig.trainLocationsLogPath ,
             colorize    : false ,
@@ -85,15 +79,12 @@ var trainLocationsLogger = new (winston.Logger)({
 
 var trainTrackingStatsLogger = new (winston.Logger)({
     levels : binaryLoggingLevels ,
-    //level  : loggingConfig.logTrainTrackingStats ? 'on' : 'off',
-    level  : 'on' ,
+    level  : loggingConfig.logTrainTrackingStats ? 'on' : 'off',
     exitOnError: false ,
 
     transports : [
-        //new (winston.transports.DailyRotateFile)({
         new (DailyRotateFile)({
-            filename : '/home/paul/AVAIL/LIRR_GTFSrt_to_SIRI/LIRR_SIRI_Server/logs/foo.log' ,
-            //filename  : loggingConfig.trainTrackingStatsLogPath,
+            filename  : loggingConfig.trainTrackingStatsLogPath,
             colorize  : false ,
             stringify : metaDataStringifier ,
             datePattern : '.yyyy-MM-dd' ,
@@ -110,7 +101,6 @@ var unscheduledTripsLogger = new (winston.Logger)({
     exitOnError: false ,
 
     transports : [
-        //new (winston.transports.DailyRotateFile)({
         new (DailyRotateFile)({
             filename  : loggingConfig.unscheduledTripsLogPath,
             colorize  : false ,
@@ -129,7 +119,6 @@ var noSpatialDataTripsLogger = new (winston.Logger)({
     exitOnError: false ,
 
     transports : [
-        //new (winston.transports.DailyRotateFile)({
         new (DailyRotateFile)({
             filename  : loggingConfig.noSpatialDataTripsLogPath,
             colorize  : false ,
@@ -143,11 +132,10 @@ var noSpatialDataTripsLogger = new (winston.Logger)({
 
 var trainTrackingErrorsLogger = new (winston.Logger)({
     levels : binaryLoggingLevels ,
-    level  : loggingConfig.logTrainTrackingStats ? 'on' : 'off',
+    level  : loggingConfig.logTrainTrackingErrors ? 'on' : 'off',
     exitOnError: false ,
 
     transports : [
-        //new (winston.transports.DailyRotateFile)({
         new (DailyRotateFile)({
             filename  : loggingConfig.trainTrackingErrorsLogPath,
             colorize  : false ,
