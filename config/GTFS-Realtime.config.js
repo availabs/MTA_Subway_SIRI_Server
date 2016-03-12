@@ -13,13 +13,10 @@ var fs    = require('fs') ,
     staticConfig = {
         protofileDirPath  : protofileDirPath ,
         protofilePath     : path.join(protofileDirPath, hotConfig.protofileName) ,
-        feedReaderLogPath : path.join(__dirname, '../logs/gtfsrtFeedReader.log') ,
 
         // NOTE: The following two config parameters are developers,
         //       they are not accessible through the Admin Console
         //       as they would not make sense to use in a production env.
-        logFeedReader : false,
-        feedReaderLoggingLevel: "debug",
     };
 
 module.exports = merge(staticConfig, hotConfig);

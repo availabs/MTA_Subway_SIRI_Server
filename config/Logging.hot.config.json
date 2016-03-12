@@ -1,0 +1,9 @@
+{
+    "logTrainLocations": true,
+    "logTrainTrackingStats": true,
+    "logUnscheduledTrips": true,
+    "logNoSpatialDataTrips": true ,
+    "logTrainTrackingErrors": true,
+    "logMemoryUsage": true,
+    "logFeedReader" : false
+}

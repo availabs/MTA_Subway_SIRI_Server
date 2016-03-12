@@ -21,9 +21,17 @@ var gtfsHotConfigPath = path.join(__dirname, '../../config/GTFS.hot.config.json'
     //memwatchHotConfig      = JSON.parse(fs.readFileSync(memwatchHotConfigPath)),
     //memwatchConfig         = require('../../config/Memwatch.config'),
 
+    loggingHotConfigPath  = path.join(__dirname, '../../config/Logging.hot.config.json'),
+    loggingHotConfig      = JSON.parse(fs.readFileSync(loggingHotConfigPath)),
+    loggingConfig         = require('../../config/Logging.config') ,
+
+   
+
+
     gtfsConfigUpdateListeners      = [] ,
     gtfsrtConfigUpdateListeners    = [] ,
-    converterConfigUpdateListeners = [] ;
+    converterConfigUpdateListeners = [] ,
+    loggingConfigUpdateListeners   = [] ;
 
 
 gtfsConfig.winston      = winston;
@@ -201,6 +209,52 @@ var api = {
     //getMemwatchConfig : function () {
         //return memwatchConfig;
     //},
+
+
+    getLoggingConfig : function () {
+        return loggingConfig;
+    },
+
+    getLoggingHotConfig : function () {
+        return loggingHotConfig;
+    },
+
+    updateLoggingConfig : function (newHotConfig, callback) {
+        loggingHotConfig = newHotConfig;
+
+        merge(loggingConfig, newHotConfig);
+
+        fs.writeFile(loggingHotConfigPath, JSON.stringify(newHotConfig, null, '    ') + '\n', function (err) {
+            if (err) {
+                callback(err);
+                return;
+            }
+
+            for (var i = 0; i < loggingConfigUpdateListeners.length; ++i) {
+                loggingConfigUpdateListeners[i](loggingConfig);
+            }
+            callback(null);
+        });
+    },
+
+    addLoggingConfigUpdateListener : function (listener) {
+        if ((typeof listener) === "function") {
+            loggingConfigUpdateListeners.push(listener);
+        } else {
+            throw new Error('Listeners must be functions..');
+        }
+    },
+
+    removeLoggingConfigUpdateListener : function (listener) {
+        for (var i = 0; i < loggingConfigUpdateListeners.length; ++i) {
+            if (loggingConfigUpdateListeners[i] === listener) {
+                loggingConfigUpdateListeners.splice(i, 1);
+                return;
+            }
+        }
+    },
+
+
 
 };
 
