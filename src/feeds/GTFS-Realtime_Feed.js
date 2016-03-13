@@ -2,9 +2,9 @@
 
 var GTFSrtFeedReader = require('MTA_Subway_GTFS-Realtime_to_SIRI_Converter').MTA_Subway_GTFS_Realtime_Toolkit
                                                                             .FeedReader,
-    ConfigService = require('./ConfigsService') ,
+    ConfigService = require('../services/ConfigsService') ,
 
-    eventHandlingService = require('./EventHandlingService') ,
+    eventHandlingService = require('../services/EventHandlingService') ,
 
     feedReaderConfig = ConfigService.getGTFSRealtimeConfig() ,
 

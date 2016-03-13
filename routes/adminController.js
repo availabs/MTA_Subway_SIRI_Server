@@ -13,8 +13,8 @@ var fs      = require('fs'),
 var ConverterService   = require('../src/services/ConverterService') ,
     ConfigsService     = require('../src/services/ConfigsService') ,
 
-    GTFS_Feed          = require('../src/services/GTFS_Feed') ,
-    GTFSRealtime_Feed  = require('../src/services/GTFS-Realtime_Feed'),
+    GTFS_Feed          = require('../src/feeds/GTFS_Feed') ,
+    GTFSRealtime_Feed  = require('../src/feeds/GTFS-Realtime_Feed'),
 
     gtfsMulterStorage = multer.diskStorage({
         destination : ConfigsService.getGTFSConfig().tmpDirPath,

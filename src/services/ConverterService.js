@@ -2,8 +2,8 @@
 
 
 var ConverterStream  = require('MTA_Subway_GTFS-Realtime_to_SIRI_Converter').ConverterStream ,
-    gtfsFeed         = require('./GTFS_Feed') ,
-    gtfsrtFeed       = require('./GTFS-Realtime_Feed') ,
+    gtfsFeed         = require('../feeds/GTFS_Feed') ,
+    gtfsrtFeed       = require('../feeds/GTFS-Realtime_Feed') ,
 
     eventHandlingService = require('./EventHandlingService') ,
 
