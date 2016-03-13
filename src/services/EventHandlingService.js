@@ -4,6 +4,10 @@
 var loggingService = require('./LoggingService') ;
 
 
+function handleGTFSFeedUpdateStatus (feedUpdateStatus) {
+    console.log(feedUpdateStatus) ;
+}
+
 function handleTrainLocationUpdateEvent (trainLocations) {
     loggingService.logTrainLocations({ payload: trainLocations }) ;
 }
@@ -49,6 +53,9 @@ function registerConverterEventListeners (converterEmitter) {
 
 
 function registerGTFSToolkitEventListeners (gtfsToolkitEventEmitter) {
+    gtfsToolkitEventEmitter.on(gtfsToolkitEventEmitter.eventTypes.FEED_UPDATE_STATUS,
+                               handleGTFSFeedUpdateStatus) ;
+
     gtfsToolkitEventEmitter.on(gtfsToolkitEventEmitter.eventTypes.DATA_ANOMALY, 
                                handleDataAnomaly) ;
 
