@@ -64,11 +64,14 @@ if (source === 'file') {
 
 var childProcess = fork(scriptAbsPath, [gtfsConfigFilePath, source]);
 
-childProcess.on('message', function (m) { console.log(m); });
+//childProcess.on('message', function (m) { console.log(m); });
+
 childProcess.on('exit', function (code) { 
     if (!code) {
         console.log('GTFS update complete.'); 
+        process.exit(0) ;
     } else {
         console.error('GTFS update terminated with non-zero exit code.');
+        process.exit(1) ;
     }
 });
