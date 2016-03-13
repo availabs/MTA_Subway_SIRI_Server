@@ -8,6 +8,10 @@ function handleGTFSFeedUpdateStatus (feedUpdateStatus) {
     console.log(feedUpdateStatus) ;
 }
 
+function handleGTFSrtFeedUpdateStatus (feedUpdateStatus) {
+    console.log(feedUpdateStatus) ;
+}
+
 function handleTrainLocationUpdateEvent (trainLocations) {
     loggingService.logTrainLocations({ payload: trainLocations }) ;
 }
@@ -64,6 +68,9 @@ function registerGTFSToolkitEventListeners (gtfsToolkitEventEmitter) {
 }
 
 function registerGTFSRealtimeToolkitEventListeners (gtfsrtToolkitEventEmitter) {
+    gtfsrtToolkitEventEmitter.on(gtfsrtToolkitEventEmitter.eventTypes.FEED_UPDATE_STATUS,
+                                 handleGTFSrtFeedUpdateStatus) ;
+
     gtfsrtToolkitEventEmitter.on(gtfsrtToolkitEventEmitter.eventTypes.DATA_ANOMALY, 
                                handleDataAnomaly) ;
 
