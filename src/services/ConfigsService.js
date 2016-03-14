@@ -2,7 +2,6 @@
 
 var fs      = require('fs')      ,
     path    = require('path')    ,
-    winston = require('winston') ,
     merge   = require('merge')   ;
 
 var gtfsHotConfigPath = path.join(__dirname, '../../config/GTFS.hot.config.json') ,
@@ -26,17 +25,11 @@ var gtfsHotConfigPath = path.join(__dirname, '../../config/GTFS.hot.config.json'
     loggingConfig         = require('../../config/Logging.config') ,
 
    
-
-
     gtfsConfigUpdateListeners      = [] ,
     gtfsrtConfigUpdateListeners    = [] ,
     converterConfigUpdateListeners = [] ,
     loggingConfigUpdateListeners   = [] ;
 
-
-gtfsConfig.winston      = winston;
-gtfsrtConfig.winston    = winston;
-converterConfig.winston = winston;
 
 
 var api = {

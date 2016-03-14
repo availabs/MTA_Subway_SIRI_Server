@@ -1,16 +1,39 @@
 'use strict';
 
 
-var loggingService = require('./LoggingService') ;
+var SystemStatusService = require('./SystemStatusService') ,
+
+    serverEventEmitter = require('../events/ServerEventEmitter') ,
+    loggingService = require('./LoggingService') ;
+
+
+
+function handleGTFSrtFeedReaderStarted (feedReaderStartedEvent) {
+    SystemStatusService.logGTFSrtFeedReaderStartedEvent(feedReaderStartedEvent) ;
+    console.log(feedReaderStartedEvent) ;
+}
+
+function handleGTFSrtFeedReaderStopped (feedReaderStoppedEvent) {
+    SystemStatusService.logGTFSrtFeedReaderStoppedEvent(feedReaderStoppedEvent) ;
+    console.log(feedReaderStoppedEvent) ;
+}
 
 
 function handleGTFSFeedUpdateStatus (feedUpdateStatus) {
+    SystemStatusService.addEventToGTFSFeedUpdateLog(feedUpdateStatus) ;
     console.log(feedUpdateStatus) ;
 }
 
 function handleGTFSrtFeedUpdateStatus (feedUpdateStatus) {
+    SystemStatusService.addEventToGTFSRealtimeConfigUpdateLog(feedUpdateStatus) ;
     console.log(feedUpdateStatus) ;
 }
+
+function handleConverterConfigUpdateStatus (feedUpdateStatus) {
+    SystemStatusService.addEventToConverterConfigUpdateLog(feedUpdateStatus) ;
+    console.log(feedUpdateStatus) ;
+}
+
 
 function handleTrainLocationUpdateEvent (trainLocations) {
     loggingService.logTrainLocations({ payload: trainLocations }) ;
@@ -42,6 +65,7 @@ function handleSystemError (errorInfo) {
 }
 
 
+
 function registerConverterEventListeners (converterEmitter) {
     converterEmitter.on(converterEmitter.eventTypes.LOCATIONS_UPDATE, 
                         handleTrainLocationUpdateEvent);
@@ -68,6 +92,11 @@ function registerGTFSToolkitEventListeners (gtfsToolkitEventEmitter) {
 }
 
 function registerGTFSRealtimeToolkitEventListeners (gtfsrtToolkitEventEmitter) {
+    gtfsrtToolkitEventEmitter.on(gtfsrtToolkitEventEmitter.eventTypes.FEED_READER_STARTED,
+                                 handleGTFSrtFeedReaderStarted) ;
+    gtfsrtToolkitEventEmitter.on(gtfsrtToolkitEventEmitter.eventTypes.FEED_READER_STOPPED,
+                                 handleGTFSrtFeedReaderStopped) ;
+
     gtfsrtToolkitEventEmitter.on(gtfsrtToolkitEventEmitter.eventTypes.FEED_UPDATE_STATUS,
                                  handleGTFSrtFeedUpdateStatus) ;
 
@@ -77,6 +106,17 @@ function registerGTFSRealtimeToolkitEventListeners (gtfsrtToolkitEventEmitter) {
     gtfsrtToolkitEventEmitter.on(gtfsrtToolkitEventEmitter.eventTypes.ERROR, 
                                handleSystemError) ;
 }
+
+
+(function registerServerEventListeners () {
+   serverEventEmitter.on(serverEventEmitter.eventTypes.GTFS_FEED_UPDATE_STATUS,
+                         handleGTFSFeedUpdateStatus) ; 
+   serverEventEmitter.on(serverEventEmitter.eventTypes.GTFS_REALTIME_FEED_UPDATE_STATUS,
+                         handleGTFSrtFeedUpdateStatus) ; 
+   serverEventEmitter.on(serverEventEmitter.eventTypes.CONVERTER_CONFIG_UPDATE_STATUS,
+                         handleConverterConfigUpdateStatus) ; 
+}());
+
 
 module.exports = {
     registerGTFSToolkitEventListeners         : registerGTFSToolkitEventListeners ,
