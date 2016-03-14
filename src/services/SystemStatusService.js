@@ -101,9 +101,9 @@ function addDataAnomaly (anomaly) {
 }
 
 function addError (error) {
-    systemStatus.errors.push(error) ;
+    systemStatus.recentErrors.push(error) ;
     sortDescendingByTimestamp(systemStatus.recentErrors);
-    systemStatus.errors.length = arrayMaxLength ;
+    systemStatus.recentErrors.length = arrayMaxLength ;
 }
 
 
