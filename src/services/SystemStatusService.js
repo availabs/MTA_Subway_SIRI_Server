@@ -15,7 +15,7 @@ var systemStatus = {
             lastStoppedEvent : null ,
             lastConfigUpdateLog : [] ,
             recentErrors : [] ,
-            lastSuccessfulMessageReadTimestamp : null ,
+            lastSuccessfulReadEvent : null ,
         } ,
 
         converter : {
@@ -39,6 +39,9 @@ function logGTFSrtFeedReaderStartedEvent (event) {
 
 function logGTFSrtFeedReaderStoppedEvent (event) {
     systemStatus.gtfsrt.lastStoppedEvent = event;
+}
+function logGTFSrtFeedReaderSuccessfulReadEvent (event) {
+    systemStatus.gtfsrt.lastSuccessfulReadEvent = event;
 }
 
 function resetGTFSFeedUpdateLog () { 
@@ -120,24 +123,26 @@ function sortDescendingByTimestamp (arr) {
 
 
 module.exports = {
-    getSystemStatus                       : getSystemStatus ,
+    getSystemStatus                        : getSystemStatus ,
 
-    logGTFSrtFeedReaderStartedEvent       : logGTFSrtFeedReaderStartedEvent ,
-    logGTFSrtFeedReaderStoppedEvent       : logGTFSrtFeedReaderStoppedEvent ,
+    logGTFSrtFeedReaderStartedEvent        : logGTFSrtFeedReaderStartedEvent ,
+    logGTFSrtFeedReaderStoppedEvent        : logGTFSrtFeedReaderStoppedEvent ,
 
-    resetGTFSFeedUpdateLog                : resetGTFSFeedUpdateLog ,
-    addEventToGTFSFeedUpdateLog           : addEventToGTFSFeedUpdateLog ,
+    logGTFSrtFeedReaderSuccessfulReadEvent : logGTFSrtFeedReaderSuccessfulReadEvent ,
 
-    resetGTFSRealtimeConfigUpdateLog      : resetGTFSRealtimeConfigUpdateLog ,
-    addEventToGTFSRealtimeConfigUpdateLog : addEventToGTFSRealtimeConfigUpdateLog ,
+    resetGTFSFeedUpdateLog                 : resetGTFSFeedUpdateLog ,
+    addEventToGTFSFeedUpdateLog            : addEventToGTFSFeedUpdateLog ,
 
-    resetConverterConfigUpdateLog         : resetConverterConfigUpdateLog ,
-    addEventToConverterConfigUpdateLog    : addEventToConverterConfigUpdateLog ,
+    resetGTFSRealtimeConfigUpdateLog       : resetGTFSRealtimeConfigUpdateLog ,
+    addEventToGTFSRealtimeConfigUpdateLog  : addEventToGTFSRealtimeConfigUpdateLog ,
 
-    addErrorToGTFSStatus                  : addErrorToGTFSStatus ,
-    addErrorToGTFSRealtimeStatus          : addErrorToGTFSRealtimeStatus ,
-    addErrorToConverterStatus             : addErrorToConverterStatus ,
+    resetConverterConfigUpdateLog          : resetConverterConfigUpdateLog ,
+    addEventToConverterConfigUpdateLog     : addEventToConverterConfigUpdateLog ,
 
-    addDataAnomaly                        : addDataAnomaly ,
-    addError                              : addError ,
+    addErrorToGTFSStatus                   : addErrorToGTFSStatus ,
+    addErrorToGTFSRealtimeStatus           : addErrorToGTFSRealtimeStatus ,
+    addErrorToConverterStatus              : addErrorToConverterStatus ,
+
+    addDataAnomaly                         : addDataAnomaly ,
+    addError                               : addError ,
 } ;

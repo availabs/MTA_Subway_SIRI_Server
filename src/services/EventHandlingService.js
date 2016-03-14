@@ -10,14 +10,15 @@ var SystemStatusService = require('./SystemStatusService') ,
 
 function handleGTFSrtFeedReaderStarted (feedReaderStartedEvent) {
     SystemStatusService.logGTFSrtFeedReaderStartedEvent(feedReaderStartedEvent) ;
-    console.log(feedReaderStartedEvent) ;
 }
 
 function handleGTFSrtFeedReaderStopped (feedReaderStoppedEvent) {
     SystemStatusService.logGTFSrtFeedReaderStoppedEvent(feedReaderStoppedEvent) ;
-    console.log(feedReaderStoppedEvent) ;
 }
 
+function handleGTFSrtFeedReaderSuccessfulRead (successfulReadEvent) {
+    SystemStatusService.logGTFSrtFeedReaderSuccessfulReadEvent(successfulReadEvent) ;
+}
 
 function handleGTFSFeedUpdateStatus (feedUpdateStatus) {
     SystemStatusService.addEventToGTFSFeedUpdateLog(feedUpdateStatus) ;
@@ -60,8 +61,10 @@ function handleDataAnomaly (anomalyInfo) {
     loggingService.logDataAnomaly({ payload: anomalyInfo }) ;
 }
 
-function handleSystemError (errorInfo) {
-    loggingService.logError({ payload: errorInfo }) ;
+function handleSystemError (errorEvent) {
+    loggingService.logError({ payload: errorEvent }) ;
+
+    SystemStatusService.addError(errorEvent) ;
 }
 
 
@@ -96,6 +99,9 @@ function registerGTFSRealtimeToolkitEventListeners (gtfsrtToolkitEventEmitter) {
                                  handleGTFSrtFeedReaderStarted) ;
     gtfsrtToolkitEventEmitter.on(gtfsrtToolkitEventEmitter.eventTypes.FEED_READER_STOPPED,
                                  handleGTFSrtFeedReaderStopped) ;
+
+    gtfsrtToolkitEventEmitter.on(gtfsrtToolkitEventEmitter.eventTypes.FEED_READER_SUCCESSFUL_READ,
+                                 handleGTFSrtFeedReaderSuccessfulRead) ;
 
     gtfsrtToolkitEventEmitter.on(gtfsrtToolkitEventEmitter.eventTypes.FEED_UPDATE_STATUS,
                                  handleGTFSrtFeedUpdateStatus) ;
