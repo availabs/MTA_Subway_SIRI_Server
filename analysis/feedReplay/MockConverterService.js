@@ -1,18 +1,20 @@
 'use strict';
 
 
-
-
 /**********************************************************
  * MOCK Converter Service
  *********************************************************/
 
+require('./MockEventHandlingService') ;
+
+
 var process = require('process') ;
 
 var ConverterStream  = require('MTA_Subway_GTFS-Realtime_to_SIRI_Converter').ConverterStream ,
-    gtfsFeed         = require('../../src/services/GTFS_Feed') ,
 
-    MockGTFSrtFeed   = require('./MockGTFS-Realtime_Feed') ,
+    GTFS_FeedHandlerService = require('../../src/services/GTFS_FeedHandlerService') ,
+
+    MockGTFSrtFeed = require('./MockGTFS-Realtime_Feed') ,
 
     mockGTFSrtFeed = new MockGTFSrtFeed() ,
 
@@ -20,12 +22,19 @@ var ConverterStream  = require('MTA_Subway_GTFS-Realtime_to_SIRI_Converter').Con
 
     converterConfig  = mockConfigService.getConverterConfig() ,
 
+    gtfsFeedHandler ,
+
     converterStream  ;
 
 
 
-var latestConverter = null;
+GTFS_FeedHandlerService.start() ;
 
+gtfsFeedHandler = GTFS_FeedHandlerService.getFeedHandler() ;
+
+
+
+var latestConverter = null;
 
 
 (function start () {
@@ -44,7 +53,7 @@ var latestConverter = null;
             }
 
             converterStream  = 
-                new ConverterStream(gtfsFeed, mockGTFSrtFeed, converterConfig, 
+                new ConverterStream(gtfsFeedHandler, mockGTFSrtFeed, converterConfig, 
                                     trainTrackerInitialState , converterUpdateListener );
 
             mockConfigService.removeTrainTrackerInitialStateFromConverterConfig();

@@ -11,17 +11,17 @@ var fs      = require('fs'),
 
 
     // Merge the static and hot config files.
-var ConverterService   = require('../src/services/ConverterService') ,
-    ConfigsService     = require('../src/services/ConfigsService') ,
+var ConfigsService     = require('../src/services/ConfigsService') ,
 
+    ConverterService   = require('../src/services/ConverterService') ,
+    
     SystemStatusService = require('../src/services/SystemStatusService') ,
 
     
     eventCreator = require('../src/events/ServerEventCreator') ,
 
-
-    GTFS_Feed          = require('../src/feeds/GTFS_Feed') ,
-    GTFSRealtime_Feed  = require('../src/feeds/GTFS-Realtime_Feed'),
+    GTFS_FeedService = require('../src/services/GTFS_FeedHandlerService') ,
+    GTFSRealtime_FeedService  = require('../src/services/GTFSRealtime_FeedReaderService'),
 
     gtfsMulterStorage = multer.diskStorage({
         destination : ConfigsService.getGTFSConfig().tmpDirPath,
@@ -43,17 +43,50 @@ var ConverterService   = require('../src/services/ConverterService') ,
 
 
 
+
+router.get('/start/Converter', function (req, res) {
+
+    ConverterService.start(function (err) {
+        if (err) {
+            res.status(500).send({ 
+                message: 'An error occurred while starting the Converter.', 
+                error: (err.stack | err)
+            });
+        } else {
+            res.status(200).send('Converter service started.') ;
+        }
+    }) ;
+});
+
+
+router.get('/stop/Converter', function (req, res) {
+
+    ConverterService.stop(function (err) {
+        if (err) {
+            res.status(500).send({ 
+                message: 'An error occurred while stopping the Converter.', 
+                error: (err.stack | err)
+            });
+        } else {
+            res.status(200).send('Converter service stopped.') ;
+        }
+    }) ;
+});
+
+
+
 //================ Config GET endpoints ================\\
 
 router.get('/get/GTFS/config', function (req, res) {
     res.send(ConfigsService.getGTFSHotConfig());
 });
 
+
 router.get('/get/GTFS-Realtime/config', function (req, res) {
     res.send(ConfigsService.getGTFSRealtimeHotConfig());
 });
 
-router.get('/get/GTFS-Realtime_to_SIRI_Converter/config', function (req, res) {
+router.get('/get/Converter/config', function (req, res) {
     res.send(ConfigsService.getConverterHotConfig());
 });
 
@@ -62,12 +95,9 @@ router.get('/get/GTFS-Realtime/currentTimestamp', function (req, res) {
 });
 
 router.get('/get/GTFS-Realtime/feed-reader/state', function (req, res) {
-    res.send(util.inspect(GTFSRealtime_Feed.getState()) + '\n');
+    res.send(util.inspect(GTFSRealtime_FeedService.getFeedReaderState()) + '\n');
 });
 
-router.get('/get/GTFS-Realtime/feed-reader/timestampOfLastSuccessfulRead', function (req, res) {
-    res.send(GTFSRealtime_Feed.getTimestampOfLastSuccessfulRead());
-});
 
 router.get('/get/server/memory-usage', function (req, res) {
     res.send(process.memoryUsage());
@@ -232,7 +262,7 @@ router.post('/update/GTFS/data', function(req, res) {
 
                     } else {
 
-                        GTFS_Feed.update((req.file) ? "file" : "url", gtfsDataUpdateCallback);
+                        GTFS_FeedService.updateFeedHandler((req.file) ? "file" : "url", gtfsDataUpdateCallback);
 
                         eventCreator.emitGTFSFeedUpdateStatus({
                             debug: 'GTFS_Toolkit component hot update started.' ,
@@ -383,7 +413,7 @@ router.post('/update/GTFS-Realtime/config', function (req, res) {
 
 
 
-router.post('/update/GTFS-Realtime_to_SIRI_Converter/config', function(req, res) {
+router.post('/update/Converter/config', function(req, res) {
     var newConfig  = {},
         configKeys = ((req.body !== null) && (typeof req.body === 'object')) && Object.keys(req.body),
         onOffKey,
@@ -438,12 +468,12 @@ router.get('/get/system/status', function (req, res) {
 function gtfsDataUpdateCallback (err) {
     if (err) {
         eventCreator.emitGTFSFeedUpdateStatus({
-            debug: 'Admin console received an error from the GTFS_Feed.update callback.' ,
+            debug: 'Admin console received an error from the GTFS_FeedService.update callback.' ,
             timestamp : Date.now() ,
         });
     } else {
         eventCreator.emitGTFSFeedUpdateStatus({
-            debug: 'Admin console received an "all-clear" from the GTFS_Feed.update callback.' ,
+            debug: 'Admin console received an "all-clear" from the GTFS_FeedService.update callback.' ,
             timestamp : Date.now() ,
         });
     }

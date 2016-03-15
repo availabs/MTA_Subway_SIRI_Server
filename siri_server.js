@@ -2,6 +2,11 @@
 
 'use strict';
 
+// We need to make sure that the EventHandling Service is running.
+require('./src/services/EventHandlingService.js') ;
+
+
+
 var fs         = require('fs')          , 
     express    = require('express')     ,
     bodyParser = require('body-parser') ,

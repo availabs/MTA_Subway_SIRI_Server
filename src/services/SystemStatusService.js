@@ -6,6 +6,7 @@ var arrayMaxLength = 25;
 
 var systemStatus = {
         gtfs : {
+            handlerConstructionStatusLog : [],
             lastFeedUpdateLog : [] ,
             recentErrors : [] ,
         } ,
@@ -19,7 +20,10 @@ var systemStatus = {
         } ,
 
         converter : {
+            lastStartedEvent : null ,
+            lastStoppedEvent : null ,
             lastConfigUpdateLog : [] ,
+            serviceStatusLog: [] ,
             recentErrors : [] ,
         } ,
 
@@ -33,16 +37,16 @@ function getSystemStatus () {
     return systemStatus ;
 }
 
-function logGTFSrtFeedReaderStartedEvent (event) {
-    systemStatus.gtfsrt.lastStartedEvent = event;
+
+function resetGTFSFeedHandlerConstructionLog () {
+    systemStatus.gtfs.handlerConstructionStatusLog.length = 0 ;
 }
 
-function logGTFSrtFeedReaderStoppedEvent (event) {
-    systemStatus.gtfsrt.lastStoppedEvent = event;
+function logGTFSFeedHandlerConstructionEvent (event) {
+    systemStatus.gtfs.handlerConstructionStatusLog.push(event) ;    
+    sortDescendingByTimestamp(systemStatus.gtfs.handlerConstructionStatusLog) ;
 }
-function logGTFSrtFeedReaderSuccessfulReadEvent (event) {
-    systemStatus.gtfsrt.lastSuccessfulReadEvent = event;
-}
+
 
 function resetGTFSFeedUpdateLog () { 
     systemStatus.gtfs.lastFeedUpdateLog.length = 0; 
@@ -53,12 +57,25 @@ function addEventToGTFSFeedUpdateLog (event) {
     sortDescendingByTimestamp(systemStatus.gtfs.lastFeedUpdateLog);
 }
 
+
 function addErrorToGTFSStatus (error) {
     systemStatus.gtfs.recentErrors.push(error) ;
     sortDescendingByTimestamp(systemStatus.gtfs.recentErrors);
     systemStatus.gtfs.recentErrors.length = arrayMaxLength ;
 }
 
+
+
+function logGTFSrtFeedReaderStartedEvent (event) {
+    systemStatus.gtfsrt.lastStartedEvent = event ;
+}
+
+function logGTFSrtFeedReaderStoppedEvent (event) {
+    systemStatus.gtfsrt.lastStoppedEvent = event ;
+}
+function logGTFSrtFeedReaderSuccessfulReadEvent (event) {
+    systemStatus.gtfsrt.lastSuccessfulReadEvent = event ;
+}
 
 
 function resetGTFSRealtimeConfigUpdateLog () { 
@@ -77,6 +94,15 @@ function addErrorToGTFSRealtimeStatus (error) {
 }
 
 
+
+function logConverterServiceStartedEvent (serviceStartedEvent) {
+    systemStatus.converter.lastStartedEvent = serviceStartedEvent ;
+}
+
+function logConverterServiceStoppedEvent (serviceStoppedEvent) {
+    systemStatus.converter.lastStoppedEvent = serviceStoppedEvent ;
+}
+
 function resetConverterConfigUpdateLog () { 
     systemStatus.converter.lastConfigUpdateLog.length = 0; 
 }
@@ -84,6 +110,11 @@ function resetConverterConfigUpdateLog () {
 function addEventToConverterConfigUpdateLog (event) {
     systemStatus.converter.lastConfigUpdateLog.push(event) ;
     sortDescendingByTimestamp(systemStatus.converter.lastConfigUpdateLog);
+}
+
+function addEventToConverterServiceStatusLog (event) {
+    systemStatus.converter.serviceStatusLog.push(event) ;
+    sortDescendingByTimestamp(systemStatus.converter.serviceStatusLog);
 }
 
 function addErrorToConverterStatus (error) {
@@ -125,10 +156,8 @@ function sortDescendingByTimestamp (arr) {
 module.exports = {
     getSystemStatus                        : getSystemStatus ,
 
-    logGTFSrtFeedReaderStartedEvent        : logGTFSrtFeedReaderStartedEvent ,
-    logGTFSrtFeedReaderStoppedEvent        : logGTFSrtFeedReaderStoppedEvent ,
-
-    logGTFSrtFeedReaderSuccessfulReadEvent : logGTFSrtFeedReaderSuccessfulReadEvent ,
+    resetGTFSFeedHandlerConstructionLog    : resetGTFSFeedHandlerConstructionLog ,
+    logGTFSFeedHandlerConstructionEvent    : logGTFSFeedHandlerConstructionEvent ,
 
     resetGTFSFeedUpdateLog                 : resetGTFSFeedUpdateLog ,
     addEventToGTFSFeedUpdateLog            : addEventToGTFSFeedUpdateLog ,
@@ -136,8 +165,18 @@ module.exports = {
     resetGTFSRealtimeConfigUpdateLog       : resetGTFSRealtimeConfigUpdateLog ,
     addEventToGTFSRealtimeConfigUpdateLog  : addEventToGTFSRealtimeConfigUpdateLog ,
 
+    logGTFSrtFeedReaderStartedEvent        : logGTFSrtFeedReaderStartedEvent ,
+    logGTFSrtFeedReaderStoppedEvent        : logGTFSrtFeedReaderStoppedEvent ,
+
+    logGTFSrtFeedReaderSuccessfulReadEvent : logGTFSrtFeedReaderSuccessfulReadEvent ,
+
+
+    logConverterServiceStartedEvent        : logConverterServiceStartedEvent ,
+    logConverterServiceStoppedEvent        : logConverterServiceStoppedEvent ,
+
     resetConverterConfigUpdateLog          : resetConverterConfigUpdateLog ,
     addEventToConverterConfigUpdateLog     : addEventToConverterConfigUpdateLog ,
+    addEventToConverterServiceStatusLog    : addEventToConverterServiceStatusLog ,
 
     addErrorToGTFSStatus                   : addErrorToGTFSStatus ,
     addErrorToGTFSRealtimeStatus           : addErrorToGTFSRealtimeStatus ,

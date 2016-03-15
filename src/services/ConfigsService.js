@@ -137,7 +137,7 @@ var api = {
         }
     },
 
-    removeGTFSrtConfigUpdateListener : function (listener) {
+    removeGTFSRealtimeConfigUpdateListener : function (listener) {
         for (var i = 0; i < gtfsrtConfigUpdateListeners.length; ++i) {
             if (gtfsrtConfigUpdateListeners[i] === listener) {
                 gtfsrtConfigUpdateListeners.splice(i, 1);

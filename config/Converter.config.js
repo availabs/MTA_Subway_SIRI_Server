@@ -18,9 +18,9 @@ var fs    = require('fs'),
 
 var staticConfig = {
 
-    fieldMutators              : fieldMutators                                ,
+    fieldMutators            : fieldMutators ,
 
-    unscheduledTripIndicator   : '\u262f' ,
+    unscheduledTripIndicator : '\u262f' ,
 };
 
     

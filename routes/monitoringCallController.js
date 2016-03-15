@@ -9,6 +9,8 @@ var router = require('express').Router();
 
 var toobusyErrorMessage = "Server is temporarily too busy. Please try again.";
 
+
+
 function sendReponse (res, contentType, error, callResponse) {
     if (error) {
         res.status(500);
@@ -30,7 +32,9 @@ function sendReponse (res, contentType, error, callResponse) {
 // Hand-off the requests.
 // NOTE: Because of the extensions on the routes, we need to use res.redirect.
 router.get('/stop-monitoring.json', function (req, res) {
-    if (toobusy()) {
+    if (!ConverterService.isRunning()) {
+        res.status(503).send({error : 'Converter service is not running.' });
+    } else if (toobusy()) {
         res.status(503).send({error : toobusyErrorMessage });
     } else {
         handleRequest(req, res, 'StopMonitoringResponse', 'json');
@@ -38,7 +42,9 @@ router.get('/stop-monitoring.json', function (req, res) {
 });
 
 router.get('/stop-monitoring.xml', function (req, res) {
-    if (toobusy()) {
+    if (!ConverterService.isRunning()) {
+        res.status(503).send({error : 'Converter service is not running.' });
+    } else if (toobusy()) {
         res.status(503).send({error : toobusyErrorMessage });
     } else {
         handleRequest(req, res, 'StopMonitoringResponse', 'xml');
@@ -46,7 +52,9 @@ router.get('/stop-monitoring.xml', function (req, res) {
 });
 
 router.get('/vehicle-monitoring.json', function (req, res) {
-    if (toobusy()) {
+    if (!ConverterService.isRunning()) {
+        res.status(503).send({error : 'Converter service is not running.' });
+    } else if (toobusy()) {
         res.status(503).send({error : toobusyErrorMessage });
     } else {
         handleRequest(req, res, 'VehicleMonitoringResponse', 'json');
@@ -54,7 +62,9 @@ router.get('/vehicle-monitoring.json', function (req, res) {
 });
 
 router.get('/vehicle-monitoring.xml', function (req, res) {
-    if (toobusy()) {
+    if (!ConverterService.isRunning()) {
+        res.status(503).send({error : 'Converter service is not running.' });
+    } else if (toobusy()) {
         res.status(503).send({error : toobusyErrorMessage });
     } else {
         handleRequest(req, res, 'VehicleMonitoringResponse', 'xml');

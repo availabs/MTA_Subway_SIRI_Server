@@ -97,7 +97,7 @@ var trainTrackingStatsLogger = new (winston.Logger)({
 
 var unscheduledTripsLogger = new (winston.Logger)({
     levels : binaryLoggingLevels ,
-    level  : loggingConfig.logTrainTrackingStats ? 'on' : 'off',
+    level  : loggingConfig.logUnscheduledTrips ? 'on' : 'off',
     exitOnError: false ,
 
     transports : [
@@ -115,7 +115,7 @@ var unscheduledTripsLogger = new (winston.Logger)({
 
 var noSpatialDataTripsLogger = new (winston.Logger)({
     levels : binaryLoggingLevels ,
-    level  : loggingConfig.logTrainTrackingStats ? 'on' : 'off',
+    level  : loggingConfig.logNoSpatialDataTrips ? 'on' : 'off',
     exitOnError: false ,
 
     transports : [
@@ -130,7 +130,7 @@ var noSpatialDataTripsLogger = new (winston.Logger)({
 });
 
 
-var trainTrackingErrorsLogger = new (winston.Logger)({
+var trainTrackingErrorLogger = new (winston.Logger)({
     levels : binaryLoggingLevels ,
     level  : loggingConfig.logTrainTrackingErrors ? 'on' : 'off',
     exitOnError: false ,
@@ -187,13 +187,13 @@ function loggerArgResolver(logger) {
 
 
 module.exports = {
-    logDataAnomaly : loggerArgResolver(dataAnomalyLogger) ,
-    logError       : loggerArgResolver(errorLogger) ,
+    logDataAnomaly        : loggerArgResolver(dataAnomalyLogger) ,
+    logError              : loggerArgResolver(errorLogger) ,
 
-    logTrainLocations      : loggerArgResolver(trainLocationsLogger) ,
-    logTrainTrackingStats  : loggerArgResolver(trainTrackingStatsLogger) ,
-    logUnscheduledTrips    : loggerArgResolver(unscheduledTripsLogger) ,
-    logNoSpatialDataTrips  : loggerArgResolver(noSpatialDataTripsLogger) ,
-    logTrainTrackingErrors : loggerArgResolver(trainTrackingErrorsLogger) ,
+    logTrainLocations     : loggerArgResolver(trainLocationsLogger) ,
+    logTrainTrackingStats : loggerArgResolver(trainTrackingStatsLogger) ,
+    logUnscheduledTrips   : loggerArgResolver(unscheduledTripsLogger) ,
+    logNoSpatialDataTrips : loggerArgResolver(noSpatialDataTripsLogger) ,
+    logTrainTrackingError : loggerArgResolver(trainTrackingErrorLogger) ,
 
 } ;
