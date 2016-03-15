@@ -44,7 +44,7 @@ var ConfigsService     = require('../src/services/ConfigsService') ,
 
 
 
-router.get('/start/Converter', function (req, res) {
+router.post('/start/Converter', function (req, res) {
 
     ConverterService.start(function (err) {
         if (err) {
@@ -59,7 +59,7 @@ router.get('/start/Converter', function (req, res) {
 });
 
 
-router.get('/stop/Converter', function (req, res) {
+router.post('/stop/Converter', function (req, res) {
 
     ConverterService.stop(function (err) {
         if (err) {
