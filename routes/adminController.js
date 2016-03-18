@@ -414,6 +414,7 @@ router.post('/update/GTFS-Realtime/config', function (req, res) {
 
 
 router.post('/update/Converter/config', function(req, res) {
+
     var newConfig  = {},
         configKeys = ((req.body !== null) && (typeof req.body === 'object')) && Object.keys(req.body),
         onOffKey,
@@ -437,6 +438,7 @@ router.post('/update/Converter/config', function(req, res) {
 
     ConfigsService.updateConverterConfig(newConfig, function (err) {
         if (err) {
+
             eventCreator.emitConverterConfigUpdateStatus({
                 error: 'Converter configuration update encountered an error.' ,
                 debug: (err.stack || err),
@@ -445,7 +447,9 @@ router.post('/update/Converter/config', function(req, res) {
             eventCreator.emitError({ error: err });
 
             res.status(500).send({ error: err });
+
         } else {
+
             eventCreator.emitConverterConfigUpdateStatus({
                 info: 'Converter configuration update successful.' ,
                 timestamp : Date.now() ,

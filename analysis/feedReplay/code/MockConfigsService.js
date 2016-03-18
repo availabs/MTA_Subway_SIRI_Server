@@ -3,7 +3,7 @@
 
 var path = require('path') ;
 
-var ConfigsService = require('../../src/services/ConfigsService') ;
+var ConfigsService = require(path.join(__dirname, '../../../src/services/ConfigsService')) ;
 
 
 var configGetterPattern = /^get.*Config$/ ,
@@ -16,7 +16,7 @@ var configGetterPattern = /^get.*Config$/ ,
 var listeners    = [] ,
     interceptors = [] ;
 
-var mockLogsDir = path.join(__dirname, './logs/');
+var mockLogsDir = path.join(__dirname, '../logs/');
 
 
 function redirectLogs (config) {

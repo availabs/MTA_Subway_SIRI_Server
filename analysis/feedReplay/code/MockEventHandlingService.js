@@ -2,7 +2,7 @@
 
 var converterEventEmitter = require('MTA_Subway_GTFS-Realtime_to_SIRI_Converter').ConverterEventEmitter ,
 
-    loggingService = require('./MockLoggingService') ;
+    loggingService = require(__dirname + '/MockLoggingService') ;
 
 
 
@@ -48,7 +48,7 @@ converterEventEmitter.on(converterEventEmitter.eventTypes.UNSCHEDULED_TRIPS_UPDA
 converterEventEmitter.on(converterEventEmitter.eventTypes.NO_SPATIAL_DATA_TRIPS_UPDATE, 
                     handleNoSpatialDataTripsUpdateEvent);
 converterEventEmitter.on(converterEventEmitter.eventTypes.TRAIN_TRACKING_ERROR, 
-                    handleNoSpatialDataTripsUpdateEvent);
+                    handleTrainTrackingError);
 
 converterEventEmitter.on(converterEventEmitter.eventTypes.DATA_ANOMALY, 
                     handleDataAnomaly);

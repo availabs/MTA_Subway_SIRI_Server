@@ -1,2 +1,3 @@
-mongo_data/*
+data/*
 logs/*
+analysis_out/*

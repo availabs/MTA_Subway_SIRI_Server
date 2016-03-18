@@ -28,6 +28,7 @@
     "morgan": "^1.6.1",
     "multer": "^1.1.0",
     "rmdir": "^1.1.0",
+    "simple-statistics": "^1.0.1",
     "toobusy-js": "^0.4.2",
     "winston": "^2.1.1",
     "winston-daily-rotate-file": "^1.0.1"

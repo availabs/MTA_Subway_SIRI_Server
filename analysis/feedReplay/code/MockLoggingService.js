@@ -4,7 +4,7 @@
 
 var fs = require('fs') ,
     
-    configsService = require('./MockConfigsService.js') ,
+    configsService = require(__dirname + '/MockConfigsService.js') ,
 
     loggingConfig = configsService.getLoggingConfig() ;
 

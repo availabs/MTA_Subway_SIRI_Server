@@ -1,4 +1,6 @@
-#!/usr/bin/env bash
+#!/bin/bash
+
+rm -f ./logs/*
 
 ###############################################################################
 # The following was taken directly from http://stackoverflow.com/a/246128
@@ -11,4 +13,5 @@ done
 DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 ################################################################################
 
-docker run --name siriServerStateStore -v "${DIR}/mongo_data:/data/db" -d -p 27017:27017 mongo
+
+node "${DIR}/../code/AnalysisEngine.js"

@@ -1,0 +1,21 @@
+{
+    "assigningCoordinates": null,
+    "lostTrains": {
+        "description": "Describes the number of times we assigned a train a location,  to then in a following message have no location. Ideally zero.",
+        "totalLostAcrossMessages": 0,
+        "totalAcrossMessagesTrackings": 0
+    },
+    "appearances": {
+        "tripKeyToGapsStartEndPairs": {},
+        "byAppearanceCount": {}
+    },
+    "stealthTrains": {},
+    "speeds": {
+        "tripSpeeds": {},
+        "speedStats": {
+            "mean": null,
+            "variance": null,
+            "standardDeviation": null
+        }
+    }
+}

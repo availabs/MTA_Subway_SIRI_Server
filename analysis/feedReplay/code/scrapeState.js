@@ -51,6 +51,7 @@ MongoClient.connect("mongodb://localhost:27017/siriServer", function(err, db) {
 });
 
 
+// Because mongo keys cannot contain a '.'.
 function cleanKeys (obj) {
 
     var keys = ((obj !== null) && (typeof obj === 'object')) ? Object.keys(obj) : null ;
