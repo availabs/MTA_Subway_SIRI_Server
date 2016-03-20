@@ -1,5 +1,4 @@
 {
-    "activeFeed": "mta_subway",
-    "daysToKeepLogsBeforeDeleting" : 3,
+    "activeFeed": "lirr",
     "defaultPortNumber": 16180
 }

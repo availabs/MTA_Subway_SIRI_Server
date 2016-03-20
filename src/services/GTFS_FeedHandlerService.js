@@ -19,6 +19,10 @@ function start () {
 
     var feedHandlerConfig = ConfigsService.getGTFSConfig() ;
 
+    if (!feedHandlerConfig) {
+        throw new Error('The GTFS feed is not configured.');
+    }
+
     SystemStatusService.resetGTFSFeedHandlerConstructionLog() ;
 
     feedHandler = new GTFSFeedHandler(feedHandlerConfig) ;

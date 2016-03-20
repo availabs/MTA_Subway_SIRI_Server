@@ -1,0 +1,23 @@
+{
+    "gtfs": {
+        "feedURL": "http://transitfeeds.com/p/mta/86/latest/download",
+        "indexStopTimes": true
+    },
+
+    "gtfsrt": {
+        "feedURL":"http://mnorth.prod.acquia-sites.com/wse/LIRR/gtfsrt/realtime/5dadd04378cc60cc4ae447da5756ddaa/proto",
+        "readInterval": 60,
+        "retryInterval": 5,
+        "maxNumRetries": 4,
+        "protofileName": "nyct-subway.proto",
+        "useLastStoptimeUpdateAsDestination": false
+    },
+
+    "converter": {
+        "fieldMutators": {
+            "OriginRef": [".", "LIRR_$&"],
+            "DestinationRef": [".", "LIRR_$&"],
+            "StopPointRef": [".", "LIRR_$&"]
+        } 
+    }
+}

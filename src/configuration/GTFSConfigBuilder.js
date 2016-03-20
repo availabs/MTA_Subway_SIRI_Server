@@ -5,7 +5,6 @@
 var process = require('process') ,
     path = require('path') ,
 
-    merge    = require('merge') ,
     validUrl = require('valid-url') ,
     _        = require('lodash') ,
 
@@ -58,18 +57,18 @@ function validateHotConfig (hotConfig, callback) {
 
 
 function updateLogging (config, loggingConfig) {
-    merge(config, _.pluck(loggingConfig, ['logIndexingStatistics', 'indexingStatisticsLogPath']));
+    return _.merge(_.deepCopy(config), 
+                   _.deepCopy(_.pluck(loggingConfig, ['logIndexingStatistics', 'indexingStatisticsLogPath'])));
 }
 
 
 function build (hotConfig, loggingConfig) {
 
     return {
-
         gtfsConfigFilePath: configServicePath ,
 
-        tripKeyMutator: (hotConfig && hotConfig.tripKeyMutator) ,
-        feedURL:        (hotConfig && hotConfig.feedURL) ,
+        tripKeyMutator: _.cloneDeep(hotConfig && hotConfig.tripKeyMutator) ,
+        feedURL:        _.cloneDeep(hotConfig && hotConfig.feedURL) ,
         indexStopTimes: !!(hotConfig && hotConfig.indexStopTimes) ,
 
         dataDirPath: dataDirPath ,
@@ -84,8 +83,6 @@ function build (hotConfig, loggingConfig) {
         indexedScheduleDataFilePath: path.resolve(dataDirPath, 'indexedScheduleData.json'),
 
         indexedSpatialDataFilePath:  path.resolve(dataDirPath, 'indexedSpatialData.json'),
-
-        __hotConfig : hotConfig ,
     } ;
 }
 
@@ -93,6 +90,6 @@ module.exports = {
     validateHotConfig     : validateHotConfig ,
     validateHotConfigSync : validateHotConfigSync ,
     updateLogging         : updateLogging ,
-    build           : build ,
+    build                 : build ,
 } ;
 

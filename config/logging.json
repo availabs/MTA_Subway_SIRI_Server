@@ -8,5 +8,6 @@
     "logNoSpatialDataTrips": true ,
     "logTrainTrackingErrors": true,
     "logMemoryUsage": true,
-    "logFeedReader" : false
+    "logFeedReader" : false,
+    "daysToKeepLogsBeforeDeleting" : 3
 }

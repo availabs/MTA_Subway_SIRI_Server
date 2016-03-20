@@ -80,7 +80,7 @@ function build (hotConfig, serverConfig) {
         serverAccessLogPath:         path.join(logsDir, activeFeed + '_serverAccess.log') ,
     } ;
  
-    return merge(true, paths, hotConfig, { __hotConfig: hotConfig}) ;
+    return merge(true, paths, hotConfig) ;
 }
 
 module.exports = {

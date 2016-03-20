@@ -2,7 +2,6 @@
 
 var fs    = require('fs') ,
     path  = require('path') ,
-    merge = require('merge') ,
     _     = require('lodash') ,
 
     validUrl = require('valid-url') ,
@@ -154,10 +153,10 @@ function build (hotConfig) {
 
     if (hotConfig && hotConfig.protofileName) {
        pfilePath = path.join(protofileDirPath, hotConfig.protofileName);
-       return merge(true, staticConfig, hotConfig, { protofilePath: pfilePath });
+       return _.merge(_.cloneDeep(staticConfig), _.cloneDeep(hotConfig), { protofilePath: pfilePath });
+    } else {
+       return _.merge(_.cloneDeep(staticConfig), _.cloneDeep(hotConfig));
     }
-
-   return merge(true, staticConfig, hotConfig);
 }
 
 module.exports = {

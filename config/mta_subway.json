@@ -15,10 +15,12 @@
     },
 
     "converter": {
-        "fieldMutator": {
+        "fieldMutators": {
             "OriginRef": [".", "MTA_$&"],
             "DestinationRef": [".", "MTA_$&"],
             "StopPointRef": [".", "MTA_$&"]
-        } 
+        } ,
+
+        "significantDigits": 2
     }
 }

@@ -4,8 +4,6 @@
 
 var process = require('process') ,
 
-    merge = require('merge') ,
-
     _ = require('lodash') ,
 
     utils = require('./Utils') ,
@@ -37,7 +35,7 @@ var process = require('process') ,
 
 function validateHotConfigSync (hotConfig) {
 
-    var errorMessage = '' ,
+    var validationMessage = {} ,
         fieldMutatorsKeys ,
         supported , 
         unsupported ,
@@ -53,52 +51,54 @@ function validateHotConfigSync (hotConfig) {
         unsupported = _.difference(fieldMutatorsKeys, supportedFieldMutators) ;
 
         for ( i = 0; i < supported.length; ++i) {
-            if (!utils.mutatorIsValid(hotConfig.fieldMutator[supported[i]])) {
-                errorMessage += ((errorMessage)?'\n':'') + 'The ' + fieldMutatorsKeys[i] + 
-                                'fieldMutator must be an array of two strings. See the configuration documentation.';
+            if (!utils.mutatorIsValid(hotConfig.fieldMutators[supported[i]])) {
+                validationMessage['fieldMutators_' + supported[i]] = { 
+                    error: 'The ' + fieldMutatorsKeys[i] + ' fieldMutator must be an array of two strings.' ,
+                };
+            } else {
+                validationMessage['fieldMutators_' + supported[i]] = { 
+                    info: 'The ' + fieldMutatorsKeys[i] + ' fieldMutator is valid.' ,
+                };
             }
         }
 
         if (unsupported.length) {
-            errorMessage += 'The following converter fieldMutator keys are not supported: \n\t' +
-                            unsupported.join(', ') + '.';
+            validationMessage.unsupportedFieldMutators = {
+                error: 'The following converter fieldMutator keys are not supported: \n\t' +
+                            unsupported.join(', ') + '.',
+            };
         }
     }
 
-    if (errorMessage) {
-        throw new Error(errorMessage);
+    if ((hotConfig.significantDigits !== null) && (hotConfig.significantDigits !== undefined)) {
+        if (isNaN(parseInt(hotConfig.significantDigits))) {
+            validationMessage.significantDigits = { error: 'significantDigits must be an integer.', };
+        } else {
+            validationMessage.significantDigits = { info: 'The significantDigits parameter is valid.', };
+        }
     }
 
-    return true;
+    return validationMessage;
 }
 
 
 
 function validateHotConfig (hotConfig, callback) {
-    process.nextTick(function () {
-        try {
-            validateHotConfigSync(hotConfig);
-            callback(null);
-
-        } catch (err) {
-            callback(err);
-        } 
-    }) ;
+    process.nextTick(function () { callback(validateHotConfigSync(hotConfig)); }) ;
 }
 
 
 
 function updateLogging (config, loggingConfig) {
-    return merge(config, _.pick(loggingConfig, relevantLoggingConfigFields));
+    return _.merge(_.cloneDeep(config), _.cloneDeep(_.pick(loggingConfig, relevantLoggingConfigFields)));
 }
 
 
-function build (hotConfig, loggingConfig, gtfsConfig, gtfsrtConfig) {
-    return merge(true, 
-                 staticConfig, 
-                 hotConfig, 
-                 _.pick(loggingConfig, relevantLoggingConfigFields),
-                 { gtfsConfig: gtfsConfig, gtfsrtConfig: gtfsrtConfig });
+function build (hotConfig, gtfsConfig, gtfsrtConfig, loggingConfig) {
+    return _.merge( _.cloneDeep(staticConfig) ,
+                    _.cloneDeep(hotConfig) ,
+                    _.cloneDeep({ gtfsConfig: gtfsConfig, gtfsrtConfig: gtfsrtConfig }),
+                    _.cloneDeep(_.pick(loggingConfig, relevantLoggingConfigFields)) );
 }
 
 
@@ -107,5 +107,5 @@ module.exports = {
     validateHotConfig     : validateHotConfig ,
     validateHotConfigSync : validateHotConfigSync ,
     updateLogging         : updateLogging ,
-    build           : build ,
+    build                 : build ,
 } ;

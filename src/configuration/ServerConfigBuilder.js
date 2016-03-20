@@ -5,7 +5,7 @@ var process = require('process') ,
     fs = require('fs') ,
     path = require('path') ,
 
-    merge = require('merge') ,
+    _ = require('lodash') ,
 
     projectRoot = path.join(__dirname, '../../') ,
 
@@ -110,7 +110,7 @@ function validateHotConfigSync (hotConfig) {
 }
 
 function build (hotConfig) {
-    return merge(true, hotConfig, { __hotConfig: hotConfig });
+    return _.cloneDeep(hotConfig);
 }
 
 module.exports = {

@@ -10,7 +10,7 @@ var fs = require('fs') ,
 
     projectRoot = path.join(__dirname, '../../') ,
 
-    configDirPath = path.join(projectRoot, 'config/') ,
+    configDirPath = path.join(projectRoot, '/config/') ,
 
     loggingHotConfigPath = path.join(projectRoot, '/config/logging.json') ,
     serverHotConfigPath = path.join(projectRoot, '/config/server.json') ;
@@ -121,6 +121,7 @@ function getActiveFeedHotConfig (serverHotConfig) {
     ServerEventCreator.emitStartupActiveFeedConfigStatus({
         debug: 'The active feed is set to ' + activeFeed + '.',
     });
+
 
     try {
         var activeFeedConfigJSON = fs.readFileSync(activeFeedHotConfigPath) ;

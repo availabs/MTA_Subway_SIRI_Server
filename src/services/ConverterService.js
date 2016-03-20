@@ -41,7 +41,7 @@ function start (callback) {
     }
 
     try {
-        var converterConfig  = ConfigService.getConverterConfig() ;
+        var converterConfig = ConfigService.getConverterConfig() ;
 
         
         ServerEventCreator.emitConverterServiceStatusUpdate({
@@ -74,6 +74,11 @@ function start (callback) {
             debug: 'ConverterService calling the ConverterStream constructor.' ,
             timestamp: Date.now() ,
         });
+
+
+        if (!converterConfig) {
+            throw new Error('The converter is not configured.');
+        }
 
         converterStream = new ConverterStream(GTFS_FeedHandlerService.getFeedHandler() , 
                                               GTFSRealtime_FeedReaderService.getFeedReader() , 
