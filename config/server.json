@@ -1,0 +1,5 @@
+{
+    "activeFeed": "mta_subway",
+    "daysToKeepLogsBeforeDeleting" : 3,
+    "defaultPortNumber": 16180
+}

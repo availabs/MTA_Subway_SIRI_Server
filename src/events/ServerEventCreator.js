@@ -6,8 +6,16 @@ var eventEmitter = require('./ServerEventEmitter.js') ;
 
 module.exports = {
 
-    emitError : function (payload) {
-        eventEmitter.emit(eventEmitter.eventTypes.ERROR, payload) ;
+    emitStartupLoggingConfigStatus : function (payload) {
+        eventEmitter.emit(eventEmitter.eventTypes.STARTUP_LOGGING_CONFIG_STATUS, payload) ;
+    } ,
+
+    emitStartupServerConfigStatus : function (payload) {
+        eventEmitter.emit(eventEmitter.eventTypes.STARTUP_SERVER_CONFIG_STATUS, payload) ;
+    } ,
+
+    emitStartupActiveFeedConfigStatus : function (payload) {
+        eventEmitter.emit(eventEmitter.eventTypes.STARTUP_ACTIVE_FEED_CONFIG_STATUS, payload) ;
     } ,
 
     emitGTFSFeedUpdateStatus : function (payload) {
@@ -27,11 +35,16 @@ module.exports = {
     } ,
 
     emitConverterServiceStatusUpdate : function (payload) {
-        eventEmitter.emit(eventEmitter.eventTypes.CONVERTER_SERVICE_STATUS_UPDATE, payload) ;
+        eventEmitter.emit(eventEmitter.eventTypes.CONVERTER_SERVICE_STATUS, payload) ;
     } ,
 
     emitConverterConfigUpdateStatus : function (payload) {
         eventEmitter.emit(eventEmitter.eventTypes.CONVERTER_CONFIG_UPDATE_STATUS, payload) ;
     } ,
+
+    emitError : function (payload) {
+        eventEmitter.emit(eventEmitter.eventTypes.ERROR, payload) ;
+    } ,
+
 } ;
 

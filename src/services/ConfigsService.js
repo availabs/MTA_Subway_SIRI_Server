@@ -1,38 +1,306 @@
 'use strict';
 
-var fs      = require('fs')      ,
-    path    = require('path')    ,
-    merge   = require('merge')   ;
+var fs    = require('fs')    ,
+    path  = require('path')  ,
+    merge = require('merge') ,
+    async = require('async') ,
+    _     = require('lodash') ,
 
-var gtfsHotConfigPath = path.join(__dirname, '../../config/GTFS.hot.config.json') ,
-    gtfsHotConfig     = JSON.parse(fs.readFileSync(gtfsHotConfigPath)),
-    gtfsConfig        = require('../../config/GTFS.config') , 
+    projectRoot = path.join(__dirname, '../../') ,
+    configDirPath = path.join(projectRoot, '/config/') ,
+    serverHotConfigPath = path.join(configDirPath, 'server,json') ,
+    loggingHotConfigPath = path.join(configDirPath, 'logging.json') ,
+    
+    utils = require('../configuration/Utils') ,
 
-    gtfsrtHotConfigPath  = path.join(__dirname, '../../config/GTFS-Realtime.hot.config.json') ,
-    gtfsrtHotConfig      = JSON.parse(fs.readFileSync(gtfsrtHotConfigPath)),
-    gtfsrtConfig         = require('../../config/GTFS-Realtime.config') ,
+    hotConfigGetters       = require('../configuration/HotConfigGetters') ,
 
-    converterHotConfigPath  = path.join(__dirname, '../../config/Converter.hot.config.json'),
-    converterHotConfig      = JSON.parse(fs.readFileSync(converterHotConfigPath)),
-    converterConfig         = require('../../config/Converter.config') ,
+    serverConfigBuilder    = require('../configuration/ServerConfigBuilder') ,
+    loggingConfigBuilder   = require('../configuration/LoggingConfigBuilder') ,
+    gtfsConfigBuilder      = require('../configuration/GTFSConfigBuilder') ,
+    gtfsrtConfigBuilder    = require('../configuration/GTFS-RealtimeConfigBuilder') ,
+    converterConfigBuilder = require('../configuration/ConverterConfigBuilder') ,
 
-    //memwatchHotConfigPath  = path.join(__dirname, '../../config/Memwatch.hot.config.json'),
-    //memwatchHotConfig      = JSON.parse(fs.readFileSync(memwatchHotConfigPath)),
-    //memwatchConfig         = require('../../config/Memwatch.config'),
+    validConfiguration ,
 
-    loggingHotConfigPath  = path.join(__dirname, '../../config/Logging.hot.config.json'),
-    loggingHotConfig      = JSON.parse(fs.readFileSync(loggingHotConfigPath)),
-    loggingConfig         = require('../../config/Logging.config') ,
+    serverConfig    = null,
+    serverHotConfig = null,
 
-   
+    loggingConfig    = null,
+    loggingHotConfig = null,
+
+    gtfsConfig    = null,
+    gtfsHotConfig = null,
+
+    gtfsrtConfig    = null,
+    gtfsrtHotConfig = null,
+
+    converterConfig    = null,
+    converterHotConfig = null,
+
     gtfsConfigUpdateListeners      = [] ,
     gtfsrtConfigUpdateListeners    = [] ,
     converterConfigUpdateListeners = [] ,
-    loggingConfigUpdateListeners   = [] ;
+    loggingConfigUpdateListeners   = [] ,
+    serverConfigUpdateListeners    = [] ;
+
+
+
+//Initializer
+(function () {
+
+    var validationMessage ,
+        activeFeedHotConfig ;
+
+    validConfiguration = false;
+
+    serverHotConfig  = hotConfigGetters.getServerHotConfig() ;
+    loggingHotConfig = hotConfigGetters.getLoggingHotConfig() ;
+
+
+    validationMessage = serverConfigBuilder.validateHotConfigSync(serverHotConfig) ;
+    // emit msg
+    if (utils.extractValidationErrorMessages(validationMessage)) { return; }
+    serverConfig = serverConfigBuilder.build(serverHotConfig) ;
+
+
+    validationMessage = loggingConfigBuilder.validateHotConfigSync(loggingHotConfig) ;
+    // emit msg
+    if (utils.extractValidationErrorMessages(validationMessage)) { return; }
+    loggingConfig = loggingConfigBuilder.build(loggingHotConfig, serverConfig) ;
+
+
+    activeFeedHotConfig = hotConfigGetters.getActiveFeedHotConfig(serverHotConfig) ;
+
+    gtfsHotConfig      = activeFeedHotConfig.gtfs;
+    gtfsrtHotConfig    = activeFeedHotConfig.gtfsrt;
+    converterHotConfig = activeFeedHotConfig.converter;
+
+
+    validationMessage = gtfsConfigBuilder.validateHotConfigSync(gtfsHotConfig) ;
+    // emit msg
+    if (utils.extractValidationErrorMessages(validationMessage)) { return; }
+    gtfsConfig = gtfsConfigBuilder.build(gtfsHotConfig, loggingConfig) ;
+
+    validationMessage = gtfsrtConfigBuilder.validateHotConfigSync(gtfsrtHotConfig) ;
+    // emit msg
+    if (utils.extractValidationErrorMessages(validationMessage)) { return; }
+    gtfsrtConfig = gtfsrtConfigBuilder.build(gtfsrtHotConfig) ;
+
+    validationMessage = converterConfigBuilder.validateHotConfigSync(converterHotConfig) ;
+    // emit msg
+    if (utils.extractValidationErrorMessages(validationMessage)) { return; }
+    converterConfig = converterConfigBuilder.build(converterHotConfig, loggingConfig, gtfsConfig, gtfsrtConfig) ;
+
+
+    validConfiguration = true ;
+}());
+
+
+
+function writeFeedConfig (feedName, feedHotConfig, callback) {
+    var filePath = path.join(configDirPath, feedName + '.json') ;
+
+    fs.writeFile(filePath, JSON.stringify(feedHotConfig, null, 4), callback);
+}
+
+
+// use this for reuse
+function updateFeedConfig (newHotConfig, callback) {
+    /* jshint validthis: true */
+    this.configBuilder.validateHotConfig(newHotConfig, function (err) {
+        if (err) { return callback(err); }
+
+        var newFeedConfig ;
+
+        // Update the configs in the components by reference.
+        merge(this.hotConfig, newHotConfig);
+        merge(this.config, this.configBuilder.build(this.hotConfig));
+
+        if (this.configBuilder === converterConfigBuilder) {
+            merge(this.config, { gtfsConfig: gtfsConfig, gtfsrtConfig: gtfsrtConfig });
+        }
+        newFeedConfig = {
+            gtfs      : gtfsHotConfig ,
+            gtfsrt    : gtfsrtHotConfig ,
+            converter : converterHotConfig ,
+        };
+
+        // Write the feed config to disk.
+        writeFeedConfig(serverConfig.activeFeed, newFeedConfig, function (err) {
+            if (err) {
+                return callback(err) ;
+            }
+
+            var listeners = this.updateListeners.map(function (listener) { 
+                               return function (cb) { listener(newHotConfig, cb); } ;
+                            });
+
+            async.series(listeners, callback);
+        });
+    });
+} 
+
 
 
 
 var api = {
+
+
+    getServerConfig : function () {
+        return serverConfig;
+    },
+
+    getServerHotConfig : function () {
+        return serverHotConfig;
+    },
+
+    updateServerConfig : function (newHotConfig, callback) {
+        serverConfigBuilder.validateHotConfig(newHotConfig, function (validationMessage) {
+            
+            var errMsgs = utils.extractValidationErrorMessages(validationMessage),
+                activeFeedChanged,
+                aFHC;
+
+            if (errMsgs) { 
+                return callback(new Error(JSON.stringify(errMsgs, null, 4))); 
+            }
+        
+            activeFeedChanged = (newHotConfig.activeFeed !== serverHotConfig.activeFeed);
+
+            aFHC = hotConfigGetters.getActiveFeedHotConfig(serverHotConfig) ;
+
+            gtfsConfigBuilder.validateHotConfig(aFHC.gtfs, function (validationMsg) {
+                var errMsgs = utils.extractValidationErrorMessages(validationMsg);
+
+                if (errMsgs) { 
+                    return callback(new Error(JSON.stringify(errMsgs, null, 4))); 
+                }
+
+                gtfsrtConfigBuilder.validateHotConfig(aFHC.gtfsrt, function (validationMsg) {
+                    var errMsgs = utils.extractValidationErrorMessages(validationMsg);
+
+                    if (errMsgs) { 
+                        return callback(new Error(JSON.stringify(errMsgs, null, 4))); 
+                    }
+
+                    converterConfigBuilder.validateHotConfig(aFHC.converter, function (validationMsg) {
+                        var errMsgs = utils.extractValidationErrorMessages(validationMsg) ;
+
+                        if (errMsgs) { 
+                            return callback(new Error(JSON.stringify(errMsgs, null, 4))); 
+                        }
+
+                        fs.writeFile(serverHotConfigPath, JSON.stringify(newHotConfig, null, 4), function (err) {
+                            if (err) { return callback(err) ; } 
+
+                            var listeners;
+
+                            merge(serverHotConfig, newHotConfig);
+                            merge(gtfsHotConfig, aFHC.gtfs);
+                            merge(gtfsrtHotConfig, aFHC.gtfsrt);
+                            merge(converterHotConfig, aFHC.converter);
+
+                            merge(serverConfig, serverConfigBuilder(serverHotConfig));
+                            merge(loggingHotConfig, loggingConfigBuilder(loggingHotConfig));
+                            merge(gtfsConfig, gtfsConfigBuilder(gtfsHotConfig));
+                            merge(gtfsrtConfig, gtfsrtConfigBuilder(gtfsrtHotConfig));
+                            merge(converterConfig, converterConfigBuilder(converterHotConfig));
+
+                            listeners = serverConfigUpdateListeners.map(function (listener) { 
+                                           return function (cb) { listener(newHotConfig, cb); } ;
+                                        });
+
+                            return async.series(listeners, callback);
+                        });
+                    });
+                });
+            });
+        });
+    } ,
+
+    addServerConfigUpdateListener : function (listener) {
+        if ((typeof listener) === "function") {
+            serverConfigUpdateListeners.push(listener);
+        } else {
+            throw new Error('Listeners must be functions..');
+        }
+    },
+
+    removeServerConfigUpdateListener : function (listener) {
+        for (var i = 0; i < serverConfigUpdateListeners.length; ++i) {
+            if (serverConfigUpdateListeners[i] === listener) {
+                serverConfigUpdateListeners.splice(i, 1);
+                return;
+            }
+        }
+    },
+
+
+    getLoggingConfig : function () {
+        return loggingConfig;
+    },
+
+    getLoggingHotConfig : function () {
+        return loggingHotConfig;
+    },
+
+    updateLoggingConfig : function (newHotConfig, callback) {
+
+        if (!newHotConfig) { callback(new Error('undefined new hot config.')); }
+
+        loggingConfigBuilder.validateHotConfig(newHotConfig, function (validationMessage) {
+                
+            var errMsgs = utils.extractValidationErrorMessages(validationMessage);
+
+            if (errMsgs) { 
+                return callback(new Error(JSON.stringify(errMsgs, null, 4))); 
+            }
+
+               
+            fs.writeFile(loggingHotConfigPath, JSON.stringify(loggingHotConfig, null, 4), function (err) {
+                if (err) { return callback(err); }
+
+                var oldHotConfigKeys = _.keys(loggingHotConfig) ,
+                    newHotConfigKeys = _.keys(newHotConfig) ,
+                    omittedKeys      = _.difference(oldHotConfigKeys, newHotConfigKeys) ,
+                    i ;
+
+
+                for ( i = 0; i < newHotConfigKeys.length; ++i) {
+                    loggingHotConfig[newHotConfigKeys[i]] = !!(newHotConfig[newHotConfigKeys[i]]) ;
+                }
+                    
+                for ( i = 0; i < omittedKeys.length; ++i) {
+                    loggingHotConfig[omittedKeys[i]] = false;
+                }
+ 
+                merge(loggingConfig, loggingConfigBuilder.build(loggingHotConfig)) ;
+
+                gtfsConfigBuilder.updateLogging(gtfsConfig, loggingConfig);
+                converterConfigBuilder.updateLogging(converterConfig, loggingConfig);
+            });
+        });
+    } ,
+
+    addLoggingConfigUpdateListener : function (listener) {
+        if ((typeof listener) === "function") {
+            loggingConfigUpdateListeners.push(listener);
+        } else {
+            throw new Error('Listeners must be functions..');
+        }
+    },
+
+    removeLoggingConfigUpdateListener : function (listener) {
+        for (var i = 0; i < loggingConfigUpdateListeners.length; ++i) {
+            if (loggingConfigUpdateListeners[i] === listener) {
+                loggingConfigUpdateListeners.splice(i, 1);
+                return;
+            }
+        }
+    },
+
+
 
     getGTFSConfig : function () {
         return gtfsConfig;
@@ -42,24 +310,6 @@ var api = {
         return gtfsHotConfig;
     },
 
-    updateGTFSConfig : function (newHotConfig, callback) {
-        gtfsHotConfig = newHotConfig;
-
-        merge(gtfsConfig, gtfsHotConfig);
-
-        fs.writeFile(gtfsHotConfigPath, JSON.stringify(newHotConfig, null, '    ') + '\n', function (err) {
-            if (err) {
-                callback(err);
-                return;
-            }
-
-            for (var i = 0; i < gtfsConfigUpdateListeners.length; ++i) {
-                gtfsConfigUpdateListeners[i](gtfsConfig);
-            }
-            callback(null);
-        });
-    },
-
     addGTFSConfigUpdateListener : function (listener) {
         if ((typeof listener) === "function") {
             gtfsConfigUpdateListeners.push(listener);
@@ -67,6 +317,12 @@ var api = {
             throw new Error('Listeners must be functions..');
         }
     },
+
+    updateGTFSConfig : updateFeedConfig.bind({ 
+        configBuilder   : gtfsConfigBuilder,
+        hotConfig       : gtfsHotConfig,
+        updateListeners : gtfsConfigUpdateListeners ,
+    }),
 
     removeGTFSConfigUpdateListener : function (listener) {
         for (var i = 0; i < gtfsConfigUpdateListeners.length; ++i) {
@@ -87,44 +343,11 @@ var api = {
         return gtfsrtHotConfig;
     },
 
-    // The caller of this function must handle creating 
-    // the complete feedURL which includes the API key.
-    updateGTFSRealtimeConfig : function (newHotConfig, callback) {
-        
-        var updatedFields = Object.keys(newHotConfig),
-            i;
-
-        for ( i = 0; i < updatedFields.length; ++i ) {
-            gtfsrtHotConfig[updatedFields[i]] = newHotConfig[updatedFields[i]];
-        }
-            
-        merge(gtfsrtConfig, newHotConfig);
-
-        // Update the path to the protofile as there may have been a new file uploaded.
-        gtfsrtConfig.protofilePath = path.join(gtfsrtConfig.protofileDirPath, gtfsrtConfig.protofileName);
-
-        fs.writeFile(gtfsrtHotConfigPath, JSON.stringify(newHotConfig, null, '    ') + '\n', function (err) {
-            var listener_err = null;
-
-            // This function is used as a callback sent to the listeners.
-            // It collects the errors they may send back.
-            function errorChecker (e) { listener_err = e; }
-
-            if (err) {
-                callback(err);
-                return;
-            }
-            
-            for (var i = 0; i < gtfsrtConfigUpdateListeners.length; ++i) {
-                gtfsrtConfigUpdateListeners[i](gtfsrtConfig, errorChecker);
-
-                // If the listener reported an error, break the loop.
-                if (listener_err) { break; }
-            }
-
-            callback(listener_err);
-        });
-    },
+    updateGTFSRealtimeConfig : updateFeedConfig.bind({ 
+        configBuilder   : gtfsrtConfigBuilder,
+        hotConfig       : gtfsrtHotConfig,
+        updateListeners : gtfsrtConfigUpdateListeners ,
+    }),
 
     // listener will be passed two arguments:
     //      1. a config obj 
@@ -149,9 +372,6 @@ var api = {
 
 
     getConverterConfig : function () {
-        converterConfig.gtfsConfig = gtfsConfig;
-        converterConfig.gtfsrtConfig = gtfsrtConfig;
-
         return converterConfig;
     },
 
@@ -159,23 +379,11 @@ var api = {
         return converterHotConfig;
     },
 
-    updateConverterConfig : function (newHotConfig, callback) {
-        converterHotConfig = newHotConfig;
-
-        merge(converterConfig, newHotConfig);
-
-        fs.writeFile(converterHotConfigPath, JSON.stringify(newHotConfig, null, '    ') + '\n', function (err) {
-            if (err) {
-                callback(err);
-                return;
-            }
-
-            for (var i = 0; i < converterConfigUpdateListeners.length; ++i) {
-                converterConfigUpdateListeners[i](converterConfig);
-            }
-            callback(null);
-        });
-    },
+    updateConverterConfig : updateFeedConfig.bind({ 
+        configBuilder   : converterConfigBuilder,
+        hotConfig       : converterHotConfig,
+        updateListeners : converterConfigUpdateListeners ,
+    }),
 
 
     addConverterConfigUpdateListener : function (listener) {
@@ -195,62 +403,11 @@ var api = {
         }
     },
 
+
     removeTrainTrackerInitialStateFromConverterConfig : function () {
         converterConfig.trainTrackerInitialState = null; // Let GC take care of this.
     } ,
-
-    //getMemwatchConfig : function () {
-        //return memwatchConfig;
-    //},
-
-
-    getLoggingConfig : function () {
-        return loggingConfig;
-    },
-
-    getLoggingHotConfig : function () {
-        return loggingHotConfig;
-    },
-
-    updateLoggingConfig : function (newHotConfig, callback) {
-        loggingHotConfig = newHotConfig;
-
-        merge(loggingConfig, newHotConfig);
-
-        fs.writeFile(loggingHotConfigPath, JSON.stringify(newHotConfig, null, '    ') + '\n', function (err) {
-            if (err) {
-                callback(err);
-                return;
-            }
-
-            for (var i = 0; i < loggingConfigUpdateListeners.length; ++i) {
-                loggingConfigUpdateListeners[i](loggingConfig);
-            }
-            callback(null);
-        });
-    },
-
-    addLoggingConfigUpdateListener : function (listener) {
-        if ((typeof listener) === "function") {
-            loggingConfigUpdateListeners.push(listener);
-        } else {
-            throw new Error('Listeners must be functions..');
-        }
-    },
-
-    removeLoggingConfigUpdateListener : function (listener) {
-        for (var i = 0; i < loggingConfigUpdateListeners.length; ++i) {
-            if (loggingConfigUpdateListeners[i] === listener) {
-                loggingConfigUpdateListeners.splice(i, 1);
-                return;
-            }
-        }
-    },
-
-
-
 };
 
 
 module.exports = api;
-

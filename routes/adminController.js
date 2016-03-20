@@ -24,7 +24,7 @@ var ConfigsService     = require('../src/services/ConfigsService') ,
     GTFSRealtime_FeedService  = require('../src/services/GTFSRealtime_FeedReaderService'),
 
     gtfsMulterStorage = multer.diskStorage({
-        destination : ConfigsService.getGTFSConfig().tmpDirPath,
+        destination : ConfigsService.getGTFSConfig().workDirPath,
         filename    : function (req, file, cb) {
             var feedDataZipFileName = ConfigsService.getGTFSConfig().feedDataZipFileName;
             cb(null, feedDataZipFileName);
@@ -144,7 +144,7 @@ router.post('/update/GTFS/config', function(req, res) {
 
                     gtfsConfig = ConfigsService.getGTFSConfig();
 
-                    rmdir(gtfsConfig.tmpDirPath, function (err) {
+                    rmdir(gtfsConfig.workDirPath, function (err) {
                         if (err) {
                             eventCreator.emitError({ error: err });
                             errorMessage += 

@@ -10,8 +10,8 @@ var fs       = require('fs')   ,
     //execFile = require('child_process').execFile ,
     fork = require('child_process').fork ,
 
-    gtfsConfig         = require('../config/GTFS.config.js') ,
-    gtfsConfigFilePath = gtfsConfig.gtfsConfigFilePath       ,
+    ConfigsService = require('../src/services/ConfigsService') ,
+    gtfsConfig = ConfigsService.getGTFSConfig(), 
 
     scriptRelPath = '../node_modules/GTFS_Toolkit/bin/updateGTFSData.js' ,
 
@@ -62,7 +62,7 @@ if (source === 'file') {
 }
 
 
-var childProcess = fork(scriptAbsPath, [gtfsConfigFilePath, source]);
+var childProcess = fork(scriptAbsPath, [gtfsConfig.gtfsConfigFilePath, source]);
 
 //childProcess.on('message', function (m) { console.log(m); });
 

@@ -1,7 +1,0 @@
-{
-    "feedURL"       : "Complete URL endpoint for the feed. Include the API key, if one is required.",
-    "readInterval"  : 30,
-    "retryInterval" : 3,
-    "maxNumRetries" : 7,
-    "protofileName" : "nyct-subway.proto"
-}

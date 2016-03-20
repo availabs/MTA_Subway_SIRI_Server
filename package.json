@@ -22,14 +22,17 @@
   "license": "",
   "dependencies": {
     "MTA_Subway_GTFS-Realtime_to_SIRI_Converter": "https://github.com/availabs/MTA_Subway_GTFS-Realtime_to_SIRI_Converter/tarball/master",
+    "async": "^2.0.0-rc.1",
     "body-parser": "^1.14.2",
     "express": "^4.13.3",
+    "lodash": "^4.6.1",
     "merge": "^1.2.0",
     "morgan": "^1.6.1",
     "multer": "^1.1.0",
     "rmdir": "^1.1.0",
     "simple-statistics": "^1.0.1",
     "toobusy-js": "^0.4.2",
+    "valid-url": "^1.0.9",
     "winston": "^2.1.1",
     "winston-daily-rotate-file": "^1.0.1"
   },

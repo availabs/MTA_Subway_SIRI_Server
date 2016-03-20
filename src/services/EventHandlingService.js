@@ -12,6 +12,20 @@ var SystemStatusService = require('./SystemStatusService') ,
 
 
 
+function handleStartupLoggingConfigStatus (event) {
+    SystemStatusService.updateStartupLoggingConfigStatus(event);
+    console.log(event) ;
+}
+
+function handleStartupServerConfigStatus (event) {
+    SystemStatusService.updateStartupServerConfigStatus(event);
+}
+
+function handleStartupActiveFeedConfigStatus (event) {
+    SystemStatusService.updateStartupActiveFeedConfigStatus(event);
+}
+
+
 //==================== GTFS events ====================
 function handleGTFSFeedConstructionStatusUpdate (constructionStatusUpdate) {
     SystemStatusService.logGTFSFeedHandlerConstructionEvent(constructionStatusUpdate) ;
@@ -102,7 +116,6 @@ function handleSystemError (errorEvent) {
 }
 
 
-
 gtfsToolkitEventEmitter.on(gtfsToolkitEventEmitter.eventTypes.FEED_HANDLER_CONSTRUCTION_STATUS,
                            handleGTFSFeedConstructionStatusUpdate) ;
 
@@ -149,6 +162,13 @@ converterEventEmitter.on(converterEventEmitter.eventTypes.TRAIN_TRACKING_ERROR,
 
 
 
+serverEventEmitter.on(serverEventEmitter.eventTypes.STARTUP_LOGGING_CONFIG_STATUS,
+                     handleStartupLoggingConfigStatus) ; 
+serverEventEmitter.on(serverEventEmitter.eventTypes.STARTUP_SERVER_CONFIG_STATUS,
+                     handleStartupServerConfigStatus) ; 
+serverEventEmitter.on(serverEventEmitter.eventTypes.STARTUP_ACTIVE_FEED_CONFIG_STATUS,
+                     handleStartupActiveFeedConfigStatus) ; 
+
 serverEventEmitter.on(serverEventEmitter.eventTypes.GTFS_FEED_UPDATE_STATUS,
                      handleGTFSFeedUpdateStatus) ; 
 serverEventEmitter.on(serverEventEmitter.eventTypes.GTFS_REALTIME_FEED_UPDATE_STATUS,
@@ -160,69 +180,7 @@ serverEventEmitter.on(serverEventEmitter.eventTypes.CONVERTER_SERVICE_STOPPED,
                      handleConverterServiceStopped) ; 
 serverEventEmitter.on(serverEventEmitter.eventTypes.CONVERTER_CONFIG_UPDATE_STATUS,
                      handleConverterConfigUpdateStatus) ; 
-serverEventEmitter.on(serverEventEmitter.eventTypes.CONVERTER_SERVICE_STATUS_UPDATE,
+serverEventEmitter.on(serverEventEmitter.eventTypes.CONVERTER_SERVICE_STATUS,
                      handleConverterServiceStatusUpdate) ; 
-
-
-
-//module.exports = {
-    //registerGTFSToolkitEventListeners   : registerGTFSToolkitEventListeners ,
-    //deregisterGTFSToolkitEventListeners : deregisterGTFSToolkitEventListeners ,
-
-    //registerGTFSRealtimeToolkitEventListeners   : registerGTFSRealtimeToolkitEventListeners ,
-    //deregisterGTFSRealtimeToolkitEventListeners : deregisterGTFSRealtimeToolkitEventListeners ,
-
-    //registerConverterEventListeners   : registerConverterEventListeners ,
-    //deregisterConverterEventListeners : deregisterConverterEventListeners ,
-//} ;
-
-
-//function deregisterGTFSToolkitEventListeners () {
-    //gtfsToolkitEventEmitter.removeListener(gtfsToolkitEventEmitter.eventTypes.FEED_UPDATE_STATUS,
-                               //handleGTFSFeedUpdateStatus) ;
-
-    //gtfsToolkitEventEmitter.removeListener(gtfsToolkitEventEmitter.eventTypes.DATA_ANOMALY, 
-                               //handleDataAnomaly) ;
-
-    //gtfsToolkitEventEmitter.removeListener(gtfsToolkitEventEmitter.eventTypes.ERROR, 
-                               //handleSystemError) ;
-//}
-
-
-//function deregisterGTFSRealtimeToolkitEventListeners () {
-    //gtfsrtToolkitEventEmitter.removeListener(gtfsrtToolkitEventEmitter.eventTypes.FEED_READER_STARTED,
-                                             //handleGTFSrtFeedReaderStarted) ;
-    //gtfsrtToolkitEventEmitter.removeListener(gtfsrtToolkitEventEmitter.eventTypes.FEED_READER_STOPPED,
-                                             //handleGTFSrtFeedReaderStopped) ;
-
-    //gtfsrtToolkitEventEmitter.removeListener(gtfsrtToolkitEventEmitter.eventTypes.FEED_READER_SUCCESSFUL_READ,
-                                             //handleGTFSrtFeedReaderSuccessfulRead) ;
-
-    //gtfsrtToolkitEventEmitter.removeListener(gtfsrtToolkitEventEmitter.eventTypes.FEED_UPDATE_STATUS,
-                                             //handleGTFSrtFeedUpdateStatus) ;
-
-    //gtfsrtToolkitEventEmitter.removeListener(gtfsrtToolkitEventEmitter.eventTypes.DATA_ANOMALY, 
-                                             //handleDataAnomaly) ;
-
-    //gtfsrtToolkitEventEmitter.removeListener(gtfsrtToolkitEventEmitter.eventTypes.ERROR, 
-                                             //handleSystemError) ;
-//}
-
-
-//function deregisterConverterEventListeners () {
-    //converterEventEmitter.removeListener(converterEventEmitter.eventTypes.LOCATIONS_UPDATE, 
-                                    //handleTrainLocationUpdateEvent);
-    //converterEventEmitter.removeListener(converterEventEmitter.eventTypes.TRAIN_TRACKING_STATS_UPDATE, 
-                                    //handleTrainTrackStatsUpdateEvent);
-    //converterEventEmitter.removeListener(converterEventEmitter.eventTypes.UNSCHEDULED_TRIPS_UPDATE, 
-                                    //handleUnscheduleTripsUpdateEvent);
-    //converterEventEmitter.removeListener(converterEventEmitter.eventTypes.NO_SPATIAL_DATA_TRIPS_UPDATE, 
-                                    //handleNoSpatialDataTripsUpdateEvent);
-    //converterEventEmitter.removeListener(converterEventEmitter.eventTypes.ERROR_UPDATE, 
-                                    //handleTrainTrackingError);
-//}
-
-
-
 
 

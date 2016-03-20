@@ -1,8 +1,0 @@
-{
-    "feedURL": "http://datamine.mta.info/mta_esi.php?&key=5dadd04378cc60cc4ae447da5756ddaa",
-    "readInterval": 30,
-    "retryInterval": 4,
-    "maxNumRetries": 2,
-    "protofileName": "nyct-subway.proto",
-    "use_last_stoptime_update_as_destination" : true
-}

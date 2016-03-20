@@ -2,9 +2,6 @@
 
 'use strict';
 
-// We need to make sure that the EventHandling Service is running.
-require('./src/services/EventHandlingService.js') ;
-
 
 
 var fs         = require('fs')          , 
@@ -12,10 +9,21 @@ var fs         = require('fs')          ,
     bodyParser = require('body-parser') ,
     morgan     = require('morgan')      ;
 
+
+
+// We need to make sure that the EventHandling Service is running.
+// If is not required by any other modules, so we need to require it
+// here to make sure the code that it contains is executed.
+require('./src/services/EventHandlingService.js') ;
+
+
+var serverConfig = require('./src/services/ConfigsService').getServerConfig() ;
+
+
 var app = express() ;
 
 var router = express.Router(),
-    port   = process.env.PORT || 16181;
+    port   = process.env.PORT || (serverConfig && serverConfig.defaultPortNumber) || 16181;
 
 require('toobusy-js').maxLag(200); //Set toobusy maximum lag (ms).
 
@@ -47,14 +55,14 @@ app.use(morgan('combined', {stream: accessLogStream}));
 router.get('/', function(req, res) {
     res.json( { 
         routes: { 
-            '/api/siri/vehicle-monitoring.json' : 'The SIRI VehicleMonitoring ("SIRI VM") call '            +
-                                    'allows the developer to request information about '      +
-                                    'one, some, or all trains monitored by the '              +
-                                    'NYCT Subway System.'                                     ,
+            '/api/siri/vehicle-monitoring.json' : 'The SIRI VehicleMonitoring ("SIRI VM") call ' +
+                                    'allows the developer to request information about ' +
+                                    'one, some, or all trains monitored by the ' +
+                                    'NYCT Subway System.' ,
 
-            '/api/siri/stop-monitoring.json'    : 'The SIRI StopMonitoring ("SIRI SM") call allows the '    +
-                                    'developer to request information about the vehicles '    +
-                                    'serving a particular stop.'                              ,
+            '/api/siri/stop-monitoring.json' : 'The SIRI StopMonitoring ("SIRI SM") call allows the ' +
+                                    'developer to request information about the vehicles ' +
+                                    'serving a particular stop.' ,
         } 
     } );   
 });
@@ -73,4 +81,4 @@ app.use('/console', express.static('console'));
 // START THE SERVER
 // =============================================================================
 app.listen(port);
-console.log('Magic happens on port ' + port);
+console.log('The server is listening on port ' + port);

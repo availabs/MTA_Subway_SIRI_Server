@@ -5,6 +5,14 @@ var arrayMaxLength = 25;
 
 
 var systemStatus = {
+
+        systemStartupStatus : {
+            startupLog: [] ,
+            loggingConfigStatus: null,
+            converterConfigStatus: null,
+            activeFeedConfigStatus: null,
+        },
+
         gtfs : {
             handlerConstructionStatusLog : [],
             lastFeedUpdateLog : [] ,
@@ -33,9 +41,36 @@ var systemStatus = {
 } ;
 
 
+
+
+function logStartupEvent (event) {
+    var log = systemStatus.systemStartupStatus.startupLog;
+    
+    log.push(event) ;    
+    sortDescendingByTimestamp(log) ;
+}
+
+function updateStartupLoggingConfigStatus (event) {
+    logStartupEvent(event);
+    systemStatus.systemStartupStatus.loggingConfigStatus = event; 
+}
+
+function updateStartupServerConfigStatus (event) {
+    logStartupEvent(event);
+    systemStatus.systemStartupStatus.converterConfigStatus = event; 
+}
+
+function updateStartupActiveFeedConfigStatus (event) {
+    logStartupEvent(event);
+    systemStatus.systemStartupStatus.activeFeedConfigStatus = event; 
+}
+
+
+
 function getSystemStatus () {
     return systemStatus ;
 }
+
 
 
 function resetGTFSFeedHandlerConstructionLog () {
@@ -47,7 +82,6 @@ function logGTFSFeedHandlerConstructionEvent (event) {
     sortDescendingByTimestamp(systemStatus.gtfs.handlerConstructionStatusLog) ;
 }
 
-
 function resetGTFSFeedUpdateLog () { 
     systemStatus.gtfs.lastFeedUpdateLog.length = 0; 
 }
@@ -56,7 +90,6 @@ function addEventToGTFSFeedUpdateLog (event) {
     systemStatus.gtfs.lastFeedUpdateLog.push(event) ;
     sortDescendingByTimestamp(systemStatus.gtfs.lastFeedUpdateLog);
 }
-
 
 function addErrorToGTFSStatus (error) {
     systemStatus.gtfs.recentErrors.push(error) ;
@@ -76,7 +109,6 @@ function logGTFSrtFeedReaderStoppedEvent (event) {
 function logGTFSrtFeedReaderSuccessfulReadEvent (event) {
     systemStatus.gtfsrt.lastSuccessfulReadEvent = event ;
 }
-
 
 function resetGTFSRealtimeConfigUpdateLog () { 
     systemStatus.gtfsrt.lastConfigUpdateLog.length = 0; 
@@ -153,7 +185,13 @@ function sortDescendingByTimestamp (arr) {
 }
 
 
+
 module.exports = {
+
+    updateStartupLoggingConfigStatus       : updateStartupLoggingConfigStatus ,
+    updateStartupServerConfigStatus        : updateStartupServerConfigStatus ,
+    updateStartupActiveFeedConfigStatus    : updateStartupActiveFeedConfigStatus ,
+
     getSystemStatus                        : getSystemStatus ,
 
     resetGTFSFeedHandlerConstructionLog    : resetGTFSFeedHandlerConstructionLog ,

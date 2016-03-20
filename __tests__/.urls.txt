@@ -1,2 +1,2 @@
-http://localhost:16180/api/siri/vehicle-monitoring.json/
-http://localhost:16180/api/siri/vehicle-monitoring.json?VehicleMonitoringDetailLevel=calls
+http://localhost:16181/api/siri/vehicle-monitoring.json/
+http://localhost:16181/api/siri/vehicle-monitoring.json?VehicleMonitoringDetailLevel=calls

@@ -1,4 +1,5 @@
 {
+    "logIndexingStatistics": true,
     "logDataAnomalies": true,
     "logErrors": true,
     "logTrainLocations": true,
