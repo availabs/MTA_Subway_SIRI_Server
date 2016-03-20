@@ -2,24 +2,28 @@
 
 
 var winston = require('winston') ,
-    DailyRotateFile = require('winston-daily-rotate-file') ;
+    DailyRotateFile = require('winston-daily-rotate-file') ,
+
+    mkdirp = require('mkdirp') ;
+
 
 var ConfigsService = require('./ConfigsService') ,
 
-    //gtfsrtConfig    = ConfigsService.getGTFSRealtimeConfig(),
+    loggingConfig = ConfigsService.getLoggingConfig() ,
 
-    loggingConfig = ConfigsService.getLoggingConfig() ;
+    logsDir = loggingConfig.logsDir;
+
 
     //memwatchConfig  = ConfigsService.getMemwatchConfig();
 
+
+mkdirp.sync(logsDir) ;
 
 
 var binaryLoggingLevels = {
         off : 0 ,
         on  : 1 ,
     } ;
-
-
 
 
 

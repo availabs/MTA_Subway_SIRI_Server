@@ -99,10 +99,10 @@ function handleRequest (req, res, monitoringCallType, extension) {
         caseInsensitiveQuery = req.query;
     }
 
-    if ( (monitoringCallType === 'StopMonitoringResponse') && (! caseInsensitiveQuery.monitoringref )) {
-        res.status(422).send('The MonitoringRef parameter is required.');
-        return;
-    }
+    //if ( (monitoringCallType === 'StopMonitoringResponse') && (! caseInsensitiveQuery.monitoringref )) {
+        //res.status(422).send('The MonitoringRef parameter is required.');
+        //return;
+    //}
 
     if (monitoringCallType === 'StopMonitoringResponse') {
         try {

@@ -4,11 +4,13 @@
 
 
 
-var fs         = require('fs')          , 
-    express    = require('express')     ,
-    bodyParser = require('body-parser') ,
-    morgan     = require('morgan')      ;
+var express    = require('express')     ,
+    bodyParser = require('body-parser') ;
 
+
+//The following two are for the server access log.
+//var fs         = require('fs')          , 
+    //morgan     = require('morgan')      ;
 
 
 // We need to make sure that the EventHandling Service is running.
@@ -43,10 +45,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 // create a write stream (in append mode)
-var accessLogStream = fs.createWriteStream(__dirname + '/logs/server-access.log', {flags: 'a'});
+//var accessLogStream = fs.createWriteStream(__dirname + '/logs/server-access.log', {flags: 'a'});
 
 // setup the logger
-app.use(morgan('combined', {stream: accessLogStream}));
+//app.use(morgan('combined', {stream: accessLogStream}));
 
 
 // ROUTES 

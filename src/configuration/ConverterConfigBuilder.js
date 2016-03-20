@@ -71,7 +71,7 @@ function validateHotConfigSync (hotConfig) {
     }
 
     if ((hotConfig.significantDigits !== null) && (hotConfig.significantDigits !== undefined)) {
-        if (isNaN(parseInt(hotConfig.significantDigits))) {
+        if (isNaN(parseInt(hotConfig.callDistanceAlongRouteNumOfDigits))) {
             validationMessage.significantDigits = { error: 'significantDigits must be an integer.', };
         } else {
             validationMessage.significantDigits = { info: 'The significantDigits parameter is valid.', };
@@ -95,10 +95,22 @@ function updateLogging (config, loggingConfig) {
 
 
 function build (hotConfig, gtfsConfig, gtfsrtConfig, loggingConfig) {
-    return _.merge( _.cloneDeep(staticConfig) ,
-                    _.cloneDeep(hotConfig) ,
-                    _.cloneDeep({ gtfsConfig: gtfsConfig, gtfsrtConfig: gtfsrtConfig }),
-                    _.cloneDeep(_.pick(loggingConfig, relevantLoggingConfigFields)) );
+
+    var newConfig =  _.merge( _.cloneDeep(staticConfig) ,
+                     _.cloneDeep(hotConfig) ,
+                     _.cloneDeep({ gtfsConfig: gtfsConfig, gtfsrtConfig: gtfsrtConfig }),
+                     _.cloneDeep(_.pick(loggingConfig, relevantLoggingConfigFields)) );
+
+
+    if (newConfig && newConfig.fieldMutators) {
+        _.forEach(newConfig.fieldMutators, function (pair) {
+            if (Array.isArray(pair) && (pair.length)) {
+                pair[0] = new RegExp(pair[0]);
+            }
+        });
+    }
+
+    return newConfig;
 }
 
 

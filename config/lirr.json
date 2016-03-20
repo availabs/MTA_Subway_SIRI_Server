@@ -18,6 +18,7 @@
             "OriginRef": [".", "LIRR_$&"],
             "DestinationRef": [".", "LIRR_$&"],
             "StopPointRef": [".", "LIRR_$&"]
-        } 
+        },
+        "callDistanceAlongRouteNumOfDigits": 2
     }
 }

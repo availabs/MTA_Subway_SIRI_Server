@@ -55,6 +55,8 @@ function build (hotConfig, serverConfig) {
     var activeFeed   = serverConfig.activeFeed;
 
     var paths = {
+        logsDir:                     logsDir ,
+
         indexingStatisticsLogPath:   path.join(logsDir, activeFeed + '_spatialDataIndexingStats.txt') ,
 
         dataAnomaliesLogPath:        path.join(logsDir, activeFeed + '_dataAnomalies.log') ,
