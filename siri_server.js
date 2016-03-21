@@ -29,8 +29,6 @@ var router = express.Router(),
 
 require('toobusy-js').maxLag(200); //Set toobusy maximum lag (ms).
 
-// fire up memwatch
-//require('./src/services/MemoryMonitoringService');
 
 
 // ROUTE HANDLERS

@@ -77,8 +77,6 @@ function build (hotConfig, serverConfig) {
 
         trainTrackingErrorsLogPath:  path.join(logsDir, activeFeed + '_trainTrackingErrors.log'),
 
-        memwatchLogPath:             path.join(logsDir, 'memwatch.log') ,
-
         serverAccessLogPath:         path.join(logsDir, activeFeed + '_serverAccess.log') ,
     } ;
  

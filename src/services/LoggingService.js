@@ -13,7 +13,6 @@ var ConfigsService = require('./ConfigsService') ,
 
     logsDir = loggingConfig.logsDir;
 
-
     //memwatchConfig  = ConfigsService.getMemwatchConfig();
 
 
@@ -152,16 +151,6 @@ var trainTrackingErrorLogger = new (winston.Logger)({
 
 
 
-//winston.loggers.add('memwatch', {
-    //file: {
-        //filename : memwatchConfig.logFilePath,
-        //level    : 'silly',
-        //colorize : false,
-        //label    : 'Memory Usage',
-    //}
-//}).remove(winston.transports.Console);
-
-
 function metaDataStringifier (options) {
     return JSON.stringify(options.payload);
 }
@@ -189,6 +178,8 @@ function loggerArgResolver(logger) {
 }
 
 
+//function logRoller
+
 
 module.exports = {
     logDataAnomaly        : loggerArgResolver(dataAnomalyLogger) ,
@@ -199,5 +190,4 @@ module.exports = {
     logUnscheduledTrips   : loggerArgResolver(unscheduledTripsLogger) ,
     logNoSpatialDataTrips : loggerArgResolver(noSpatialDataTripsLogger) ,
     logTrainTrackingError : loggerArgResolver(trainTrackingErrorLogger) ,
-
 } ;
