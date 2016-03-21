@@ -1,0 +1,25 @@
+{
+    "gtfs": {
+        "feedURL": "http://transitfeeds.com/p/mta/79/latest/download",
+        "tripKeyMutator": [".{9}", ""],
+        "indexStopTimes": false
+    },
+
+    "gtfsrt": {
+        "feedURL": "http://datamine.mta.info/mta_esi.php?&key=5dadd04378cc60cc4ae447da5756ddaa&feed_id=11",
+        "readInterval": 30,
+        "retryInterval": 4,
+        "maxNumRetries": 2,
+        "protofileName": "nyct-subway.proto",
+        "useLastStoptimeUpdateAsDestination": true
+    },
+
+    "converter": {
+        "fieldMutators": {
+            "OriginRef": [".", "MTA_$&"],
+            "DestinationRef": [".", "MTA_$&"],
+            "StopPointRef": [".", "MTA_$&"]
+        },
+        "callDistanceAlongRouteNumOfDigits": 2
+    }
+}

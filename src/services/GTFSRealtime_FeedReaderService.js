@@ -15,12 +15,11 @@ function start () {
 
     var feedReaderConfig = ConfigsService.getGTFSRealtimeConfig() ;
 
-
-    feedReader = new GTFSrtFeedReader(feedReaderConfig) ;
-
-    if (!feedReader.feedURL) {
+    if (!feedReaderConfig.feedURL) {
         throw new Error('No GTFS-Realtime configuration.');
     }
+
+    feedReader = new GTFSrtFeedReader(feedReaderConfig) ;
 
     ConfigsService.addGTFSRealtimeConfigUpdateListener(feedReader.updateConfig); 
 } 
