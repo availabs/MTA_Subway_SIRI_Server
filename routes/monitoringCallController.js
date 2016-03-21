@@ -20,7 +20,6 @@ function sendReponse (res, contentType, error, callResponse) {
     }
 
     res.writeHead(200, {
-        //'Content-Length': callResponse.length,
         'Content-Length': callResponse.toString().length,
         'Content-Type'  : contentType,
     });
@@ -99,10 +98,6 @@ function handleRequest (req, res, monitoringCallType, extension) {
         caseInsensitiveQuery = req.query;
     }
 
-    //if ( (monitoringCallType === 'StopMonitoringResponse') && (! caseInsensitiveQuery.monitoringref )) {
-        //res.status(422).send('The MonitoringRef parameter is required.');
-        //return;
-    //}
 
     if (monitoringCallType === 'StopMonitoringResponse') {
         try {
@@ -123,7 +118,7 @@ function handleRequest (req, res, monitoringCallType, extension) {
             console.error(e.stack);
         }
     } else {
-        res.status(500).send('Unrecognized monitoring call type.');
+        res.status(500).send({ error: 'Unrecognized monitoring call type.'});
     }
 }
 

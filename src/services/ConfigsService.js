@@ -21,7 +21,6 @@ var fs    = require('fs')    ,
     gtfsrtConfigBuilder    = require('../configuration/GTFS-RealtimeConfigBuilder') ,
     converterConfigBuilder = require('../configuration/ConverterConfigBuilder') ,
 
-    validConfiguration ,
 
     serverConfig    = null,
     serverHotConfig = null,
@@ -52,22 +51,29 @@ var fs    = require('fs')    ,
     var validationMessage ,
         activeFeedHotConfig ;
 
-    validConfiguration = false;
 
     serverHotConfig  = hotConfigGetters.getServerHotConfig() ;
     loggingHotConfig = hotConfigGetters.getLoggingHotConfig() ;
 
 
     validationMessage = serverConfigBuilder.validateHotConfigSync(serverHotConfig) ;
-    // emit msg
-    if (utils.extractValidationErrorMessages(validationMessage)) { return; }
-    serverConfig = serverConfigBuilder.build(serverHotConfig) ;
+    if (!utils.extractValidationErrorMessages(validationMessage)) { 
+        serverConfig = serverConfigBuilder.build(serverHotConfig) ;  
+    } else {
+        console.error(validationMessage);
+        // TODO: emit event msg
+    }
+  
 
 
     validationMessage = loggingConfigBuilder.validateHotConfigSync(loggingHotConfig) ;
     // emit msg
-    if (utils.extractValidationErrorMessages(validationMessage)) { return; }
-    loggingConfig = loggingConfigBuilder.build(loggingHotConfig, serverConfig) ;
+    if (!utils.extractValidationErrorMessages(validationMessage)) { 
+        loggingConfig = loggingConfigBuilder.build(loggingHotConfig, serverConfig) ;
+    } else {
+        console.error(validationMessage);
+        // TODO: emit event msg
+    }
 
 
     activeFeedHotConfig = hotConfigGetters.getActiveFeedHotConfig(serverHotConfig) ;
@@ -76,24 +82,32 @@ var fs    = require('fs')    ,
     gtfsrtHotConfig    = activeFeedHotConfig.gtfsrt;
     converterHotConfig = activeFeedHotConfig.converter;
 
-
     validationMessage = gtfsConfigBuilder.validateHotConfigSync(gtfsHotConfig) ;
     // emit msg
-    if (utils.extractValidationErrorMessages(validationMessage)) { return; }
-    gtfsConfig = gtfsConfigBuilder.build(gtfsHotConfig, loggingConfig) ;
+    if (!utils.extractValidationErrorMessages(validationMessage)) { 
+        gtfsConfig = gtfsConfigBuilder.build(gtfsHotConfig, loggingConfig) ;
+    } else {
+        console.error(validationMessage);
+        // TODO: emit event msg
+    }
 
     validationMessage = gtfsrtConfigBuilder.validateHotConfigSync(gtfsrtHotConfig) ;
     // emit msg
-    if (utils.extractValidationErrorMessages(validationMessage)) { return; }
-    gtfsrtConfig = gtfsrtConfigBuilder.build(gtfsrtHotConfig) ;
+    if (!utils.extractValidationErrorMessages(validationMessage)) { 
+        gtfsrtConfig = gtfsrtConfigBuilder.build(gtfsrtHotConfig) ;
+    } else {
+        console.error(validationMessage);
+        // TODO: emit event msg
+    }
 
     validationMessage = converterConfigBuilder.validateHotConfigSync(converterHotConfig) ;
     // emit msg
-    if (utils.extractValidationErrorMessages(validationMessage)) { return; }
-    converterConfig = converterConfigBuilder.build(converterHotConfig, gtfsConfig, gtfsrtConfig, loggingConfig) ;
-
-
-    validConfiguration = true ;
+    if (!utils.extractValidationErrorMessages(validationMessage)) { 
+        converterConfig = converterConfigBuilder.build(converterHotConfig, gtfsConfig, gtfsrtConfig, loggingConfig) ;
+    } else {
+        console.error(validationMessage);
+        // TODO: emit event msg
+    }
 }());
 
 

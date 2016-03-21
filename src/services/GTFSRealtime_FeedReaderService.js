@@ -18,7 +18,7 @@ function start () {
 
     feedReader = new GTFSrtFeedReader(feedReaderConfig) ;
 
-    if (!feedReader) {
+    if (!feedReader.feedURL) {
         throw new Error('No GTFS-Realtime configuration.');
     }
 
