@@ -7,5 +7,5 @@
     "logUnscheduledTrips": true,
     "logNoSpatialDataTrips": true ,
     "logTrainTrackingErrors": true,
-    "daysToKeepLogsBeforeDeleting" : 3
+    "daysToKeepLogsBeforeDeleting" : 1
 }

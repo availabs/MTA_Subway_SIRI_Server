@@ -1,19 +1,29 @@
 'use strict';
 
 
-var winston = require('winston') ,
+var fs = require('fs') ,
+    path = require('path') ,
+    winston = require('winston') ,
     DailyRotateFile = require('winston-daily-rotate-file') ,
 
-    mkdirp = require('mkdirp') ;
+    mkdirp = require('mkdirp') ,
+
+    moment = require('moment') ,
+
+    schedule = require('node-schedule');
+
 
 
 var ConfigsService = require('./ConfigsService') ,
 
     loggingConfig = ConfigsService.getLoggingConfig() ,
 
-    logsDir = loggingConfig.logsDir;
+    logsDir = loggingConfig.logsDir ,
 
-    //memwatchConfig  = ConfigsService.getMemwatchConfig();
+    daysToKeepLogsBeforeDeleting = parseInt(loggingConfig.daysToKeepLogsBeforeDeleting) ,
+
+    logRollerScheduledJob ;
+
 
 
 mkdirp.sync(logsDir) ;
@@ -178,7 +188,80 @@ function loggerArgResolver(logger) {
 }
 
 
-//function logRoller
+function logRoller () {
+
+    fs.readdir(logsDir, function (err, files) {
+        if (err) {
+            console.err('Could not read the logs directory.') ;
+            return ;
+        }
+
+        var cutoffDate = moment().startOf('day').subtract(daysToKeepLogsBeforeDeleting + 1, 'days') ,
+            toDelete = [],
+            dateSuffix,
+            i;
+
+        for ( i = 1; i < files.length; ++i ) {
+            
+            dateSuffix = files[i].match(/^.*\.(.*)$/)[1]; // http://stackoverflow.com/a/10767838
+
+            if (moment(new Date(dateSuffix)).isBefore(cutoffDate)) {
+                toDelete.push(path.join(logsDir, files[i]));
+            }
+        }
+
+        function deleteFile (i) {
+            if (i === toDelete.length) {
+                console.log('Logroller DONE.');
+                return;
+            }   
+
+            fs.unlink(toDelete[i], function () {
+                deleteFile(++i);
+            });
+        }
+
+        deleteFile(0);
+    }) ;
+}
+
+
+function scheduleTheLogRollingJob () {
+    if (!isNaN(daysToKeepLogsBeforeDeleting)) {
+        // At 00:10:10  each morning, run the log roller.
+        // The 10 mins and 10 secs is to give Winston time to switch to the new date. 
+        //logRollerScheduledJob = schedule.scheduleJob('10 10 * * * *', logRoller);
+        logRollerScheduledJob = schedule.scheduleJob('10 10 * * * *', logRoller);
+    }
+}
+
+scheduleTheLogRollingJob() ;
+
+
+function loggingConfigUpdateListener (newLoggingConfig) {
+    var newDaysToKeepLogs = parseInt(newLoggingConfig && newLoggingConfig.daysToKeepLogsBeforeDeleting) ,
+        daysToKeepLogsChanged = (daysToKeepLogsBeforeDeleting !== newDaysToKeepLogs);
+
+    loggingConfig = newLoggingConfig ;
+
+    if (daysToKeepLogsChanged) {
+        daysToKeepLogsChanged = newDaysToKeepLogs;
+        logRollerScheduledJob.cancel();
+        scheduleTheLogRollingJob();
+    } 
+
+    dataAnomalyLogger.transports.file.level        = (loggingConfig.logDataAnomalies) ? 'on' : 'off' ;
+    errorLogger.transports.file.level              = (loggingConfig.logErrors) ? 'on' : 'off' ;
+    trainLocationsLogger.transports.file.level     = (loggingConfig.logTrainLocations) ? 'on' : 'off' ;
+    trainTrackingStatsLogger.transports.file.level = (loggingConfig.logTrainTrackingStats) ? 'on' : 'off' ;
+    unscheduledTripsLogger.transports.file.level   = (loggingConfig.logUnscheduledTrips) ? 'on' : 'off' ;
+    noSpatialDataTripsLogger.transports.file.level = (loggingConfig.logNoSpatialDataTrips) ? 'on' : 'off' ;
+    trainTrackingErrorLogger.transports.file.level = (loggingConfig.logTrainTrackingErrors) ? 'on' : 'off' ;
+}
+
+ConfigsService.addLoggingConfigUpdateListener(loggingConfigUpdateListener) ;
+
+
 
 
 module.exports = {
@@ -191,3 +274,5 @@ module.exports = {
     logNoSpatialDataTrips : loggerArgResolver(noSpatialDataTripsLogger) ,
     logTrainTrackingError : loggerArgResolver(trainTrackingErrorLogger) ,
 } ;
+
+
