@@ -77,10 +77,13 @@ router.post('/stop/Converter', function (req, res) {
 
 //================ Config GET endpoints ================\\
 
+router.get('/get/Logging/config', function (req, res) {
+    res.send(ConfigsService.getLoggingHotConfig());
+});
+
 router.get('/get/GTFS/config', function (req, res) {
     res.send(ConfigsService.getGTFSHotConfig());
 });
-
 
 router.get('/get/GTFS-Realtime/config', function (req, res) {
     res.send(ConfigsService.getGTFSRealtimeHotConfig());
@@ -412,6 +415,37 @@ router.post('/update/GTFS-Realtime/config', function (req, res) {
 });
 
 
+router.post('/update/Logging/config', function (req, res) {
+
+    try {
+        var loggingHotConfig = ConfigsService.getLoggingHotConfig(),
+            
+              newConfig = Object.keys(loggingHotConfig || {}).reduce(function (acc, key) {
+                                acc[key] = !!req.body[key];
+                                return acc;
+                            }, {});
+
+        newConfig.daysToKeepLogsBeforeDeleting = req.body.daysToKeepLogsBeforeDeleting || 0;
+
+    //debugger;
+        //eventCreator.emitLoggingConfigUpdateStatus({
+            //info: 'Server received request for Logging configuration update.' ,
+            //timestamp : Date.now() ,
+        //});
+
+        ConfigsService.updateLoggingConfig(newConfig, function (err) {
+            if (err) {
+                res.status(500).send('Error');
+            } else {
+                console.log('Dope.');
+                res.status(200).send('Update successful.');
+            }
+        });
+
+  } catch (err) {
+      res.status(500).send('Error');
+  }
+});
 
 router.post('/update/Converter/config', function(req, res) {
 

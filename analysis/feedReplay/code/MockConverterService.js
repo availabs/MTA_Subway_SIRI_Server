@@ -39,7 +39,6 @@ var ConverterStream  = require('MTA_Subway_GTFS-Realtime_to_SIRI_Converter').Con
     converterStream  ;
 
 
-
 GTFS_FeedHandlerService.start() ;
 
 gtfsFeedHandler = GTFS_FeedHandlerService.getFeedHandler() ;
@@ -82,7 +81,9 @@ function start () {
                                     trainTrackerInitialState , converterUpdateListener );
 
             mockConfigService.removeTrainTrackerInitialStateFromConverterConfig();
-            mockConfigService.addConverterConfigUpdateListener(converterStream.updateConfig);
+            mockConfigService.addConverterConfigUpdateListener(function (config) { 
+                converterStream.updateConfig(config); 
+            });
 
             converterStream.start();
 
@@ -104,7 +105,7 @@ function converterUpdateListener (converterUpdate) {
 
     var gtfsrtJSON = converterUpdate.GTFSrt.GTFSrt_JSON ;
 
-    converterUpdate.getVehicleMonitoringResponse({}, 'json', function(err, resp) {
+    converterUpdate.getVehicleMonitoringResponse({vehiclemonitoringdetaillevel: 'calls'}, 'json', function(err, resp) {
 
         var siriObj = JSON.parse(resp) ;
 

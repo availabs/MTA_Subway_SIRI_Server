@@ -3,43 +3,56 @@
 
     /* globals $ */
 
-    var gtfsConfig,
-        gtfsrtConfig,
-        converterConfig;
+    var gtfsConfig ,
+        gtfsrtConfig ,
+        loggingConfig ;
 
-    var activeConfigDiv = '#GTFS';
+    var activeConfigDiv = '#ServerStatus';
 
-    $("#GTFS_selector").addClass('active');
-    $("#GTFS-Realtime_config_div").hide();
-    $("#Converter_config_div").hide();
+    $("#ServerStatus_selector").addClass('active');
+    $("#FeedConfig_div").hide();
+    $("#LoggingConfig_div").hide();
+
+
 
     (function () {
         var descriptionDivs = [
-                "GTFS_feedURL_label",
-                "GTFS_zipfile_label",
+                "GTFS_feedURL_div",
+                "GTFS_zipfile_div",
+                "GTFS_update_GTFS_data_btn_div",
+                "GTFS_update_GTFS_config_btn_div",
 
-                "GTFS-Realtime_feedURL_label",
-                "GTFS-Realtime_readInterval_label",
-                "GTFS-Realtime_retryInterval_label",
-                "GTFS-Realtime_maxNumRetries_label",
-                "GTFS-Realtime_protofile_label",
+                "GTFS-Realtime_feedURL_div",
+                "GTFS-Realtime_readInterval_div",
+                "GTFS-Realtime_retryInterval_div",
+                "GTFS-Realtime_maxNumRetries_div",
+                "GTFS-Realtime_protofile_div",
 
-                "Converter_converterLoggingLevel_label",
-                "Converter_trainLocationsLoggingLevel_label",
-                "Converter_trainTrackingErrorsLoggingLevel_label",
-                "Converter_trainTrackingStatsLoggingLevel_label",
-                "Converter_unscheduledTripsLoggingLevel_label",
-                "Converter_noSpatialDataTripsLoggingLevel_label",
+                "Logging_logIndexingStatistics_div",
+                "Logging_logErrors_div",
+                "Logging_logTrainLocations_div",
+                "Logging_logTrainTrackingStats_div",
+                "Logging_logUnscheduledTrips_div",
+                "Logging_logNoSpatialDataTrips_div",
+                "Logging_logTrainTrackingErrors_div",
+                "Logging_daysToKeepLogsBeforeDeleting_div",
             ] ,
-            i ;
+            
+            i ; 
 
-        function fadeIn  (divID) { $('#' + divID).fadeIn() ; }
-        function fadeOut (divID) { $('#' + divID).fadeOut(); }
+
+        function fadeIn  (divID) { 
+            $('#' + divID).show() ; 
+        }
+        function fadeOut (divID) { 
+            $('#' + divID).hide(); 
+        }
 
         for ( i = 0; i < descriptionDivs.length; ++i) {
-            $('#' + descriptionDivs[i]).hover(
-                fadeIn.bind(null , descriptionDivs[i].replace('label', 'description')),
-                fadeOut.bind(null, descriptionDivs[i].replace('label', 'description'))
+            var id = descriptionDivs[i];
+            $('#' + id).hover(
+                fadeIn.bind(null, id.replace('div', 'description')) ,
+                fadeOut.bind(null, id.replace('div', 'description')) 
             ); 
         }
     }());
@@ -56,38 +69,55 @@
     }
 
     function switchActiveConfigDiv (newActiveDivSelector) {
-        $(activeConfigDiv + '_config_div').hide();
-        $(newActiveDivSelector + '_config_div').show();
 
         $(activeConfigDiv + '_selector').removeClass('active');
         $(newActiveDivSelector + '_selector').addClass('active');
 
+        $(activeConfigDiv + '_div').hide();
+        $(activeConfigDiv + '_div').hide();
+        $(newActiveDivSelector + '_div').show();
+
         activeConfigDiv = newActiveDivSelector;
     }
 
-    $("#GTFS_selector").bind('click', switchActiveConfigDiv.bind(null, '#GTFS'));
-    $("#GTFS-Realtime_selector").bind('click', switchActiveConfigDiv.bind(null, '#GTFS-Realtime'));
-    $("#Converter_selector").bind('click', switchActiveConfigDiv.bind(null, '#Converter'));
+    $("#ServerStatus_selector").bind('click', switchActiveConfigDiv.bind(null, '#ServerStatus'));
+    $("#FeedConfig_selector").bind('click', switchActiveConfigDiv.bind(null, '#FeedConfig'));
+    $("#LoggingConfig_selector").bind('click', switchActiveConfigDiv.bind(null, '#LoggingConfig'));
 
 
-    function setGTFSConfigFormPlaceholders () {
-        $('#GTFS_URL').prop('defaultValue', gtfsConfig.feedURL);
+
+
+    function setGTFSFormPlaceholders () {
+        var keys = Object.keys(gtfsConfig) ,
+            i ;
+
+        for ( i = 0; i < keys.length; ++i ) {
+            $('#GTFS_' + keys[i] + '_input').prop('defaultValue', gtfsConfig[keys[i]]);
+        }
     }
 
-    function setGTFSRealtimeConfigFormPlaceholders () {
-        $('#GTFS-Realtime_FeedURL').prop('defaultValue', gtfsrtConfig.feedURL);
-        $('#GTFS-Realtime_Read_Interval').prop('defaultValue', gtfsrtConfig.readInterval);
-        $('#GTFS-Realtime_Retry_Interval').prop('defaultValue', gtfsrtConfig.retryInterval);
-        $('#GTFS-Realtime_Max_Num_Retries').prop('defaultValue', gtfsrtConfig.maxNumRetries);
+    function setGTFSrtFormPlaceholders () {
+        var keys = Object.keys(gtfsrtConfig) ,
+            i ;
+
+        for ( i = 0; i < keys.length; ++i ) {
+            $('#GTFS-Realtime_' + keys[i] + '_input').prop('defaultValue', gtfsrtConfig[keys[i]]);
+        }
     }
 
-    function setConverterConfigFormPlaceholders () {
-        $('#converterConverterLoggingLevel').val(converterConfig.converterLoggingLevel);
-        $('#converterTrainLocationsLoggingLevel').val(converterConfig.trainLocationsLoggingLevel);
-        $('#converterTrainTrackingErrorsLoggingLevel').val(converterConfig.trainTrackingErrorsLoggingLevel);
-        $('#converterTrainTrackingStatsLoggingLevel').val(converterConfig.trainTrackingStatsLoggingLevel);
-        $('#converterUnscheduledTripsLoggingLevel').val(converterConfig.unscheduledTripsLoggingLevel);
-        $('#converterNoSpatialDataTripsLoggingLevel').val(converterConfig.noSpatialDataTripsLoggingLevel);
+    function setLoggingFormPlaceholders () {
+        var keys = Object.keys(loggingConfig) ,
+            switchPattern = /^log/,
+            i ;
+
+        for ( i = 0; i < keys.length; ++i ) {
+            if (keys[i].match(switchPattern)) {
+                $('#Logging_' + keys[i] + '_input').bootstrapToggle(loggingConfig[keys[i]] ? 'on' : 'off');
+            } else {
+                console.log('========', keys[i], ':', loggingConfig[keys[i]]);
+                $('#Logging_' + keys[i] + '_input').prop('defaultValue', loggingConfig[keys[i]]);
+            }
+        }
     }
 
 
@@ -136,7 +166,7 @@
     });
 
 
-    $('#GTFS_form').submit(function () {
+    $('#GTFSConfig_form').submit(function () {
         sendGTFSUpdatePost('/admin/update/GTFS/config');
         return false;
     });
@@ -147,7 +177,7 @@
     });
 
 
-    $('#GTFS-Realtime_form').submit(function () {
+    $('#GTFS-RealtimeConfig_form').submit(function () {
         $(this).ajaxSubmit({
             type    : "POST",
             url     : '/admin/update/GTFS-Realtime/config',
@@ -159,12 +189,12 @@
     });
 
 
-    $('#Converter_form').submit(function () {
+    $('#LoggingConfig_form').submit(function () {
         $(this).ajaxSubmit({
             type    : "POST",
-            url     : '/admin/update/GTFS-Realtime_to_SIRI_Converter/config',
-            error   : function(xhr) { notify('Converter', xhr.responseText, 'danger'); },
-            success : function(response) { notify('Converter', response, 'success'); }
+            url     : '/admin/update/Logging/config',
+            error   : function(xhr) { notify('Logging', xhr.responseText, 'danger'); },
+            success : function(response) { notify('Logging', response, 'success'); }
         });
 
         return false;
@@ -173,24 +203,26 @@
 
      $.ajax({
          url: '/admin/get/GTFS/config',
+         dataType : 'json',
          success: function(data) {
             gtfsConfig = data;
-            setGTFSConfigFormPlaceholders();
+            setGTFSFormPlaceholders();
          }
      });
      $.ajax({
          url: '/admin/get/GTFS-Realtime/config',
+         dataType : 'json',
          success: function(data) {
             gtfsrtConfig = data;
-            setGTFSRealtimeConfigFormPlaceholders();
+            setGTFSrtFormPlaceholders();
          }
      });
      $.ajax({
-         url: '/admin/get/GTFS-Realtime_to_SIRI_Converter/config',
+         url: '/admin/get/Logging/config',
          dataType : 'json',
          success: function(data) {
-            converterConfig = data;
-            setConverterConfigFormPlaceholders();
+            loggingConfig = data;
+            setLoggingFormPlaceholders();
          }
      });
 

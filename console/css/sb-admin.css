@@ -233,3 +233,17 @@ ul.alert-dropdown {
 .displayNone {
     display: none;
 }
+
+.pad-top-25 {
+  padding-top: 25px;
+}
+
+.float-left-btn {
+  float: left;
+  padding-right: 4px;
+}
+
+.pad-left-10 {
+  margin-left: 12px;
+}
+

@@ -1,0 +1,25 @@
+{
+    "gtfs": {
+        "feedURL": "",
+        "tripKeyMutator": ["", ""],
+        "indexStopTimes": false
+    },
+
+    "gtfsrt": {
+        "feedURL": "",
+        "readInterval": 30,
+        "retryInterval": 4,
+        "maxNumRetries": 2,
+        "protofileName": "gtfs-realtime.proto",
+        "useLastStoptimeUpdateAsDestination": false
+    },
+
+    "converter": {
+        "fieldMutators": {
+            "OriginRef": ["", ""],
+            "DestinationRef": ["", ""],
+            "StopPointRef": ["", ""]
+        },
+        "callDistanceAlongRouteNumOfDigits": 4
+    }
+}

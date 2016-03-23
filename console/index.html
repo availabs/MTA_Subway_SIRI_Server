@@ -3,402 +3,543 @@
 
 <head>
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="">
 
-    <title>MTA Subway GTFS-Realtime to SIRI Configuration Dashboard</title>
+  <title>MTA Subway GTFS-Realtime to SIRI Configuration Dashboard</title>
 
 
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 
-    <!-- Custom CSS -->
-    <link href="css/sb-admin.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+  <link href="css/sb-admin.css" rel="stylesheet">
 
-    <!-- Custom Fonts -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+  <!-- Custom Fonts -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
 
 </head>
 
 <body>
 
-    <div id="wrapper">
+  <div id="wrapper">
 
-        <!-- Navigation -->
-        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-            <div>
-                <h3>MTA Subway GTFS-Realtime to SIRI Server Configuration Dashboard</h3>
+    <!-- Navigation -->
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div>
+        <h3>MTA Subway GTFS-Realtime to SIRI Server Configuration Dashboard</h3>
+      </div>
+      <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
+      <div class="collapse navbar-collapse navbar-ex1-collapse">
+        <ul class="nav navbar-nav side-nav nav-pills">
+
+          <li id="ServerStatus_selector" role="presentation">
+            <a href="#"><i class="fa fa-fw fa-server">&nbsp;&nbsp;</i>Server</a>
+          </li>
+
+          <li id="FeedConfig_selector" role="presentation">
+            <a href="#"><i class="fa fa-fw fa-train">&nbsp;&nbsp;</i>Feed</a>
+          </li>
+
+          <li id="LoggingConfig_selector" role="presentation">
+            <a href="#"><i class="fa fa-fw fa-book">&nbsp;&nbsp;</i>Logging</a>
+          </li>
+
+        </ul>
+      </div>
+      <!-- /.navbar-collapse -->
+    </nav>
+
+
+    <div id="page-wrapper">
+
+      <div class="container-fluid">
+
+        <div id="ServerStatus_div" class="row">
+          <div class="col-lg-6">
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h3 class="panel-title">Server Configuration</h3>
+              </div>
+
+              <div class="panel-body">
+                <h3>TODO: Implement status console.</h3>
+              </div>
             </div>
-            <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
-            <div class="collapse navbar-collapse navbar-ex1-collapse">
-                <ul class="nav navbar-nav side-nav nav-pills">
-                    <li id="GTFS_selector" role="presentation">
-                        <a href="#"><i class="fa fa-fw fa-train"></i>GTFS</a>
-                    </li>
-                    <li id="GTFS-Realtime_selector" role="presentation">
-                        <a href="#"><i class="fa fa-fw fa-table"></i>GTFS-Realtime</a>
-                    </li>
-                    <li id="Converter_selector" role="presentation">
-                        <a href="#"><i class="fa fa-fw fa-table"></i>Converter</a>
-                    </li>
-                </ul>
+         </div>
+       </div>
+
+
+        <div id="FeedConfig_div" class="row">
+          <div class="col-lg-6">
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h3 class="panel-title">GTFS Transit Feed Configuration</h3>
+              </div>
+
+              <div class="panel-body">
+                <form id="GTFS_form" enctype="multipart/form-data" role="form" action=''>
+
+                  <div class="form-group">
+
+                    <div id="GTFS_feedURL_div">
+                      <label>
+                        Static GTFS Data URL
+                      </label>
+                      <input id="GTFS_feedURL_input" name="feedURL" class="form-control">
+                    </div>
+
+                    <div id="GTFS_zipfile_div">
+                      <label>
+                        Upload the GTFS feed's .zip file.
+                      </label>
+                      <input type="file" 
+                           id="GTFS_zipfile_input" 
+                           name="zipfile" 
+                           class="form-control">
+                    </div>
+
+                  </div>
+
+                  <div id="GTFS_form_btn_row" class="row">
+                    <div class="float-left-btn pad-left-10 ">
+                      <button type="reset" class="btn btn-primary btn-sm">
+                        Reset
+                      </button>
+                    </div>
+
+                    <div id="GTFS_update_GTFS_config_btn_div" class="float-left-btn">
+                      <button id="update_GTFS_config_btn"
+                          type="submit" 
+                          class="btn btn-primary btn-sm">
+                            Update GTFS Config
+                      </button>
+                    </div>
+
+                    <div id="GTFS_update_GTFS_data_btn_div" class="float-left-btn">
+                      <button id="update_GTFS_data_btn" 
+                          type="button" 
+                          class="btn btn-warning btn-sm">
+                            Update GTFS Data
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+              <div id="FeedConfig_descriptions_area" class="col-lg-12 pad-top-25">
+                <div id="GTFS_feedURL_description" class="displayNone">
+                    <p> 
+                      <b>
+                        The URL from which to get the GTFS feed data.<br/>
+                        If provided, uploading the .zip file is not required.<br/>
+                        (Note: Uploaded .zip files take precedence over URLs.) 
+                      </b> 
+                    </p>
+                </div>
+
+                <div id="GTFS_zipfile_description" class="displayNone">
+                    <p> 
+                      <b>
+                        The .zip file that contains the GTFS feed data.<br/>
+                        If provided, the GTFS feed URL is not required.<br/>
+                        (Note: Uploaded .zip files take precedence over URLs.) 
+                      </b> 
+                    </p>
+                </div>
+
+                 <div id="GTFS_update_GTFS_config_btn_description" class="displayNone">
+                    <p> 
+                      <b>
+                        Update the GTFS feed configuration 
+                        <span class="text-danger">WITHOUT</span>
+                        updating the GTFS feed data.
+                      </b> 
+                    </p>
+                </div>
+ 
+                 <div id="GTFS_update_GTFS_data_btn_description" class="displayNone">
+                    <p> 
+                      <b>
+                        Update the GTFS feed configuration and data.</br>
+                        <span class="text-danger">Existing feed data on the server will be overwritten.</span>
+                      </b> 
+                    </p>
+                </div>
+ 
+              <div id="GTFS-Realtime_feedURL_description"
+                 class="displayNone">
+                  <p>
+                    <b>
+                      Required: The URL from which to get the GTFS-Realtime feed messages.<br/>
+                      (NOTE: Only Protocol Buffer format feeds are supported.)
+                    </b>
+                  </p>
+              </div>
+              <div id="GTFS-Realtime_readInterval_description"
+                 class="displayNone">
+                  <p>
+                    <b>
+                      Required: The interval, in seconds, at which to poll the 
+                      GTFS-Realtime feed URL for new messages.
+                    </b>
+                  </p>
+              </div>
+              <div id="GTFS-Realtime_retryInterval_description"
+                 class="displayNone">
+                  <p>
+                    <b>
+                      The interval at which to retry the feed URL after a failed a feed request.<br/>
+                      Reasons for feed request errors include failure to parse the message and 
+                      a message with a timestamp that is not later than the last successful 
+                      feed request.<br/>
+                      (Default: 2)
+                    </b>
+                  </p>
+              </div>
+              <div id="GTFS-Realtime_maxNumRetries_description"
+                 class="displayNone">
+                  <p>
+                    <b>
+                      The maximum number of feed read retries before simply waiting for the next
+                      regularly scheduled feed read.<br/>
+                      (Default: 10)
+                    </b>
+                  </p>
+              </div>
+              <div id="GTFS-Realtime_protofile_description"
+                 class="displayNone">
+                  <p>
+                  <b>
+                    The .proto file used to parse the GTFS-Realtime feed.<br/>
+                    (Default: The gtfs-realtime.proto file provided by Google.)
+                    <!--<a href="https://developers.google.com/transit/gtfs-realtime/gtfs-realtime-proto">-->
+                      <!--Google's gtfs-realtime.proto file documentation.</a>-->
+                  </b>
+                  </p>
+              </div>
             </div>
-            <!-- /.navbar-collapse -->
-        </nav>
+          </div>
+        </div>
+
+            <div id="GTFS_notifications_div"></div>
+            <div id="GTFS-Realtime_notifications_div"></div>
 
 
-        <div id="page-wrapper">
+          <div class="col-lg-6">
 
-            <div class="container-fluid">
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h3 class="panel-title">GTFS-Realtime Feed Configuration</h3>
+              </div>
 
-                <div id="GTFS_config_div" class="row">
-                    <div class="col-lg-6">
+              <div class="panel-body">
+                <form id="GTFS-Realtime_form"
+                    enctype="multipart/form-data"
+                    role="form" action=''>
 
-                        <form id="GTFS_form"
-                              enctype="multipart/form-data"
-                              role="form">
+                  <div class="form-group">
 
-                            <div class="form-group">
-                                <label id="GTFS_feedURL_label">
-                                    Static GTFS Data URL
-                                </label>
-                                <input id="GTFS_URL" name="feedURL" class="form-control">
-
-                                <label id="GTFS_zipfile_label">
-                                    Upload the GTFS feed's .zip file.
-                                </label>
-                                <input type="file" id="GTFS_data_file" name="zipfile" class="form-control">
-                            </div>
-
-                            <div id="GTFS_form_btn_row" class "row">
-                                <button type="reset" class="btn btn-primary btn-sm">
-                                    Reset
-                                </button>
-
-                                <button id="update_GTFS_config_btn" type="submit" class="btn btn-primary btn-sm">
-                                    Update GTFS Config
-                                </button>
-
-                                <button id="update_GTFS_data_btn" type="button" class="btn btn-warning btn-sm">
-                                    Update GTFS Data
-                                </button>
-                            </div>
-
-                        </form>
-
-                        <div id="GTFS_notifications_div"></div>
-
+                    <div id="GTFS-Realtime_feedURL_div">
+                      <label>
+                        GTFS-Realtime Feed URL (Include the API key, if one is required.)
+                      </label>
+                      <input id="GTFS-Realtime_feedURL_input" name="feedURL" class="form-control">
                     </div>
 
-                    <div id="GTFS_descriptions_area" class="col-lg-4">
-                        <div id="GTFS_feedURL_description"
-                             class="displayNone">
-                                <p>
-                                    <b>TODO: write description.</b>
-                                </p>
-                        </div>
-                        <div id="GTFS_zipfile_description"
-                             class="displayNone">
-                                <p>
-                                    <b>TODO: write description.</b>
-                                </p>
-                        </div>
+                    <div id="GTFS-Realtime_readInterval_div">
+                      <label>
+                        Read Frequency (seconds)
+                      </label>
+                      <input id="GTFS-Realtime_readInterval_input" name="readInterval" class="form-control">
                     </div>
 
-
-                </div>
-                <!-- /.row -->
-
-                <div id="GTFS-Realtime_config_div" class="row">
-                    <div class="col-lg-6">
-
-                        <form id="GTFS-Realtime_form"
-                              enctype="multipart/form-data"
-                              role="form">
-
-                            <div class="form-group">
-                                <label id="GTFS-Realtime_feedURL_label">
-                                    GTFS-Realtime Feed URL (Include the API key, if one is required.)
-                                </label>
-                                <input id="GTFS-Realtime_FeedURL" name="feedURL" class="form-control">
-
-                                <label id="GTFS-Realtime_readInterval_label">
-                                    Read Frequency (seconds)
-                                </label>
-                                <input id="GTFS-Realtime_Read_Interval" name="readInterval" class="form-control">
-
-                                <label id="GTFS-Realtime_retryInterval_label">
-                                    Retry Frequency (seconds)
-                                </label>
-                                <input id="GTFS-Realtime_Retry_Interval" name="retryInterval" class="form-control">
-
-                                <label id="GTFS-Realtime_maxNumRetries_label">
-                                    Max number of retries
-                                </label>
-                                <input id="GTFS-Realtime_Max_Num_Retries" name="maxNumRetries" class="form-control">
-
-                                <label id="GTFS-Realtime_protofile_label">
-                                    Upload a .proto file
-                                </label>
-                                <input type="file" id="GTFS-Realtime_Protofile" name="protofile" class="form-control">
-                            </div>
-
-                            <button type="reset" class="btn btn-primary btn-sm">
-                                Reset
-                            </button>
-                            <button id="update_GTFS-Realtime_config_btn" type="submit" class="btn btn-primary btn-sm">
-                                Update Config
-                            </button>
-
-                        </form>
-
-                        <div id="GTFS-Realtime_notifications_div"></div>
-
+                    <div id="GTFS-Realtime_retryInterval_div">
+                      <label>
+                        Retry Frequency (seconds)
+                      </label>
+                      <input id="GTFS-Realtime_retryInterval_input" name="retryInterval" class="form-control">
                     </div>
 
-                    <div id="GTFS-Realtime_descriptions_area" class="col-lg-4">
-                        <div id="GTFS-Realtime_feedURL_description"
-                             class="displayNone">
-                                <p>
-                                    <b>TODO: write description.</b>
-                                </p>
-                        </div>
-                        <div id="GTFS-Realtime_readInterval_description"
-                             class="displayNone">
-                                <p>
-                                    <b>TODO: write description.</b>
-                                </p>
-                        </div>
-                        <div id="GTFS-Realtime_retryInterval_description"
-                             class="displayNone">
-                                <p>
-                                    <b>TODO: write description.</b>
-                                </p>
-                        </div>
-                        <div id="GTFS-Realtime_maxNumRetries_description"
-                             class="displayNone">
-                                <p>
-                                    <b>TODO: write description.</b>
-                                </p>
-                        </div>
-                        <div id="GTFS-Realtime_protofile_description"
-                             class="displayNone">
-                                <p>
-                                    <b>TODO: write description.</b>
-                                </p>
-                        </div>
+                    <div id="GTFS-Realtime_maxNumRetries_div">
+                      <label>
+                        Max number of retries
+                      </label>
+                      <input id="GTFS-Realtime_maxNumRetries_input" name="maxNumRetries" class="form-control">
                     </div>
 
-                </div>
-                <!-- /.row -->
-
-                <div id="Converter_config_div" class="row">
-                    <div class="col-lg-6">
-                        <h3>Converter Logging</h3>
-                        <form id="Converter_form"
-                              enctype="application/x-www-form-urlencoded"
-                              role="form">
-
-                            <div class="form-group">
-                                <div class="row separatedRows">
-                                    <div id="Converter_converterLoggingLevel_label" 
-                                         class="col-md-4 text-right">
-                                            Converter
-                                    </div>
-                                    <div class="col-md-3">
-                                        <select id="converterConverterLoggingLevel"
-                                                class="form-control" 
-                                                name="converterLoggingLevel">
-                                          <option>off</option>
-                                          <option>error</option>
-                                          <option>info</option>
-                                          <option>verbose</option>
-                                          <option>debug</option>
-                                          <option>silly</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-
-                                <div class="row separatedRows">
-                                    <div id="Converter_trainLocationsLoggingLevel_label"
-                                         class="col-md-4 text-right">
-                                            Train Locations
-                                    </div>
-                                    <div class="col-md-3">
-                                        <select id="converterTrainLocationsLoggingLevel"
-                                                class="form-control col-md-4" 
-                                                name="trainLocationsLoggingLevel">
-                                          <option>off</option>
-                                          <option>error</option>
-                                          <option>info</option>
-                                          <option>verbose</option>
-                                          <option>debug</option>
-                                          <option>silly</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="row separatedRows">
-                                    <div id="Converter_trainTrackingErrorsLoggingLevel_label"
-                                         class="col-md-4 text-right">
-                                            Train Tracking Errors
-                                    </div>
-                                    <div class="col-md-3">
-                                        <select id="converterTrainTrackingErrorsLoggingLevel"
-                                                class="form-control col-md-4" 
-                                                name="trainTrackingErrorsLoggingLevel">
-                                          <option>off</option>
-                                          <option>error</option>
-                                          <option>info</option>
-                                          <option>verbose</option>
-                                          <option>debug</option>
-                                          <option>silly</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="row separatedRows">
-                                    <div id="Converter_trainTrackingStatsLoggingLevel_label"
-                                         class="col-md-4 text-right">
-                                            Train Tracking Statistics
-                                    </div>
-                                    <div class="col-md-3">
-                                        <select id="converterTrainTrackingStatsLoggingLevel"
-                                                class="form-control col-md-4" 
-                                                name="trainTrackingStatsLoggingLevel">
-                                          <option>off</option>
-                                          <option>error</option>
-                                          <option>info</option>
-                                          <option>verbose</option>
-                                          <option>debug</option>
-                                          <option>silly</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="row separatedRows">
-                                    <div id="Converter_unscheduledTripsLoggingLevel_label" 
-                                         class="col-md-4 text-right">
-                                            Unscheduled Trips
-                                    </div>
-                                    <div class="col-md-3">
-                                        <select id="converterUnscheduledTripsLoggingLevel"
-                                                class="form-control col-md-4" 
-                                                name="unscheduledTripsLoggingLevel">
-                                          <option>off</option>
-                                          <option>error</option>
-                                          <option>info</option>
-                                          <option>verbose</option>
-                                          <option>debug</option>
-                                          <option>silly</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="row separatedRows">
-                                    <div id="Converter_noSpatialDataTripsLoggingLevel_label" 
-                                         class="col-md-4 text-right">
-                                            Trips Without Spatial Data
-                                    </div>
-                                    <div class="col-md-3">
-                                        <select id="converterNoSpatialDataTripsLoggingLevel"
-                                                class="form-control col-md-4" 
-                                                name="noSpatialDataTripsLoggingLevel">
-                                          <option>off</option>
-                                          <option>error</option>
-                                          <option>info</option>
-                                          <option>verbose</option>
-                                          <option>debug</option>
-                                          <option>silly</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                            </div>
-
-                            <button type="reset" class="btn btn-primary btn-sm">Reset</button>
-                            <button id="update_Converter_config_btn" type="submit" class="btn btn-primary btn-sm">
-                                Update Config
-                            </button>
-
-                        </form>
-
-                        <div id="Converter_notifications_div"></div>
-
+                    <div id="GTFS-Realtime_protofile_div">
+                      <label>
+                        Upload a .proto file
+                      </label>
+                      <input type="file" id="GTFS-Realtime_protofile_input" name="protofile" class="form-control">
                     </div>
+                  </div>
 
-                    <div id="Converter_descriptions_area" class="col-lg-4">
-                        <div id="Converter_converterLoggingLevel_description"
-                             class="displayNone">
-                                <p>
-                                    <b>TODO: write description.</b>
-                                </p>
-                        </div>
-                        <div id="Converter_trainLocationsLoggingLevel_description"
-                             class="displayNone">
-                                <p>
-                                    <b>TODO: write description.</b>
-                                </p>
-                        </div>
-                        <div id="Converter_trainTrackingErrorsLoggingLevel_description"
-                             class="displayNone">
-                                <p>
-                                    <b>TODO: write description.</b>
-                                </p>
-                        </div>
-                        <div id="Converter_trainTrackingStatsLoggingLevel_description"
-                             class="displayNone">
-                                <p>
-                                    <b>TODO: write description.</b>
-                                </p>
-                        </div>
-                        <div id="Converter_unscheduledTripsLoggingLevel_description"
-                             class="displayNone">
-                                <p>
-                                    <b>TODO: write description.</b>
-                                </p>
-                        </div>
-                        <div id="Converter_noSpatialDataTripsLoggingLevel_description"
-                             class="displayNone">
-                                <p>
-                                    <b>TODO: write description.</b>
-                                </p>
-                        </div>
-                    </div>
+                  <button type="reset" class="btn btn-primary btn-sm">
+                    Reset
+                  </button>
+                  <button id="update_GTFS-Realtime_config_btn" type="submit" class="btn btn-primary btn-sm">
+                    Update Config
+                  </button>
 
-                </div>
-                <!-- /.row -->
-
+                </form>
             </div>
-            <!-- /.container-fluid -->
+            </div>
+
+
+          </div>
 
         </div>
-        <!-- /#page-wrapper -->
+        <!-- /.row -->
+
+        <div id="LoggingConfig_div" class="row">
+          <div class="col-lg-6">
+
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h3 class="panel-title">Logging Configuration</h3>
+              </div>
+
+              <div class="panel-body">
+
+                <form id="LoggingConfig_form" enctype="application/x-www-form-urlencoded" role="form" action=''>
+
+                  <div class="form-group">
+
+                    <div id="Logging_logIndexingStatistics_div" class="col-md-12 text-right row separatedRows">
+                      <div class="col-md-5">
+                          <label> Indexing Statistics </label>
+                      </div>
+                      <div class="col-md-2">
+                        <div class="checkbox">
+                          <input id="Logging_logIndexingStatistics_input" 
+                               name="logIndexingStatistics" 
+                               data-size="small"
+                               type="checkbox" data-toggle="toggle">
+                        </div>
+                      </div>
+                    </div>
+
+                    <div id="Logging_logErrors_div" class="col-md-12 text-right row separatedRows">
+                      <div class="col-md-5">
+                          <label> System Errors </label>
+                      </div>
+                      <div class="col-md-2">
+                        <div class="checkbox">
+                          <input id="Logging_logErrors_input"
+                               name="logErrors"
+                               data-size="small"
+                               type="checkbox" data-toggle="toggle">
+                        </div>
+                      </div>
+                    </div>
+
+                    <div id="Logging_logTrainLocations_div" class="col-md-12 text-right row separatedRows">
+                      <div class="col-md-5">
+                          <label> Train Locations </label>
+                      </div>
+                      <div class="col-md-2">
+                        <div class="checkbox">
+                          <input id="Logging_logTrainLocations_input"
+                               name="logTrainLocations"
+                               data-size="small"
+                               type="checkbox" data-toggle="toggle">
+                        </div>
+                      </div>
+                    </div>
+
+                    <div id="Logging_logTrainTrackingStats_div" class="col-md-12 text-right row separatedRows">
+                      <div class="col-md-5">
+                          <label> Train Tracking Stats </label>
+                      </div>
+                      <div class="col-md-2">
+                        <div class="checkbox">
+                          <input id="Logging_logTrainTrackingStats_input"
+                               name="logTrainTrackingStats"
+                               data-size="small"
+                               type="checkbox" data-toggle="toggle">
+                        </div>
+                      </div>
+                    </div>
+
+                    <div id="Logging_logUnscheduledTrips_div" class="col-md-12 text-right row separatedRows">
+                      <div class="col-md-5">
+                          <label> Unscheduled Trips </label>
+                      </div>
+                      <div class="col-md-2">
+                        <div class="checkbox">
+                          <input id="Logging_logUnscheduledTrips_input"
+                               name="logUnscheduledTrips"
+                               data-size="small"
+                               type="checkbox" data-toggle="toggle">
+                        </div>
+                      </div>
+                    </div>
+
+                    <div id="Logging_logNoSpatialDataTrips_div" class="col-md-12 text-right row separatedRows">
+                      <div class="col-md-5">
+                          <label> No Spatial Data Trips </label>
+                      </div>
+                      <div class="col-md-2">
+                        <div class="checkbox">
+                          <input id="Logging_logNoSpatialDataTrips_input"
+                               name="logNoSpatialDataTrips"
+                               data-size="small"
+                               type="checkbox" data-toggle="toggle">
+                        </div>
+                      </div>
+                    </div>
+
+                    <div id="Logging_logTrainTrackingErrors_div" class="col-md-12 text-right row separatedRows">
+                      <div class="col-md-5">
+                          <label> Train Tracking Errors </label>
+                      </div>
+                      <div class="col-md-2">
+                        <div class="checkbox">
+                          <input id="Logging_logTrainTrackingErrors_input"
+                               name="logTrainTrackingErrors"
+                               data-size="small"
+                               type="checkbox" data-toggle="toggle">
+                        </div>
+                      </div>
+                    </div>
+
+                    <div id="Logging_daysToKeepLogsBeforeDeleting_div" class="col-md-12 text-right row separatedRows">
+                      <div class="col-md-7">
+                          <label> Days to keep logs before deleting </label>
+                      </div>
+                      <div class="col-md-2">
+                        <div class="checkbox">
+                          <input id="Logging_daysToKeepLogsBeforeDeleting_input"
+                               name="daysToKeepLogsBeforeDeleting"
+                               class="form-control">
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+
+                  <button type="reset" class="btn btn-primary btn-sm">Reset</button>
+                  <button id="update_LoggingConfig_btn" type="submit" class="btn btn-primary btn-sm">
+                    Update Config
+                  </button>
+
+                </form>
+              </div>
+            </div>
+
+
+            <div id="Logging_notifications_div"></div>
+
+          </div>
+
+
+          <div id="Logging_descriptions_area" class="col-lg-4 pad-top-25">
+            <div id="Logging_logIndexingStatistics_description" class="displayNone">
+                <p>
+                  <b>
+                    While indexing the GTFS shapes.txt and stops.txt file, 
+                    statistics are generated concerning how far away stops are
+                    from the line in shapes.txt representing the path followed by
+                    the train. These
+                    statistics can help reveal anomalies in the GTFS data.<br/>
+                  </b>
+                </p>
+            </div>
+
+            <div id="Logging_logErrors_description" class="displayNone">
+                <p>
+                  <b>Keep a log of the caught exceptions in the Converter system.<br/></b>
+                </p>
+            </div>
+
+            <div id="Logging_logTrainLocations_description" class="displayNone">
+                <p>
+                  <b>Keep a log of the inferred locations of trains.<br/></b>
+                </p>
+            </div>
+
+            <div id="Logging_logTrainTrackingStats_description" class="displayNone">
+                <p>
+                  <b> Keep a log of the following counts for each GTFS-Realime message: </b>
+                </p>
+                    <ul>
+                        <li>Scheduled trains with complete spatial data in the GTFS feed</li>
+                        <li>Unscheduled trips</li>
+                        <li>Scheduled trips missing the spatial data (from shapes.txt).</li>
+                    </ul>
+            </div>
+            
+            <div id="Logging_logUnscheduledTrips_description" class="displayNone">
+                <p>
+                  <b>Keep a log of the unscheduled trips from each GTFS-Realtime message.<br/></b>
+                </p>
+            </div>
+
+            <div id="Logging_logNoSpatialDataTrips_description" class="displayNone">
+                <p>
+                  <b>Keep a log of the scheduled trips that had incomplete spatial data.<br/></b>
+                </p>
+            </div>
+
+            <div id="Logging_logTrainTrackingErrors_description" class="displayNone">
+                <p>
+                  <b>
+                    Keep a log if all the incidents in which an error in train tracking 
+                    occurred. In most instances, this is the result of a data anomaly.
+                    This log is helpful in discovering patterns of anomalous data
+                    in the GTFS-Realtime feed.<br/>
+                  </b>
+                </p>
+            </div>
+
+            <div id="Logging_daysToKeepLogsBeforeDeleting_description" class="displayNone">
+                <p>
+                    <b>Number of days to keep the log files. A value of zero means delete them at midnight.<br/></b>
+                </p>
+            </div>
+
+          </div>
+
+        </div>
+        <!-- /.row -->
+
+      </div>
+      <!-- /.container-fluid -->
 
     </div>
-    <!-- /#wrapper -->
+    <!-- /#page-wrapper -->
 
-    <!-- jQuery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  </div>
+  <!-- /#wrapper -->
 
-    <!-- JQuery Forms -->
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.min.js"></script>
 
-    <!-- Latest compiled and minified JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 
-    <script src="js/code.js"></script>
+
+  <!-- jQuery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+  <!-- JQuery Forms -->
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.min.js"></script>
+
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+  <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+  
+  <script src="js/code.js"></script>
 
 </body>
 

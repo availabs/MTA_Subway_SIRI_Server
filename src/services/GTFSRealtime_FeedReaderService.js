@@ -6,7 +6,8 @@ var GTFSrtFeedReader = require('MTA_Subway_GTFS-Realtime_to_SIRI_Converter').MTA
 
 
 
-var feedReader;
+var feedReader ,
+    configUpdateListener;
 
 
 
@@ -21,15 +22,20 @@ function start () {
 
     feedReader = new GTFSrtFeedReader(feedReaderConfig) ;
 
-    ConfigsService.addGTFSRealtimeConfigUpdateListener(feedReader.updateConfig); 
+
+    // Need to preserve the context.
+    configUpdateListener = feedReader.updateConfig.bind(feedReader);
+
+    ConfigsService.addGTFSRealtimeConfigUpdateListener(configUpdateListener); 
 } 
 
 
 function stop () {
     if (!feedReader) { return; }
 
-    ConfigsService.removeGTFSRealtimeConfigUpdateListener(feedReader.updateConfig);
+    ConfigsService.removeGTFSRealtimeConfigUpdateListener(configUpdateListener);
 
+    configUpdateListener = null;
     feedReader = null ;
 }
 

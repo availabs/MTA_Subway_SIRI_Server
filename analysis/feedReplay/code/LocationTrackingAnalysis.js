@@ -232,7 +232,6 @@ process.on('exit', function () {
 
 
 function feedListener (err, gtfsrtJSON, siriJSON, converterCache) {
-
     //========== Get the data to be reused by all analyzers =========
 
     var trainTrackerSnapshot = converterCache.converter.trainTrackerSnapshot ,

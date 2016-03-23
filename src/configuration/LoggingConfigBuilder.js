@@ -52,7 +52,7 @@ function validateHotConfig (hotConfig, callback) {
 }
 
 function build (hotConfig, serverConfig) {
-    var activeFeed   = serverConfig.activeFeed;
+    var activeFeed = serverConfig.activeFeed;
 
     var paths = {
         logsDir:                     logsDir ,

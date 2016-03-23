@@ -124,8 +124,6 @@ var unscheduledTripsLogger = new (winston.Logger)({
     ],
 });
 
-
-
 var noSpatialDataTripsLogger = new (winston.Logger)({
     levels : binaryLoggingLevels ,
     level  : loggingConfig.logNoSpatialDataTrips ? 'on' : 'off',
@@ -239,29 +237,36 @@ scheduleTheLogRollingJob() ;
 
 
 function loggingConfigUpdateListener (newLoggingConfig) {
-    var newDaysToKeepLogs = parseInt(newLoggingConfig && newLoggingConfig.daysToKeepLogsBeforeDeleting) ,
-        daysToKeepLogsChanged = (daysToKeepLogsBeforeDeleting !== newDaysToKeepLogs);
 
-    loggingConfig = newLoggingConfig ;
+    try {
+        var newDaysToKeepLogs = parseInt(newLoggingConfig && newLoggingConfig.daysToKeepLogsBeforeDeleting) ,
+            daysToKeepLogsChanged = (daysToKeepLogsBeforeDeleting !== newDaysToKeepLogs);
 
-    if (daysToKeepLogsChanged) {
-        daysToKeepLogsChanged = newDaysToKeepLogs;
-        logRollerScheduledJob.cancel();
-        scheduleTheLogRollingJob();
-    } 
+        loggingConfig = newLoggingConfig ;
 
-    dataAnomalyLogger.transports.file.level        = (loggingConfig.logDataAnomalies) ? 'on' : 'off' ;
-    errorLogger.transports.file.level              = (loggingConfig.logErrors) ? 'on' : 'off' ;
-    trainLocationsLogger.transports.file.level     = (loggingConfig.logTrainLocations) ? 'on' : 'off' ;
-    trainTrackingStatsLogger.transports.file.level = (loggingConfig.logTrainTrackingStats) ? 'on' : 'off' ;
-    unscheduledTripsLogger.transports.file.level   = (loggingConfig.logUnscheduledTrips) ? 'on' : 'off' ;
-    noSpatialDataTripsLogger.transports.file.level = (loggingConfig.logNoSpatialDataTrips) ? 'on' : 'off' ;
-    trainTrackingErrorLogger.transports.file.level = (loggingConfig.logTrainTrackingErrors) ? 'on' : 'off' ;
+        if (daysToKeepLogsChanged) {
+            daysToKeepLogsChanged = newDaysToKeepLogs;
+            if (logRollerScheduledJob) {
+                logRollerScheduledJob.cancel();
+            }
+            scheduleTheLogRollingJob();
+        } 
+
+        dataAnomalyLogger.transports.dailyRotateFile.level        = (loggingConfig.logDataAnomalies) ?'on':'off';
+        errorLogger.transports.dailyRotateFile.level              = (loggingConfig.logErrors) ?'on':'off';
+        trainLocationsLogger.transports.dailyRotateFile.level     = (loggingConfig.logTrainLocations) ?'on':'off';
+        trainTrackingStatsLogger.transports.dailyRotateFile.level = (loggingConfig.logTrainTrackingStats) ?'on':'off';
+        unscheduledTripsLogger.transports.dailyRotateFile.level   = (loggingConfig.logUnscheduledTrips) ?'on':'off';
+        noSpatialDataTripsLogger.transports.dailyRotateFile.level = (loggingConfig.logNoSpatialDataTrips) ?'on':'off';
+        trainTrackingErrorLogger.transports.dailyRotateFile.level = (loggingConfig.logTrainTrackingErrors) ?'on':'off';
+
+    } catch (err) {
+        console.log(err) ;
+        throw err;
+    }
 }
 
 ConfigsService.addLoggingConfigUpdateListener(loggingConfigUpdateListener) ;
-
-
 
 
 module.exports = {

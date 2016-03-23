@@ -11,7 +11,8 @@ var ConverterStream  = require('MTA_Subway_GTFS-Realtime_to_SIRI_Converter').Con
 
     ConfigService = require('./ConfigsService') ,
 
-    converterStream ;
+    converterStream ,
+    converterStreamConfigUpdateListener;
 
 
     
@@ -94,7 +95,10 @@ function start (callback) {
 
         ConfigService.removeTrainTrackerInitialStateFromConverterConfig();
 
-        ConfigService.addConverterConfigUpdateListener(converterStream.updateConfig);
+        // Need to preserve the context.
+        converterStreamConfigUpdateListener = converterStream.updateConfig.bind(converterStream);
+
+        ConfigService.addConverterConfigUpdateListener(converterStreamConfigUpdateListener);
 
 
         ServerEventCreator.emitConverterServiceStatusUpdate({
@@ -167,7 +171,9 @@ function stop (callback) {
 
         //converterStream does not require destruction.
 
-        ConfigService.removeConverterConfigUpdateListener(converterStream.updateConfig);
+        ConfigService.removeConverterConfigUpdateListener(converterStreamConfigUpdateListener);
+
+        converterStreamConfigUpdateListener = null;
 
         latestConverter = null ;
 

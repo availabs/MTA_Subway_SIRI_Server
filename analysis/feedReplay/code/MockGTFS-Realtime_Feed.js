@@ -92,7 +92,7 @@ MockFeedReader.prototype.sendNext = function () {
         }
 
 //console.log('####################' + (item._id) + '####################');
-//var counter = 0;
+var counter = 0;
 
         var state = restoreKeys(item.state);
 

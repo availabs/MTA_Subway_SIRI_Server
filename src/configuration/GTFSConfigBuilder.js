@@ -57,17 +57,23 @@ function validateHotConfig (hotConfig, callback) {
 
 
 function updateLogging (config, loggingConfig) {
-    return _.merge(_.deepCopy(config), 
-                   _.deepCopy(_.pluck(loggingConfig, ['logIndexingStatistics', 'indexingStatisticsLogPath'])));
+    return _.merge(_.cloneDeep(config), 
+                   _.cloneDeep(_.pick(loggingConfig, ['logIndexingStatistics', 'indexingStatisticsLogPath'])));
 }
 
 
 function build (hotConfig, loggingConfig) {
 
+    var tripKeyMutator = (hotConfig && hotConfig.tripKeyMutator) ? _.cloneDeep(hotConfig.tripKeyMutator) : null;
+        
+    if (Array.isArray(tripKeyMutator) && tripKeyMutator.length) {
+        tripKeyMutator[0] = new RegExp(tripKeyMutator[0]);
+    }
+
     return {
         gtfsConfigFilePath: configServicePath ,
 
-        tripKeyMutator: _.cloneDeep(hotConfig && hotConfig.tripKeyMutator) ,
+        tripKeyMutator: tripKeyMutator ,
         feedURL:        _.cloneDeep(hotConfig && hotConfig.feedURL) ,
         indexStopTimes: !!(hotConfig && hotConfig.indexStopTimes) ,
 

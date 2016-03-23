@@ -330,33 +330,31 @@ var api = {
                 
             var errMsgs = utils.extractValidationErrorMessages(validationMessage);
 
-            if (errMsgs) { 
-                return callback(new Error(JSON.stringify(errMsgs, null, 4))); 
-            }
-
+            if (errMsgs) { return callback(new Error(JSON.stringify(errMsgs, null, 4))); }
                
             fs.writeFile(loggingHotConfigPath, JSON.stringify(newHotConfig, null, 4), function (err) {
                 if (err) { return callback(err); }
 
-                var gtfsCULs, converterCULs;
+                var i ;
 
                 loggingHotConfig = _.cloneDeep(newHotConfig);
  
-                loggingConfig = loggingConfigBuilder.build(loggingHotConfig);
+                loggingConfig = loggingConfigBuilder.build(loggingHotConfig, serverConfig);
 
                 gtfsConfig = gtfsConfigBuilder.updateLogging(gtfsConfig, loggingConfig);
                 converterConfig = converterConfigBuilder.updateLogging(converterConfig, loggingConfig);
 
+                for ( i = 0; i < loggingConfigUpdateListeners.length; ++i ) {
+                    loggingConfigUpdateListeners[i](loggingConfig);
+                }
+                for ( i = 0; i < gtfsConfigUpdateListeners.length; ++i ) {
+                    gtfsConfigUpdateListeners[i](gtfsConfig);
+                }
+                for ( i = 0; i < converterConfigUpdateListeners.length; ++i ) {
+                    converterConfigUpdateListeners[i](converterConfig) ;
+                }
 
-                gtfsCULs = gtfsConfigUpdateListeners.map(function (listener) { 
-                              return function (cb) { listener(_.cloneDeep(gtfsConfig), cb); } ;
-                            });
-
-                converterCULs = converterConfigUpdateListeners.map(function (listener) { 
-                              return function (cb) { listener(_.cloneDeep(converterConfig), cb); } ;
-                            });
-
-                async.series(gtfsCULs.concat(converterCULs), callback);
+                callback(null) ;
             });
         });
     } ,
