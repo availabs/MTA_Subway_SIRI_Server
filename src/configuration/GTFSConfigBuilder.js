@@ -31,18 +31,26 @@ function validateHotConfigSync (hotConfig) {
     }
 
     if (!hotConfig.feedURL) {
-        validationMessage.feedURL = { error: 'No feedURL provided in the GTFS configuration.' } ;
+        validationMessage.feedURL = { 
+            info: 'No feedURL provided in the GTFS configuration. Admins will need to upload the .zip files.' ,
+        } ;
     } else if (!(validUrl.isHttpUri(hotConfig.feedURL) || validUrl.isHttpsUri(hotConfig.feedURL))) { 
-        validationMessage.feedURL = { error: 'An invalid feedURL was supplied for GTFS configuration' } ;
+        validationMessage.feedURL = { 
+            error: 'An invalid feedURL was supplied for GTFS configuration' ,
+        } ;
     } else {
         validationMessage.feedURL = { info: 'GTFS feedURL is a valid URL.' } ;
     }
 
     if (hotConfig.tripKeyMutator) {
         if (!utils.mutatorIsValid(hotConfig.tripKeyMutator)) {
-            validationMessage.tripKeyMutator = { error: 'The tripKeyMutator must be an array of two strings.' };
+            validationMessage.tripKeyMutator = { 
+                error: 'The tripKeyMutator must be an array of two strings.' ,
+            };
         } else {
-            validationMessage.tripKeyMutator = { info: 'GTFS tripKeyMutator appears valid.' } ;
+            validationMessage.tripKeyMutator = { 
+                info: 'GTFS tripKeyMutator appears valid.' ,
+            } ;
         }
     }
 
@@ -73,10 +81,6 @@ function build (hotConfig, loggingConfig) {
     return {
         gtfsConfigFilePath: configServicePath ,
 
-        tripKeyMutator: tripKeyMutator ,
-        feedURL:        _.cloneDeep(hotConfig && hotConfig.feedURL) ,
-        indexStopTimes: !!(hotConfig && hotConfig.indexStopTimes) ,
-
         dataDirPath: dataDirPath ,
         workDirPath: workDirPath ,
 
@@ -89,6 +93,11 @@ function build (hotConfig, loggingConfig) {
         indexedScheduleDataFilePath: path.resolve(dataDirPath, 'indexedScheduleData.json'),
 
         indexedSpatialDataFilePath:  path.resolve(dataDirPath, 'indexedSpatialData.json'),
+
+        // Optional configuration parameters
+        tripKeyMutator: tripKeyMutator ,
+        feedURL:        _.cloneDeep(hotConfig && hotConfig.feedURL) ,
+        indexStopTimes: !!(hotConfig && hotConfig.indexStopTimes) ,
     } ;
 }
 

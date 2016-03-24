@@ -14,22 +14,30 @@ var feedHandler ,
     configUpdateListener; 
 
 
-
 function start () {
     if (feedHandler) { return; }
 
     var feedHandlerConfig = ConfigsService.getGTFSConfig() ;
 
-    if (!feedHandlerConfig.feedURL) {
+    if (!feedHandlerConfig.gtfsConfigFilePath) {
         throw new Error('The GTFS feed is not configured.');
     }
 
     SystemStatusService.resetGTFSFeedHandlerConstructionLog() ;
 
-    feedHandler = new GTFSFeedHandler(feedHandlerConfig) ;
+    try {
+        feedHandler = new GTFSFeedHandler(feedHandlerConfig) ;
+    } catch (err) {
 
-    configUpdateListener = feedHandler.updateConfig.bind(feedHandler);
+        feedHandler = null;
+
+        console.error('Could not construct the GTFS Feed Handler.');
+        throw err;
+    }
+
     // Need to preserve the context of the feedHandler's updateConfig call.
+    configUpdateListener = feedHandler.updateConfig.bind(feedHandler);
+
     ConfigsService.addGTFSConfigUpdateListener(configUpdateListener);
 } 
 

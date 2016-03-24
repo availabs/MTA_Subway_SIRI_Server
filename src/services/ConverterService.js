@@ -128,7 +128,9 @@ function start (callback) {
     } catch (err) {
 
         ServerEventCreator.emitConverterServiceStatusUpdate({
-            error: 'ConverterStream startup process encountered an error.' ,
+            error: 'ConverterStream startup process encountered an error.' + 
+                   ' GTFS-Realtime to Siri conversion will not be available' +
+                   ' until the configuration problems are fixed.',
             debug: (err.stack || err) ,
             timestamp: Date.now() ,
         });

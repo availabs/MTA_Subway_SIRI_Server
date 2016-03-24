@@ -1,10 +1,7 @@
 {
     "gtfs": {
-        "feedURL": "",
-        "tripKeyMutator": ["", ""],
-        "indexStopTimes": false
+        "feedURL": "http://transitfeeds.com/p/mta/79/latest/download"
     },
-
     "gtfsrt": {
         "feedURL": "",
         "readInterval": 30,
@@ -13,12 +10,20 @@
         "protofileName": "gtfs-realtime.proto",
         "useLastStoptimeUpdateAsDestination": false
     },
-
     "converter": {
         "fieldMutators": {
-            "OriginRef": ["", ""],
-            "DestinationRef": ["", ""],
-            "StopPointRef": ["", ""]
+            "OriginRef": [
+                "",
+                ""
+            ],
+            "DestinationRef": [
+                "",
+                ""
+            ],
+            "StopPointRef": [
+                "",
+                ""
+            ]
         },
         "callDistanceAlongRouteNumOfDigits": 4
     }

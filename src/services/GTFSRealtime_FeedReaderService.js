@@ -22,7 +22,6 @@ function start () {
 
     feedReader = new GTFSrtFeedReader(feedReaderConfig) ;
 
-
     // Need to preserve the context.
     configUpdateListener = feedReader.updateConfig.bind(feedReader);
 

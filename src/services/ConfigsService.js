@@ -76,11 +76,16 @@ var fs    = require('fs')    ,
     }
 
 
-    activeFeedHotConfig = hotConfigGetters.getActiveFeedHotConfig(serverHotConfig) ;
+    try {
+        activeFeedHotConfig = hotConfigGetters.getActiveFeedHotConfig(serverHotConfig) ;
+    } catch (err) {
+        activeFeedHotConfig = null;
+        console.log(err.message);
+    }
 
-    gtfsHotConfig      = activeFeedHotConfig.gtfs;
-    gtfsrtHotConfig    = activeFeedHotConfig.gtfsrt;
-    converterHotConfig = activeFeedHotConfig.converter;
+    gtfsHotConfig      = activeFeedHotConfig && activeFeedHotConfig.gtfs;
+    gtfsrtHotConfig    = activeFeedHotConfig && activeFeedHotConfig.gtfsrt;
+    converterHotConfig = activeFeedHotConfig && activeFeedHotConfig.converter;
 
     validationMessage = gtfsConfigBuilder.validateHotConfigSync(gtfsHotConfig) ;
     // emit msg
@@ -134,8 +139,10 @@ function updateFeedConfig (feedComponentName, newHotConfig, callback) {
         return callback(new Error('Unrecognized feedComponentName name.'));
     }
 
-    configBuilder.validateHotConfig(newHotConfig, function (err) {
-        if (err) { return callback(err); }
+    configBuilder.validateHotConfig(newHotConfig, function (validationMessage) {
+        if (utils.extractValidationErrorMessages(validationMessage)) { 
+            return callback(new Error(JSON.stringify(validationMessage))); 
+        }
 
         var newFeedConfig;
 
@@ -225,7 +232,12 @@ var api = {
 
             } else {
 
-                aFHC = hotConfigGetters.getActiveFeedHotConfig(serverHotConfig) ;
+                try {
+                    aFHC = hotConfigGetters.getActiveFeedHotConfig(serverHotConfig) ;
+                } catch (err) {
+                    //emit event
+                    return callback(err) ;
+                }
 
                 gtfsConfigBuilder.validateHotConfig(aFHC.gtfs, function (validationMsg) {
                     var errMsgs = utils.extractValidationErrorMessages(validationMsg);

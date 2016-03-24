@@ -103,16 +103,20 @@ function getActiveFeedHotConfig (serverHotConfig) {
 
 
     var activeFeed = serverHotConfig.activeFeed ,
-        activeFeedHotConfigPath;
+        activeFeedHotConfigPath,
+        errMsg;
 
     if (!activeFeed) {
+        errMsg = 'ERROR: Invalid server.json file. `activeFeed` is not provided.' +
+                 'The server.json file must specify the active GTFS-Realtime feed (activeFeed). ' +
+                 'The server will not be available until server.json provides this information.' ;
+
         ServerEventCreator.emitStartupServerConfigStatus({
-            error: 'ERROR: Invalid server.json file. `activeFeed` is not provided.' +
-                   'The server.json file must specify the active GTFS-Realtime feed (activeFeed). ' +
-                   'The server will not be available until server.json provides this information.' ,
+            error: errMsg ,
+            debug: new Error(errMsg) ,
         });
 
-        return null;
+        throw new Error(errMsg) ;
     }
 
 
@@ -156,7 +160,7 @@ function getActiveFeedHotConfig (serverHotConfig) {
                 debug: (parseErr.stack || parseErr) ,
             });
             
-            return null;
+            throw parseErr;
         }
 
     } catch (fileReadError) {
@@ -165,7 +169,7 @@ function getActiveFeedHotConfig (serverHotConfig) {
             debug: (fileReadError.stack || fileReadError) ,
         });
 
-        return null;
+        throw fileReadError;
     }
 }
 

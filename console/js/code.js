@@ -19,8 +19,8 @@
         var descriptionDivs = [
                 "GTFS_feedURL_div",
                 "GTFS_zipfile_div",
-                "GTFS_update_GTFS_data_btn_div",
                 "GTFS_update_GTFS_config_btn_div",
+                "GTFS_update_GTFS_data_btn_div",
 
                 "GTFS-Realtime_feedURL_div",
                 "GTFS-Realtime_readInterval_div",
@@ -166,7 +166,9 @@
     });
 
 
-    $('#GTFSConfig_form').submit(function () {
+    $('#update_GTFS_config_btn').bind('click', function () {
+        console.log("===> submit GTFS config form");
+
         sendGTFSUpdatePost('/admin/update/GTFS/config');
         return false;
     });
