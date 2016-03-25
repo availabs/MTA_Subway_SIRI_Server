@@ -1,6 +1,7 @@
 {
     "gtfs": {
-        "feedURL": "http://transitfeeds.com/p/mta/79/latest/download"
+        "feedURL": "http://transitfeeds.com/p/mta/79/latest/download",
+        "zipfile": ""
     },
     "gtfsrt": {
         "feedURL": "",

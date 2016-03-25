@@ -5,8 +5,6 @@ var process = require('process') ,
     fs = require('fs') ,
     path = require('path') ,
 
-    _ = require('lodash') ,
-
     projectRoot = path.join(__dirname, '../../') ,
 
     configDirPath = path.join(projectRoot, '/config') ;
@@ -15,7 +13,7 @@ var process = require('process') ,
 
 function validator (hotConfig, callback) {
 
-    var validationMessage = {} ,
+    var validationMessage = { __isValid: true } ,
         activeFeedHotConfigFileName ,
         activeFeedHotConfigPath ,
         activeFeedHotConfigDNEMessage ,
@@ -25,7 +23,10 @@ function validator (hotConfig, callback) {
 
 
     if (!hotConfig) { 
-        validationMessage.configuration = { error: 'No server configuration provided.' };
+        validationMessage.configuration = { 
+            error: 'No server configuration provided.' 
+        };
+        validationMessage.__isValid = false ;
 
         if (callback) {
             return process.nextTick(function () { callback(validationMessage); });
@@ -38,19 +39,30 @@ function validator (hotConfig, callback) {
         numDays = parseInt(hotConfig.daysToKeepLogsBeforeDeleting);
 
         if (isNaN(numDays)) {
-            validationMessage.daysToKeepLogsBeforeDeleting = { error: 'Invalid daysToKeepLogsBeforeDeleting value.' };
+            validationMessage.daysToKeepLogsBeforeDeleting = { 
+                error: 'Invalid daysToKeepLogsBeforeDeleting value.' ,
+            };
+            validationMessage.__isValid = false;
         } else { 
-            validationMessage.daysToKeepLogsBeforeDeleting = 
-                { info: 'Valid daysToKeepLogsBeforeDeleting in server.json' };
+            validationMessage.daysToKeepLogsBeforeDeleting = { 
+                info: 'Valid daysToKeepLogsBeforeDeleting in server.json' 
+            };
         }
     }
 
-    if (hotConfig.defaultPortNumber) {
+    if ((hotConfig.defaultPortNumber !== null) && (hotConfig.defaultPortNumber !== undefined)) {
     
-        if (isNaN(parseInt(hotConfig.defaultPortNumber))) {
-            validationMessage.defaultPortNumber = { error: 'Invalid defaultPortNumber value.' };
+        var defaultPortNumber = parseInt(hotConfig.defaultPortNumber);
+
+        if (isNaN(defaultPortNumber) && (defaultPortNumber >= 1) && (defaultPortNumber <= 65535)) {
+            validationMessage.defaultPortNumber = { 
+                error: 'Invalid defaultPortNumber value.' ,
+            };
+            validationMessage.__isValid = false ;
         } else {
-            validationMessage.defaultPortNumber = { info: 'defaultPortNumber looks okay.' };
+            validationMessage.defaultPortNumber = { 
+                info: 'defaultPortNumber looks okay.' ,
+            };
         }
     }
 
@@ -65,10 +77,16 @@ function validator (hotConfig, callback) {
         if (callback) {
             fs.access(activeFeedHotConfigPath, fs.F_OK, function (err) {
                 if (err) {
-                    validationMessage.feedConfigurationFile = { error: activeFeedHotConfigDNEMessage } ;
+                    validationMessage.activeFeedConfigurationFile = { 
+                        error: activeFeedHotConfigDNEMessage ,
+                        debug: err.stack ,
+                    } ;
+
+                    validationMessage.__isValid = false ;
                 } else {
-                    validationMessage.feedConfigurationFile = 
-                        { info: activeFeedHotConfigFileName + ' was found on the server.' } ;
+                    validationMessage.feedConfigurationFile = { 
+                        info: activeFeedHotConfigFileName + ' was found on the server.' ,
+                    } ;
                 }
 
                 if (validationMessage) {
@@ -79,13 +97,19 @@ function validator (hotConfig, callback) {
             try {
                 fs.accessSync(activeFeedHotConfigPath, fs.F_OK);
             } catch (fileDoesNotExistsError) {
-                 validationMessage.feedConfigurationFile = { error: activeFeedHotConfigDNEMessage };
+                 validationMessage.feedConfigurationFile = { 
+                     error: activeFeedHotConfigDNEMessage ,
+                 };
+                 validationMessage.__isValid = false ;
             } finally {
                 return validationMessage;
             }
         }
     } else {
-        validationMessage.activeFeed = { error: 'The activeFeed for the server must be specified.' };
+        validationMessage.activeFeed = { 
+            error: 'The activeFeed for the server must be specified.' ,
+        };
+        validationMessage.__isValid = false ;
     }
 
         
@@ -106,17 +130,17 @@ function validateHotConfig (hotConfig, callback) {
 
 
 function validateHotConfigSync (hotConfig) {
-    validator(hotConfig) ;
+    return validator(hotConfig) ;
 }
 
 function build (hotConfig) {
-    return _.cloneDeep(hotConfig);
+    return hotConfig ;
 }
 
 module.exports = {
     validateHotConfig     : validateHotConfig ,
     validateHotConfigSync : validateHotConfigSync ,
-    build           : build ,
+    build                 : build ,
 } ;
 
 

@@ -17,18 +17,43 @@ var process = require('process') ,
     workDirPath  = path.join(projectRoot, '/data/GTFS/tmp') ,
 
     feedDataZipFileName = 'gtfs.zip',
-    feedDataZipFilePath = path.join(workDirPath, feedDataZipFileName) ;
+    feedDataZipFilePath = path.join(workDirPath, feedDataZipFileName) ,
+
+    supportedConfigKeys = [ "feedURL", "tripKeyMutator", "indexStopTimes" ] ;
 
 
 
 function validateHotConfigSync (hotConfig) {
 
-    var validationMessage = {};
+    var validationMessage = { __isValid: true } ,
+        keys ,
+        unsupportedKeys ; 
 
     if (!hotConfig) { 
-        validationMessage.configuration = { error : 'No configuration provided for GTFS.' };
-        return validationMessage;
+        validationMessage.configuration = {
+            info: 'No configuration provided. NOTE: if a feedURL is not provided, ' + 
+                  'admins will need to upload the .zip file to update the GTFS feed data.' ,
+        };
+        validationMessage.__isValid = true;
+        return validationMessage ;
+    } else if (Object.prototype.toString.call(hotConfig) !== '[object Object]') {
+        validationMessage.configuration = {
+            error:'The configuration provided is not an Object.' ,
+        };
+        validationMessage.__isValid = false;
+        return validationMessage ;
     }
+
+    keys = Object.keys(hotConfig);
+
+    unsupportedKeys = _.difference(keys, supportedConfigKeys) ;
+
+    if (unsupportedKeys.length) {
+        validationMessage.unsupportedConfigurationFields = {
+            warning: 'The following configuration fields are not supported: ' + unsupportedKeys.join(', ') + '.', 
+        } ;
+    }
+
 
     if (!hotConfig.feedURL) {
         validationMessage.feedURL = { 
@@ -36,8 +61,9 @@ function validateHotConfigSync (hotConfig) {
         } ;
     } else if (!(validUrl.isHttpUri(hotConfig.feedURL) || validUrl.isHttpsUri(hotConfig.feedURL))) { 
         validationMessage.feedURL = { 
-            error: 'An invalid feedURL was supplied for GTFS configuration' ,
+            error: 'An invalid feedURL was supplied for GTFS configuration.' ,
         } ;
+        validationMessage.__isValid = false ;
     } else {
         validationMessage.feedURL = { info: 'GTFS feedURL is a valid URL.' } ;
     }
@@ -47,6 +73,7 @@ function validateHotConfigSync (hotConfig) {
             validationMessage.tripKeyMutator = { 
                 error: 'The tripKeyMutator must be an array of two strings.' ,
             };
+            validationMessage.__isValid = false ;
         } else {
             validationMessage.tripKeyMutator = { 
                 info: 'GTFS tripKeyMutator appears valid.' ,
@@ -66,15 +93,15 @@ function validateHotConfig (hotConfig, callback) {
 
 function updateLogging (config, loggingConfig) {
     return _.merge(_.cloneDeep(config), 
-                   _.cloneDeep(_.pick(loggingConfig, ['logIndexingStatistics', 'indexingStatisticsLogPath'])));
+                   _.pick(loggingConfig, ['logIndexingStatistics', 'indexingStatisticsLogPath']));
 }
 
 
 function build (hotConfig, loggingConfig) {
 
-    var tripKeyMutator = (hotConfig && hotConfig.tripKeyMutator) ? _.cloneDeep(hotConfig.tripKeyMutator) : null;
+    var tripKeyMutator = (hotConfig && hotConfig.tripKeyMutator && hotConfig.tripKeyMutator) || null;
         
-    if (Array.isArray(tripKeyMutator) && tripKeyMutator.length) {
+    if (Array.isArray(tripKeyMutator) && tripKeyMutator.length && (typeof tripKeyMutator[0] === 'string')) {
         tripKeyMutator[0] = new RegExp(tripKeyMutator[0]);
     }
 
@@ -96,7 +123,7 @@ function build (hotConfig, loggingConfig) {
 
         // Optional configuration parameters
         tripKeyMutator: tripKeyMutator ,
-        feedURL:        _.cloneDeep(hotConfig && hotConfig.feedURL) ,
+        feedURL:        (hotConfig && hotConfig.feedURL) ,
         indexStopTimes: !!(hotConfig && hotConfig.indexStopTimes) ,
     } ;
 }

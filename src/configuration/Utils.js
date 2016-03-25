@@ -9,23 +9,20 @@ function mutatorIsValid (mutator) {
 }
 
 
-
-function extractValidationErrorMessages (msgObject) {
-    if (!msgObject) { return false; }
-
-    var keys = Object.keys(msgObject),
-        m, i;
-
-    for ( i = 0; i < keys.length; ++i ) {
-        m =  msgObject[keys[i]];
-        if (m && m.error) {
-            return true;
-        }
+function validateNumericField (hotConfig, fieldName, validationMessage) {
+    if (isNaN(parseInt(hotConfig[fieldName]))) { 
+        validationMessage[fieldName] = { 
+            error: ('GTFS-Realtime configuration field "' + fieldName + '" must be a numeric value.') ,
+        };
+    } else {
+        validationMessage[fieldName] = { 
+            info: ('GTFS-Realtime configuration field "' + fieldName + '" looks valid.') ,
+        };
     }
 }
 
 
 module.exports = {
-    mutatorIsValid                 : mutatorIsValid ,
-    extractValidationErrorMessages : extractValidationErrorMessages ,
+    mutatorIsValid       : mutatorIsValid ,
+    validateNumericField : validateNumericField ,
 };

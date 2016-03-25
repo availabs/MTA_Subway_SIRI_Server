@@ -4,8 +4,6 @@
 
 var GTFSFeedHandler = require ('MTA_Subway_GTFS-Realtime_to_SIRI_Converter').MTA_Subway_GTFS_Toolkit.FeedHandler ,
 
-    SystemStatusService = require('./SystemStatusService') ,
-
     ConfigsService = require('./ConfigsService') ;
 
 
@@ -22,8 +20,6 @@ function start () {
     if (!feedHandlerConfig.gtfsConfigFilePath) {
         throw new Error('The GTFS feed is not configured.');
     }
-
-    SystemStatusService.resetGTFSFeedHandlerConstructionLog() ;
 
     try {
         feedHandler = new GTFSFeedHandler(feedHandlerConfig) ;

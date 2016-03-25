@@ -4,8 +4,6 @@
 
 var path  = require('path') ,
 
-    merge = require('merge') ,
-
     _ = require('lodash') ,
 
     projectRoot = path.join(__dirname, '../../') ,
@@ -23,25 +21,36 @@ var path  = require('path') ,
         "logTrainTrackingErrors",
         "logMemoryUsage",
         "logFeedReader" ,
-    ].sort();
+    ];
 
 
 function validateHotConfigSync (hotConfig) {
 
+    var validationMessage = { __isValid: true } ;
 
     if (!hotConfig) { 
-        return { configuration: { info: 'Empty logging config object turns off all logging.' } };
+        validationMessage.configuration = { 
+            info: 'Empty logging config object turns off all logging.' ,
+        };
+
+        return validationMessage ;
+
     } else if (Object.prototype.toString.call(hotConfig) !== '[object Object]') {
-        return { configuration: { error: 'The logging config should be a simple Object.' } };
+        validationMessage.configuration = { 
+            error: 'The logging config should be a simple Object.' ,
+        };
+        validationMessage.__isValid = false;
+
+        return validationMessage ;
     }
 
-    var validationMessage = {} ,
-        given = Object.keys(hotConfig) ,
+    var given = Object.keys(hotConfig) ,
         unsupported = _.difference(given, supportedLoggingOptions) ;
 
     if (unsupported.length) {
-        validationMessage.unsupportedLoggingOptions = 
-            { warn: 'The following logging options are not supported:\n\t' + unsupported.join(', ') + '.' };
+        validationMessage.unsupportedLoggingOptions = { 
+            warn: 'The following logging options are not supported:\n\t' + unsupported.join(', ') + '.' 
+        };
     }
 
     return validationMessage;
@@ -55,6 +64,7 @@ function build (hotConfig, serverConfig) {
     var activeFeed = serverConfig.activeFeed;
 
     var paths = {
+
         logsDir:                     logsDir ,
 
         indexingStatisticsLogPath:   path.join(logsDir, activeFeed + '_spatialDataIndexingStats.txt') ,
@@ -80,7 +90,7 @@ function build (hotConfig, serverConfig) {
         serverAccessLogPath:         path.join(logsDir, activeFeed + '_serverAccess.log') ,
     } ;
  
-    return merge(true, paths, hotConfig) ;
+    return _.merge(paths, hotConfig) ;
 }
 
 module.exports = {

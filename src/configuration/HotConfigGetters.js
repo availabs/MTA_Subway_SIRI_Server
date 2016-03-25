@@ -4,9 +4,10 @@
 
 
 var fs = require('fs') ,
+    process = require('process') ,
     path = require('path') ,
 
-    ServerEventCreator = require('../events/ServerEventCreator') ,
+    eventCreator = require('../events/ServerEventCreator') ,
 
     projectRoot = path.join(__dirname, '../../') ,
 
@@ -17,7 +18,7 @@ var fs = require('fs') ,
 
 
 
-function getLoggingHotConfig () {
+function getLoggingHotConfigSync () {
 
     try { // Try reading the logging hot config file. 
 
@@ -26,14 +27,14 @@ function getLoggingHotConfig () {
         try { // Try parsing the logging hot config JSON string read from the file.
             var loggingHotConfig = JSON.parse(loggingHotConfigJSON);
 
-            ServerEventCreator.emitStartupLoggingConfigStatus({
+            eventCreator.emitLoggingConfigStatus({
                 debug: 'The logging.json was successfully parsed.' ,
             });
 
             return loggingHotConfig;
 
         } catch (parseErr) { // Catch the JSON.parse error.
-            ServerEventCreator.emitStartupLoggingConfigStatus({
+            eventCreator.emitLoggingConfigStatus({
                 error: 'ERROR: The logging configuration file could not be parsed. ' + 
                       'All logging will be turned off.' ,
                 debug: (parseErr.stack || parseErr) ,
@@ -45,7 +46,7 @@ function getLoggingHotConfig () {
     } catch (readFileError) { // Catch the readFileSync error.
 
         // TODO: Use error code for more precise error message.
-        ServerEventCreator.emitStartupLoggingConfigStatus({
+        eventCreator.emitLoggingConfigStatus({
             error: 'ERROR: The logging.json file could not be read. All logging will be turned off.' ,
             debug: (readFileError.stack || readFileError) ,
         });
@@ -56,26 +57,26 @@ function getLoggingHotConfig () {
 
 
 
-function getServerHotConfig () {
+function getServerHotConfigSync () {
 
     try {
         var serverHotConfigJSON = fs.readFileSync(serverHotConfigPath);
 
-        ServerEventCreator.emitStartupServerConfigStatus({
+        eventCreator.emitSystemConfigStatus({
             debug: 'server.json configuration file successfully read.' ,
         });
 
             try {
                 var serverHotConfig = JSON.parse(serverHotConfigJSON);
 
-                ServerEventCreator.emitStartupServerConfigStatus({
+                eventCreator.emitSystemConfigStatus({
                     debug: 'server.json configuration file successfully parsed.' ,
                 });
 
                 return serverHotConfig;
 
             } catch (parseErr) {
-                ServerEventCreator.emitStartupServerConfigStatus({
+                eventCreator.emitSystemConfigStatus({
                     error: 'Could not parse the /server.json file.' ,
                     debug: (parseErr.stack || parseErr) ,
                 });
@@ -84,7 +85,7 @@ function getServerHotConfig () {
             }
 
     } catch (readFileError) {
-        ServerEventCreator.emitStartupServerConfigStatus({
+        eventCreator.emitSystemConfigStatus({
             error: 'Could not read the server.json file. ' +  
                    'The server.json file is required to specify the active GTFS-Realtime feed (activeFeed). ' +
                    'The server will not be available until a server.json file is provided.' ,
@@ -97,7 +98,7 @@ function getServerHotConfig () {
 
 
 
-function getActiveFeedHotConfig (serverHotConfig) {
+function getActiveFeedHotConfigSync (serverHotConfig) {
 
     if (!serverHotConfig) { return null; }
 
@@ -111,7 +112,7 @@ function getActiveFeedHotConfig (serverHotConfig) {
                  'The server.json file must specify the active GTFS-Realtime feed (activeFeed). ' +
                  'The server will not be available until server.json provides this information.' ;
 
-        ServerEventCreator.emitStartupServerConfigStatus({
+        eventCreator.emitSystemConfigStatus({
             error: errMsg ,
             debug: new Error(errMsg) ,
         });
@@ -122,28 +123,32 @@ function getActiveFeedHotConfig (serverHotConfig) {
 
     activeFeedHotConfigPath = path.join(configDirPath, activeFeed + '.json');
 
-    ServerEventCreator.emitStartupActiveFeedConfigStatus({
+    eventCreator.emitSystemStatus({
         debug: 'The active feed is set to ' + activeFeed + '.',
+        timestamp: parseInt(process.hrtime().join(''))/1000 ,
     });
 
 
     try {
         var activeFeedConfigJSON = fs.readFileSync(activeFeedHotConfigPath) ;
 
-        ServerEventCreator.emitStartupActiveFeedConfigStatus({
-            debug: activeFeed + ' configuration file read from disk.'
+        eventCreator.emitSystemStatus({
+            debug: activeFeed + ' configuration file read from disk.' ,
+            timestamp: parseInt(process.hrtime().join(''))/1000 ,
         });
 
         try {
             var activeFeedConfig = JSON.parse(activeFeedConfigJSON) ;
 
-            ServerEventCreator.emitStartupActiveFeedConfigStatus({
+            eventCreator.emitSystemStatus({
                 debug: 'Successfuly parsed the configuration file for ' + activeFeed + '.' ,
+                timestamp: parseInt(process.hrtime().join(''))/1000 ,
             });
 
             if (!activeFeedConfig) {
-                ServerEventCreator.emitStartupActiveFeedConfigStatus({
+                eventCreator.emitSystemStatus({
                     error: 'The configuration file for ' + activeFeed + 'is not valid.' ,
+                    timestamp: parseInt(process.hrtime().join(''))/1000 ,
                 });
             } 
 
@@ -155,18 +160,20 @@ function getActiveFeedHotConfig (serverHotConfig) {
 
         } catch (parseErr) {
 
-            ServerEventCreator.emitStartupActiveFeedConfigStatus({
+            eventCreator.emitSystemStatus({
                 error: 'Could not parse the configuration file for ' + activeFeed + '.' ,
                 debug: (parseErr.stack || parseErr) ,
+                timestamp: parseInt(process.hrtime().join(''))/1000 ,
             });
             
             throw parseErr;
         }
 
     } catch (fileReadError) {
-        ServerEventCreator.emitStartupActiveFeedConfigStatus({
+        eventCreator.emitSystemStatus({
             error: 'Could not read the configuration file for the feed named ' + activeFeed + '.' ,
             debug: (fileReadError.stack || fileReadError) ,
+            timestamp: parseInt(process.hrtime().join(''))/1000 ,
         });
 
         throw fileReadError;
@@ -177,7 +184,29 @@ function getActiveFeedHotConfig (serverHotConfig) {
 
 
 module.exports = {
-    getServerHotConfig : getServerHotConfig ,
-    getLoggingHotConfig : getLoggingHotConfig ,
-    getActiveFeedHotConfig : getActiveFeedHotConfig ,
+    getServerHotConfigSync     : getServerHotConfigSync ,
+    getLoggingHotConfigSync    : getLoggingHotConfigSync ,
+    getActiveFeedHotConfigSync : getActiveFeedHotConfigSync ,
 };
+
+
+
+
+//emitSystemStatus 
+//emitSystemConfigStatus 
+//emitLoggingStatus 
+//emitLoggingConfigStatus 
+//emitGTFSServiceStatus 
+
+//emitGTFSServiceConfigStatus 
+//emitGTFSDataUpdateStatus 
+
+//emitGTFSRealtimeServiceStatus 
+//emitGTFSRealtimeServiceConfigStatus 
+//emitConverterServiceStatus 
+//emitConverterServiceConfigStatus 
+//emitConverterServiceStartedEvent 
+//emitConverterServiceStoppedEvent 
+//emitError 
+//emitDataAnomaly 
+

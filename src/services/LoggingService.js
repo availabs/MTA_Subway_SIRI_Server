@@ -6,6 +6,7 @@ var fs = require('fs') ,
     winston = require('winston') ,
     DailyRotateFile = require('winston-daily-rotate-file') ,
 
+
     mkdirp = require('mkdirp') ,
 
     moment = require('moment') ,
@@ -36,40 +37,19 @@ var binaryLoggingLevels = {
 
 
 
-var dataAnomalyLogger = new (winston.Logger)({
+var systemStatusUpdateLogger = new (winston.Logger)({
     levels : binaryLoggingLevels ,
-    level  : loggingConfig.logDataAnomalies ? 'on' : 'off',
-    exitOnError: false ,
+    level  : 'on' ,
+    exitOnError: false,
 
-    transports : [
-        //new (winston.transports.DailyRotateFile)({
-        new (DailyRotateFile)({
-            filename  : loggingConfig.dataAnomaliesLogPath,
-            colorize  : false ,
-            datePattern : '.yyyy-MM-dd' ,
-            stringify : metaDataStringifier ,
-            label     : 'DataAnomalyLogger',
-        }) ,
-    ],
+    transports: [
+        new (winston.transports.Console)({
+            showLevel : false ,
+            json      : true ,
+            stringify : function (obj) { return JSON.stringify(obj.payload); } ,
+        }), 
+    ]
 });
-
-
-var errorLogger = new (winston.Logger)({
-    levels : binaryLoggingLevels ,
-    level  : loggingConfig.logErrors ? 'on' : 'off',
-    exitOnError: false ,
-
-    transports : [
-        new (DailyRotateFile)({
-            filename  : loggingConfig.errorsLogPath,
-            colorize  : false ,
-            datePattern : '.yyyy-MM-dd' ,
-            stringify : metaDataStringifier ,
-            label     : 'ErrorLogger',
-        }) ,
-    ],
-});
-
 
 
 var trainLocationsLogger = new (winston.Logger)({
@@ -158,6 +138,43 @@ var trainTrackingErrorLogger = new (winston.Logger)({
 });
 
 
+var dataAnomalyLogger = new (winston.Logger)({
+    levels : binaryLoggingLevels ,
+    level  : loggingConfig.logDataAnomalies ? 'on' : 'off',
+    exitOnError: false ,
+
+    transports : [
+        //new (winston.transports.DailyRotateFile)({
+        new (DailyRotateFile)({
+            filename  : loggingConfig.dataAnomaliesLogPath,
+            colorize  : false ,
+            datePattern : '.yyyy-MM-dd' ,
+            stringify : metaDataStringifier ,
+            label     : 'DataAnomalyLogger',
+        }) ,
+    ],
+});
+
+
+var errorLogger = new (winston.Logger)({
+    levels : binaryLoggingLevels ,
+    level  : loggingConfig.logErrors ? 'on' : 'off',
+    exitOnError: false ,
+
+    transports : [
+        new (DailyRotateFile)({
+            filename  : loggingConfig.errorsLogPath,
+            colorize  : false ,
+            datePattern : '.yyyy-MM-dd' ,
+            stringify : metaDataStringifier ,
+            label     : 'ErrorLogger',
+        }) ,
+    ],
+});
+
+
+
+
 
 function metaDataStringifier (options) {
     return JSON.stringify(options.payload);
@@ -175,7 +192,7 @@ function loggerArgResolver(logger) {
             logger.log('on', arg) ;
         } else if ((typeof arg === 'object') && (arg !== null)) {
             try {
-                logger.on('on', '', arg);
+                logger.log('on', '', arg);
             } catch (e) {
                 console.error(e.stack);
             }
@@ -270,6 +287,8 @@ ConfigsService.addLoggingConfigUpdateListener(loggingConfigUpdateListener) ;
 
 
 module.exports = {
+    logSystemStatusUpdate : loggerArgResolver(systemStatusUpdateLogger) ,
+
     logDataAnomaly        : loggerArgResolver(dataAnomalyLogger) ,
     logError              : loggerArgResolver(errorLogger) ,
 

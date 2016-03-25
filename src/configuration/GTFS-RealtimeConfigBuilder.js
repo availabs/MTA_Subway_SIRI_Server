@@ -6,6 +6,8 @@ var fs    = require('fs') ,
 
     validUrl = require('valid-url') ,
 
+    utils = require('./Utils') ,
+
     projectRoot = path.join(__dirname, '../../') ,
     protofileDirPath = path.join(projectRoot, '/proto_files/'),
     defaultProtofileName = 'gtfs-realtime.proto' ,
@@ -32,61 +34,74 @@ var fs    = require('fs') ,
 
 
 
-function validateRequiredNumericFields (hotConfig, fieldName, validationMessage) {
-    if (!hotConfig[fieldName]) {
-        validationMessage.fieldName = { error: (fieldName + ' is required in the GTFS-Realtime configuration.') };
-    } else if (isNaN(parseInt(hotConfig[fieldName]))) { 
-        validationMessage.fieldName = { error: ('GTFS-Realtime ' + fieldName + ' must be a numeric value.') };
-    }
-}
-
 function validator (hotConfig, callback) {
 
-    var validationMessage = {},
-        hotConfigKeys,
+    var validationMessage = { __isValid: true },
+        keys,
         unsupportedKeys,
         protofileName ,
         protofilePath ,
         protofileErrorMessage ,
         i;
 
-    callback = (typeof callback === 'function') ? callback : null;
-
 
     if (!hotConfig) { 
-        validationMessage.configuration = { error: 'No configuration provided for the GTFS-Realtime component.' };
-    } else if (!(Object.prototype.toString.call(hotConfig))) {
-        validationMessage.configuration = { error: 'The logging config should be a simple Object.' };
+        validationMessage.configuration = { 
+            error: 'No configuration provided for the GTFS-Realtime component.' 
+        } ;
+        validationMessage.__isValid = false ;
+        return validationMessage ;
+    } else if (Object.prototype.toString.call(hotConfig) !== '[object Object]') {
+        validationMessage.configuration = { 
+            error: 'The logging config should be a simple Object.' 
+        } ;
+        validationMessage.__isValid = false ;
+        return validationMessage ;
     }
 
-
-    if (validationMessage) {
+    
+    if (!validationMessage.__isValid) {
         if (callback) {
-            return callback(validationMessage);
+            return process.nextTick(function () { callback(validationMessage); });
         } else {
             return validationMessage;
         }
     }
 
-    
+
     if (!hotConfig.feedURL) {
-        validationMessage = { error: 'A feedURL is required for GTFS-Realtime configuration' } ;
+        validationMessage.feedURL = { 
+            error: 'A feedURL is required for GTFS-Realtime configuration' 
+        } ;
+        validationMessage.__isValid = false ;
     } else if (!(validUrl.isHttpUri(hotConfig.feedURL) || validUrl.isHttpsUri(hotConfig.feedURL))) { 
-        validationMessage = { error: 'An invalid feedURL was supplied for GTFS-Realtime configuration' } ;
+        validationMessage.feedURL = { 
+            error: 'An invalid feedURL was supplied for GTFS-Realtime configuration' 
+        } ;
+        validationMessage.__isValid = false ;
     } else {
-        validationMessage = { info: 'The feedURL supplied for GTFS-Realtime configuration looks valid.' } ;
+        validationMessage.feedURL = { 
+            info: 'The feedURL supplied for GTFS-Realtime configuration looks valid.' 
+        } ;
     }
 
     for ( i = 0; i < requiredNumericFields.length; ++i ) {
-        validateRequiredNumericFields(hotConfig, requiredNumericFields[i], validationMessage) ;
+        utils.validateNumericField(hotConfig, requiredNumericFields[i], validationMessage) ;
+        if (validationMessage[requiredNumericFields[i]].error) {
+            validationMessage.__isValid = false ;
+        }
     }
         
-    hotConfigKeys = Object.keys(hotConfig) ;
-    unsupportedKeys = _.difference(hotConfigKeys, supportedConfigParams);
+
+    keys = Object.keys(hotConfig) ;
+    unsupportedKeys = _.difference(keys, supportedConfigParams);
+
 
     if (unsupportedKeys.length) {
-        validationMessage.configuration = { warn: 'The following logging options are not supported:\n\t' + 
-                                                   unsupportedKeys.join(', ') + '.' };
+        validationMessage.configuration = { 
+            warn: 'The following GTFS-Realtime configuration options are not supported:\n\t' + 
+                  unsupportedKeys.join(', ') + '.' 
+        };
     }
 
 
@@ -96,34 +111,48 @@ function validator (hotConfig, callback) {
         protofileName = defaultProtofileName;
     }
 
+
     if  (protofileName) {
 
         protofilePath = path.join(protofileDirPath, protofileName) ;
         protofileErrorMessage = 'The .proto file ' + protofileName + ' does not exist. ' + 
-                                'The GTFS-Realtime feed cannor be parsed.';
+                                'The GTFS-Realtime feed cannot be parsed without a .proto file.';
 
-        if (callback) {
+        if (callback) { // Async
             fs.access(protofilePath, fs.F_OK, function (err) {
                 if (err) {
-                    validationMessage.protofile = { error: protofileErrorMessage } ;
+                    validationMessage.protofile = { 
+                        error: protofileErrorMessage 
+                    } ;
+                    validationMessage.__isValid = false ;
                 } else {
-                    validationMessage.protofile = { info: 'The specified .profo file exists.' } ;
+                    validationMessage.protofile = { 
+                        info: 'The specified .profo file exists.' 
+                    } ;
                 }
 
-                callback(validationMessage) ;
+                return callback(validationMessage) ;
             });
         } else { //Sync
             try {
                 fs.accessSync(protofilePath, fs.F_OK);
-                validationMessage.protofile = { info: 'The specified .profo file exists.' } ;
+                validationMessage.protofile = { 
+                    info: 'The specified .profo file exists.' 
+                } ;
             } catch (fileDoesNotExistsError) {
-                validationMessage.protofile = { error: protofileErrorMessage } ;
+                validationMessage.protofile = { 
+                    error: protofileErrorMessage 
+                } ;
+                validationMessage.__isValid = false ;
             } finally {
                 return validationMessage ;
             }
         }
     } else {
-        validationMessage.protofileName = { error: 'An invalid protofileName was specified.' };
+        validationMessage.protofileName = { 
+            error: 'An invalid protofileName was specified.' 
+        };
+        validationMessage.__isValid = false ;
     }
 
         
@@ -143,7 +172,7 @@ function validateHotConfig (hotConfig, callback) {
 
 
 function validateHotConfigSync (hotConfig) {
-    validator(hotConfig) ;
+    return validator(hotConfig) ;
 }
 
 

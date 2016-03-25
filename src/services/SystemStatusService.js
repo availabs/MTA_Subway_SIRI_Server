@@ -1,172 +1,131 @@
 'use strict'; 
 
 
-var arrayMaxLength = 25;
+var arrayMaxLength = 100;
 
 
-var systemStatus = {
+    var system = {
+        statusLog: [] ,
+        configStatus: null,
+    },
 
-        systemStartupStatus : {
-            startupLog: [] ,
-            loggingConfigStatus: null,
-            converterConfigStatus: null,
-            activeFeedConfigStatus: null,
-        },
+    logging = {
+        statusLog: [],
+        configStatus: null,
+    },
 
-        gtfs : {
-            handlerConstructionStatusLog : [],
-            lastFeedUpdateLog : [] ,
-            recentErrors : [] ,
-        } ,
+    gtfs = {
+        statusLog: [],
+        configStatus: null,
+        lastDataUpdateLog : [] ,
+    } ,
 
-        gtfsrt : {
-            lastStartedEvent : null ,
-            lastStoppedEvent : null ,
-            lastConfigUpdateLog : [] ,
-            recentErrors : [] ,
-            lastSuccessfulReadEvent : null ,
-        } ,
+    gtfsrt = {
+        statusLog: [] ,
+        configStatus : null ,
+        lastSuccessfulReadEvent : null ,
+    } ,
 
-        converter : {
-            lastStartedEvent : null ,
-            lastStoppedEvent : null ,
-            lastConfigUpdateLog : [] ,
-            serviceStatusLog: [] ,
-            recentErrors : [] ,
-        } ,
+    converter = {
+        lastStartedEvent : null ,
+        lastStoppedEvent : null ,
+        statusLog: [] ,
+        configStatus : null,
+    } ,
 
-        recentDataAnomalies : [] ,
+    recentDataAnomalies = [] ,
 
-        recentErrors : [] ,
-} ;
+    recentErrors = [] ;
 
 
-
-
-function logStartupEvent (event) {
-    var log = systemStatus.systemStartupStatus.startupLog;
-    
-    log.push(event) ;    
-    sortDescendingByTimestamp(log) ;
-}
-
-function updateStartupLoggingConfigStatus (event) {
-    logStartupEvent(event);
-    systemStatus.systemStartupStatus.loggingConfigStatus = event; 
-}
-
-function updateStartupServerConfigStatus (event) {
-    logStartupEvent(event);
-    systemStatus.systemStartupStatus.converterConfigStatus = event; 
-}
-
-function updateStartupActiveFeedConfigStatus (event) {
-    logStartupEvent(event);
-    systemStatus.systemStartupStatus.activeFeedConfigStatus = event; 
+function addToLog (log, update) {
+    log.push(update);
+    sortDescendingByTimestamp(log);
+    if (log.length > arrayMaxLength) {
+        log.length = arrayMaxLength;
+    }
 }
 
 
 
-function getSystemStatus () {
-    return systemStatus ;
+//==================== System ==================== 
+function updateSystemStatusLog (update) {
+    addToLog(system.statusLog, update) ;
+}
+
+function updateSystemConfigStatus (update) {
+    system.configStatus = update ;
+}
+
+
+//==================== Logging ==================== 
+function updateLoggingStatus (update) {
+    addToLog(logging.statusLog, update) ;
+}
+
+function updateLoggingConfigStatus (update) {
+    logging.configStatus = update;
 }
 
 
 
-function resetGTFSFeedHandlerConstructionLog () {
-    systemStatus.gtfs.handlerConstructionStatusLog.length = 0 ;
+//==================== GTFS ==================== 
+function updateGTFSStatus (update) {
+    addToLog(gtfs.statusLog, update) ;
 }
 
-function logGTFSFeedHandlerConstructionEvent (event) {
-    systemStatus.gtfs.handlerConstructionStatusLog.push(event) ;    
-    sortDescendingByTimestamp(systemStatus.gtfs.handlerConstructionStatusLog) ;
+function updateGTFSConfigStatus (update) {
+    gtfs.configStatus = update;
 }
 
-function resetGTFSFeedUpdateLog () { 
-    systemStatus.gtfs.lastFeedUpdateLog.length = 0; 
+function resetGTFSLastDataUpdateLog () {
+    gtfs.lastDataUpdateLog.length = 0 ;
 }
 
-function addEventToGTFSFeedUpdateLog (event) {
-    systemStatus.gtfs.lastFeedUpdateLog.push(event) ;
-    sortDescendingByTimestamp(systemStatus.gtfs.lastFeedUpdateLog);
-}
-
-function addErrorToGTFSStatus (error) {
-    systemStatus.gtfs.recentErrors.push(error) ;
-    sortDescendingByTimestamp(systemStatus.gtfs.recentErrors);
-    systemStatus.gtfs.recentErrors.length = arrayMaxLength ;
+function updateGTFSLastDataUpdateLog (update) {
+    addToLog(gtfs.lastDataUpdateLog, update) ;
 }
 
 
-
-function logGTFSrtFeedReaderStartedEvent (event) {
-    systemStatus.gtfsrt.lastStartedEvent = event ;
+//==================== GTFS-Realtime ==================== 
+function updateGTFSRealtimeStatus (update) {
+    addToLog(gtfsrt.statusLog, update) ;
 }
 
-function logGTFSrtFeedReaderStoppedEvent (event) {
-    systemStatus.gtfsrt.lastStoppedEvent = event ;
+function updateGTFSRealtimeConfigStatus (update) {
+    gtfsrt.configStatus = update;
 }
+
 function logGTFSrtFeedReaderSuccessfulReadEvent (event) {
-    systemStatus.gtfsrt.lastSuccessfulReadEvent = event ;
-}
-
-function resetGTFSRealtimeConfigUpdateLog () { 
-    systemStatus.gtfsrt.lastConfigUpdateLog.length = 0; 
-}
-
-function addEventToGTFSRealtimeConfigUpdateLog (event) {
-    systemStatus.gtfsrt.lastConfigUpdateLog.push(event) ;
-    sortDescendingByTimestamp(systemStatus.gtfsrt.lastConfigUpdateLog);
-}
-
-function addErrorToGTFSRealtimeStatus (error) {
-    systemStatus.gtfsrt.recentErrors.push(error) ;
-    sortDescendingByTimestamp(systemStatus.gtfsrt.recentErrors);
-    systemStatus.gtfsrt.recentErrors.length = arrayMaxLength ;
+    gtfsrt.lastSuccessfulReadEvent = event ;
 }
 
 
-
+//==================== Converter ==================== 
 function logConverterServiceStartedEvent (serviceStartedEvent) {
-    systemStatus.converter.lastStartedEvent = serviceStartedEvent ;
+    converter.lastStartedEvent = serviceStartedEvent ;
 }
 
 function logConverterServiceStoppedEvent (serviceStoppedEvent) {
-    systemStatus.converter.lastStoppedEvent = serviceStoppedEvent ;
+    converter.lastStoppedEvent = serviceStoppedEvent ;
 }
 
-function resetConverterConfigUpdateLog () { 
-    systemStatus.converter.lastConfigUpdateLog.length = 0; 
+function updateConverterStatus (update) {
+    addToLog(converter.statusLog, update) ;
 }
 
-function addEventToConverterConfigUpdateLog (event) {
-    systemStatus.converter.lastConfigUpdateLog.push(event) ;
-    sortDescendingByTimestamp(systemStatus.converter.lastConfigUpdateLog);
-}
-
-function addEventToConverterServiceStatusLog (event) {
-    systemStatus.converter.serviceStatusLog.push(event) ;
-    sortDescendingByTimestamp(systemStatus.converter.serviceStatusLog);
-}
-
-function addErrorToConverterStatus (error) {
-    systemStatus.converter.recentErrors.push(error) ;
-    sortDescendingByTimestamp(systemStatus.gtfs.recentErrors);
-    systemStatus.converter.recentErrors.length = arrayMaxLength ;
+function updateConverterConfigStatus (update) {
+    converter.configStatus = update;
 }
 
 
 
-function addDataAnomaly (anomaly) {
-    systemStatus.recentDataAnomalies.push(anomaly) ;
-    sortDescendingByTimestamp(systemStatus.recentDataAnomalies);
-    systemStatus.recentDataAnomalies.length = arrayMaxLength ;
+function logAnomaly (anomaly) {
+    addToLog(recentDataAnomalies, anomaly) ;
 }
 
-function addError (error) {
-    systemStatus.recentErrors.push(error) ;
-    sortDescendingByTimestamp(systemStatus.recentErrors);
-    systemStatus.recentErrors.length = arrayMaxLength ;
+function logError (error) {
+    addToLog(recentErrors, error) ;
 }
 
 
@@ -185,41 +144,41 @@ function sortDescendingByTimestamp (arr) {
 }
 
 
+function getSystemStatus () {
+    return {
+        system : system ,
+        logging : logging ,
+        gtfs : gtfs ,
+        gtfsrt : gtfsrt ,
+        converter : converter ,
+        recentDataAnomalies : recentDataAnomalies ,
+        recentErrors : recentErrors ,
+    };
+}
+
 
 module.exports = {
 
-    updateStartupLoggingConfigStatus       : updateStartupLoggingConfigStatus ,
-    updateStartupServerConfigStatus        : updateStartupServerConfigStatus ,
-    updateStartupActiveFeedConfigStatus    : updateStartupActiveFeedConfigStatus ,
+    getSystemStatus : getSystemStatus,
 
-    getSystemStatus                        : getSystemStatus ,
+	updateSystemStatusLog                  : updateSystemStatusLog ,
+	updateSystemConfigStatus               : updateSystemConfigStatus ,
+	updateLoggingStatus                    : updateLoggingStatus ,
+	updateLoggingConfigStatus              : updateLoggingConfigStatus ,
+	updateGTFSStatus                       : updateGTFSStatus ,
+	updateGTFSConfigStatus                 : updateGTFSConfigStatus ,
+	resetGTFSLastDataUpdateLog             : resetGTFSLastDataUpdateLog ,
+	updateGTFSLastDataUpdateLog            : updateGTFSLastDataUpdateLog ,
+	updateGTFSRealtimeStatus               : updateGTFSRealtimeStatus ,
+	updateGTFSRealtimeConfigStatus         : updateGTFSRealtimeConfigStatus ,
 
-    resetGTFSFeedHandlerConstructionLog    : resetGTFSFeedHandlerConstructionLog ,
-    logGTFSFeedHandlerConstructionEvent    : logGTFSFeedHandlerConstructionEvent ,
+	logGTFSrtFeedReaderSuccessfulReadEvent : logGTFSrtFeedReaderSuccessfulReadEvent ,
+	logConverterServiceStartedEvent        : logConverterServiceStartedEvent ,
+	logConverterServiceStoppedEvent        : logConverterServiceStoppedEvent ,
 
-    resetGTFSFeedUpdateLog                 : resetGTFSFeedUpdateLog ,
-    addEventToGTFSFeedUpdateLog            : addEventToGTFSFeedUpdateLog ,
+	updateConverterStatus                  : updateConverterStatus ,
+	updateConverterConfigStatus            : updateConverterConfigStatus ,
+	logAnomaly                             : logAnomaly ,
+	logError                               : logError ,
 
-    resetGTFSRealtimeConfigUpdateLog       : resetGTFSRealtimeConfigUpdateLog ,
-    addEventToGTFSRealtimeConfigUpdateLog  : addEventToGTFSRealtimeConfigUpdateLog ,
-
-    logGTFSrtFeedReaderStartedEvent        : logGTFSrtFeedReaderStartedEvent ,
-    logGTFSrtFeedReaderStoppedEvent        : logGTFSrtFeedReaderStoppedEvent ,
-
-    logGTFSrtFeedReaderSuccessfulReadEvent : logGTFSrtFeedReaderSuccessfulReadEvent ,
-
-
-    logConverterServiceStartedEvent        : logConverterServiceStartedEvent ,
-    logConverterServiceStoppedEvent        : logConverterServiceStoppedEvent ,
-
-    resetConverterConfigUpdateLog          : resetConverterConfigUpdateLog ,
-    addEventToConverterConfigUpdateLog     : addEventToConverterConfigUpdateLog ,
-    addEventToConverterServiceStatusLog    : addEventToConverterServiceStatusLog ,
-
-    addErrorToGTFSStatus                   : addErrorToGTFSStatus ,
-    addErrorToGTFSRealtimeStatus           : addErrorToGTFSRealtimeStatus ,
-    addErrorToConverterStatus              : addErrorToConverterStatus ,
-
-    addDataAnomaly                         : addDataAnomaly ,
-    addError                               : addError ,
 } ;
