@@ -45,15 +45,15 @@
         <ul class="nav navbar-nav side-nav nav-pills">
 
           <li id="ServerStatus_selector" role="presentation">
-            <a href="#"><i class="fa fa-fw fa-server">&nbsp;&nbsp;</i>Server</a>
+            <a href="#"><i class="fa fa-fw fa-server">&nbsp;&nbsp;</i>System Health</a>
           </li>
 
           <li id="FeedConfig_selector" role="presentation">
-            <a href="#"><i class="fa fa-fw fa-train">&nbsp;&nbsp;</i>Feed</a>
+            <a href="#"><i class="fa fa-fw fa-train">&nbsp;&nbsp;</i>Feed Configuration</a>
           </li>
 
           <li id="LoggingConfig_selector" role="presentation">
-            <a href="#"><i class="fa fa-fw fa-book">&nbsp;&nbsp;</i>Logging</a>
+            <a href="#"><i class="fa fa-fw fa-book">&nbsp;&nbsp;</i>Logging Configuration</a>
           </li>
 
         </ul>
@@ -68,17 +68,246 @@
 
         <div id="ServerStatus_div" class="row">
           <div class="col-lg-6">
+
+            <!--<div class="panel panel-default">-->
+                <!--<div class="panel-heading">-->
+                  <!--<h3 class="panel-title">Input and Output</h3>-->
+                <!--</div>-->
+
+                <!--<div class="panel-body thinner-reveal">-->
+                  <!--<section id="SystemStatus_anomaliesAndErrors_div" class="panel minimal row">-->
+                    <!--<div class="panel-heading panel-heading-sm minimal">-->
+                      <!--<h3 class="panel-title">Data Anomalies and System Errors</h3>-->
+                    <!--</div>-->
+
+                    <!--<div class="panel-body thinner-reveal">-->
+                      <!--<div class="col-lg-6 thinner-reveal">-->
+                        <!--<div id="SystemStatus_recentDataAnomalies_statusLog_div" class="panel minimal">-->
+                          <!--<div class="panel-heading minimal">-->
+                            <!--<h3 class="panel-title panel-title-sm">Data Anomalies</h3>-->
+                          <!--</div>-->
+                          <!--<div id="SystemStatus_recentDataAnomalies_statusLog_content" -->
+                               <!--class="panel-body thinner-reveal">-->
+                          <!--</div>-->
+                        <!--</div>-->
+                      <!--</div>-->
+
+                      <!--<div class="col-lg-6 thinner-reveal">-->
+                        <!--<div id="SystemStatus_recentErrors_statusLog_div" class="panel minimal">-->
+                          <!--<div class="panel-heading minimal">-->
+                            <!--<h3 class="panel-title panel-title-sm">Caught System Errors</h3>-->
+                          <!--</div>-->
+                          <!--<div id="SystemStatus_recentErrors_statusLog_content" -->
+                               <!--class="panel-body thinner-reveal">-->
+                          <!--</div>-->
+                        <!--</div>-->
+                      <!--</div>-->
+                    <!--</div>-->
+                  <!--</section>-->
+              <!--</div>-->
+            <!--</div>-->
+
             <div class="panel panel-default">
+
               <div class="panel-heading">
-                <h3 class="panel-title">Server Configuration</h3>
+                <h3 class="panel-title">Configuration and Runtime Status</h3>
               </div>
 
-              <div class="panel-body">
-                <h3>TODO: Implement status console.</h3>
+              <div class="panel-body thinner-reveal">
+
+                <section id="SystemStatus_system_div" class="panel minimal row">
+                  <div class="panel-heading panel-heading-sm minimal">
+                    <h3 class="panel-title">System</h3>
+                  </div>
+
+                  <div class="panel-body thinner-reveal">
+                    <div class="col-lg-6 thinner-reveal">
+                        <div id="SystemStatus_system_configStatus_div" class="panel minimal">
+                          <div class="panel-heading minimal">
+                            <h3 class="panel-title panel-title-sm">Configuration</h3>
+                          </div>
+                          <div id="SystemStatus_system_configStatus_content" class="panel-body thinner-reveal">
+                          </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 thinner-reveal">
+                        <div id="SystemStatus_system_statusLog_div" class="panel minimal">
+                          <div class="panel-heading minimal">
+                            <h3 class="panel-title panel-title-sm">Status Log</h3>
+                          </div>
+                          <div id="SystemStatus_system_statusLog_content" class="panel-body thinner-reveal">
+                          </div>
+                        </div>
+                    </div>
+                </div>
+              </section>
+
+              <section id="SystemStatus_gtfs_div" class="panel minimal row">
+                <div class="panel-heading panel-heading-sm minimal">
+                  <h3 class="panel-title">GTFS Feed Handler</h3>
+                </div>
+
+                <div class="panel-body thinner-reveal">
+                  <div class="col-lg-6 thinner-reveal">
+                      <div id="SystemStatus_gtfs_configStatus_div" class="panel minimal">
+                        <div class="panel-heading minimal">
+                          <h3 class="panel-title panel-title-sm">Configuration</h3>
+                        </div>
+                        <div id="SystemStatus_gtfs_configStatus_content" class="panel-body thinner-reveal">
+                        </div>
+                      </div>
+                  </div>
+
+                  <div class="col-lg-6 thinner-reveal">
+                      <div id="SystemStatus_gtfs_statusLog_div" class="panel minimal">
+                        <div class="panel-heading minimal">
+                          <h3 class="panel-title panel-title-sm">Status Log</h3>
+                        </div>
+                        <div id="SystemStatus_gtfs_statusLog_content" class="panel-body thinner-reveal">
+                        </div>
+                      </div>
+                  </div>
+              </div>
+            </section>
+
+              <section id="SystemStatus_gtfsrt_div" class="panel minimal row">
+                  <div class="panel-heading panel-heading-sm minimal">
+                    <h3 class="panel-title">GTFS-Realtime Feed Reader</h3>
+                  </div>
+
+                  <div class="panel-body thinner-reveal">
+                    <div class="col-lg-6 thinner-reveal">
+                        <div id="SystemStatus_gtfsrt_configStatus_div" class="panel minimal">
+                          <div class="panel-heading minimal">
+                            <h3 class="panel-title panel-title-sm">Configuration</h3>
+                          </div>
+                          <div id="SystemStatus_gtfsrt_configStatus_content" class="panel-body thinner-reveal">
+                          </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 thinner-reveal">
+                        <div id="SystemStatus_gtfsrt_statusLog_div" class="panel minimal">
+                          <div class="panel-heading minimal">
+                            <h3 class="panel-title panel-title-sm">Status Log</h3>
+                          </div>
+                          <div id="SystemStatus_gtfsrt_statusLog_content" class="panel-body thinner-reveal">
+                          </div>
+                        </div>
+                    </div>
+                  </div>
+              </section>
+
+              <section id="SystemStatus_converter_div" class="panel minimal row">
+                  <div class="panel-heading panel-heading-sm minimal">
+                    <h3 class="panel-title">GTFS-Realtime to Siri Converter</h3>
+                  </div>
+
+                  <div class="panel-body thinner-reveal">
+                    <div class="col-lg-6 thinner-reveal">
+                        <div id="SystemStatus_converter_configStatus_div" class="panel minimal">
+                          <div class="panel-heading minimal">
+                            <h3 class="panel-title panel-title-sm">Configuration</h3>
+                          </div>
+                          <div id="SystemStatus_converter_configStatus_content" class="panel-body thinner-reveal">
+                          </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 thinner-reveal">
+                        <div id="SystemStatus_converter_statusLog_div" class="panel minimal">
+                          <div class="panel-heading minimal">
+                            <h3 class="panel-title panel-title-sm">Status Log</h3>
+                          </div>
+                          <div id="SystemStatus_converter_statusLog_content" class="panel-body thinner-reveal">
+                          </div>
+                        </div>
+                    </div>
+                  </div>
+              </section>
+
+              <section id="SystemStatus_logging_div" class="panel minimal row">
+                  <div class="panel-heading panel-heading-sm minimal">
+                    <h3 class="panel-title">Logging</h3>
+                  </div>
+
+                  <div class="panel-body thinner-reveal">
+                    <div class="col-lg-6 thinner-reveal">
+                        <div id="SystemStatus_logging_configStatus_div" class="panel minimal">
+                          <div class="panel-heading minimal">
+                            <h3 class="panel-title panel-title-sm">Configuration</h3>
+                          </div>
+                          <div id="SystemStatus_logging_configStatus_content" class="panel-body thinner-reveal">
+                          </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 thinner-reveal">
+                        <div id="SystemStatus_logging_statusLog_div" class="panel minimal">
+                          <div class="panel-heading minimal">
+                            <h3 class="panel-title panel-title-sm">Status Log</h3>
+                          </div>
+                          <div id="SystemStatus_logging_statusLog_content" class="panel-body thinner-reveal">
+                          </div>
+                        </div>
+                    </div>
+                  </div>
+              </section>
+
               </div>
             </div>
-         </div>
-       </div>
+
+          </div>
+
+          <div class="col-lg-6 row">
+            <div id="Converter_start_btn_div" class="col-lg-2 col-lg-offset-3 pad-top-25">
+              <button id="Converter_start_btn" 
+                      type="button" 
+                      class="btn btn-lg"></button>
+            </div>
+
+            <div class="col-lg-12 pad-top-25">
+              
+              <div class="panel panel-default">
+                <div class="panel-heading">
+                  <h3 id="ServerStatus_detailed_content_title_div" class="panel-title"></h3>
+                  <!--<div>-->
+                    <!--<ul class="nav navbar-nav navbar-right">-->
+                      <!--<li class="dropdown">-->
+                        <!--<a href="#" -->
+                           <!--class="dropdown-toggle" -->
+                           <!--data-toggle="dropdown" -->
+                           <!--role="button" -->
+                           <!--aria-haspopup="true" -->
+                           <!--aria-expanded="false"><b>Detail Level</b><span class="caret">&nbsp;</span></a>-->
+                        <!--<ul class="dropdown-menu">-->
+                          <!--<li class="bg-danger">-->
+                            <!--<a href="#"><span class="btn btn-danger btn-xs pull-right">Error</span></a>-->
+                          <!--</li>-->
+                          <!--<li class="bg-warning">-->
+                            <!--<a href="#"><span class="btn btn-warning btn-xs pull-right">Warn</span></a>-->
+                          <!--</li>-->
+                          <!--<li class="bg-info">-->
+                            <!--<a href="#"><span class="btn btn-info btn-xs pull-right">Info</span></a>-->
+                          <!--</li>-->
+                          <!--<li class="bg-success">-->
+                            <!--<a href="#"><span class="btn btn-default btn-xs pull-right">Debug</span></a>-->
+                          <!--</li>-->
+                        <!--</ul>-->
+                      <!--</li>-->
+                    <!--</ul>-->
+                  <!--</div>-->
+                </div>
+
+                <div id="ServerStatus_detailed_content_div" class="panel-body thinner-reveal">
+                </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
 
 
         <div id="FeedConfig_div" class="row">
@@ -113,13 +342,13 @@
                   </div>
 
                   <div id="GTFS_form_btn_row" class="row">
-                    <div class="float-left-btn pad-left-10 ">
+                    <div  id="GTFS_reset_config_btn_div" class="float-left-btn pad-left-10 ">
                       <button type="reset" class="btn btn-primary btn-sm">
                         Reset
                       </button>
                     </div>
 
-                    <div id="GTFS_update_GTFS_config_btn_div" class="float-left-btn">
+                    <div id="GTFS_update_config_btn_div" class="float-left-btn">
                       <button id="update_GTFS_config_btn"
                           type="submit" 
                           class="btn btn-primary btn-sm">
@@ -127,7 +356,7 @@
                       </button>
                     </div>
 
-                    <div id="GTFS_update_GTFS_data_btn_div" class="float-left-btn">
+                    <div id="GTFS_update_data_btn_div" class="float-left-btn">
                       <button id="update_GTFS_data_btn" 
                           type="button" 
                           class="btn btn-warning btn-sm">
@@ -144,7 +373,9 @@
                       <b>
                         The URL from which to get the GTFS feed data.<br/>
                         If provided, uploading the .zip file is not required.<br/>
-                        (Note: Uploaded .zip files take precedence over URLs.) 
+                        <span class="text-info">
+                          (Note: Uploaded .zip files take precedence over URLs.) 
+                        </span>
                       </b> 
                     </p>
                 </div>
@@ -154,28 +385,42 @@
                       <b>
                         The .zip file that contains the GTFS feed data.<br/>
                         If provided, the GTFS feed URL is not required.<br/>
-                        (Note: Uploaded .zip files take precedence over URLs.) 
+                        <span class="text-info">
+                          (Note: Uploaded .zip files take precedence over URLs.) 
+                        </span>
                       </b> 
                     </p>
                 </div>
 
-                 <div id="GTFS_update_GTFS_config_btn_description" class="displayNone">
+                <div id="GTFS_reset_config_btn_description" class="displayNone">
+                  <p> 
+                    <b>
+                      Reset the values in the 'GTFS Transit Feed Configuration' form.
+                    </b> 
+                  </p>
+                </div>
+
+                 <div id="GTFS_update_config_btn_description" class="displayNone">
                     <p> 
                       <b>
                         Update the GTFS feed configuration 
                         <span class="text-danger">WITHOUT</span>
                         updating the GTFS feed data.<br/>
-                        (Note: Effects will be immediate. Can be run without shutting down the system.)
+                        <span class="text-info">
+                          (Note: Effects will be immediate. Can be run while the converter is running.)
+                        </span>
                       </b> 
                     </p>
                 </div>
  
-                 <div id="GTFS_update_GTFS_data_btn_description" class="displayNone">
+                 <div id="GTFS_update_data_btn_description" class="displayNone">
                     <p> 
                       <b>
                         Update the GTFS feed configuration and data.</br>
                         <span class="text-danger">Existing feed data on the server will be overwritten.</span><br/>
-                        (Note: Effects will be immediate. Can be run without shutting down the system.)
+                        <span class="text-info">
+                          (Note: Effects will be immediate. Can be run while the converter is running.)
+                        </span>
                       </b> 
                     </p>
                 </div>
@@ -184,8 +429,11 @@
                  class="displayNone">
                   <p>
                     <b>
-                      Required: The URL from which to get the GTFS-Realtime feed messages.<br/>
-                      (NOTE: Only Protocol Buffer format feeds are supported.)
+                      <span class="bg-primary">Required:</span> 
+                        The URL from which to get the GTFS-Realtime feed messages.<br/>
+                      <span class="text-info">
+                        (NOTE: Only Protocol Buffer format feeds are supported.)
+                      </span>
                     </b>
                   </p>
               </div>
@@ -193,8 +441,8 @@
                  class="displayNone">
                   <p>
                     <b>
-                      Required: The interval, in seconds, at which to poll the 
-                      GTFS-Realtime feed URL for new messages.
+                      <span class="bg-primary">Required:</span>
+                        The interval, in seconds, at which to poll the GTFS-Realtime feed URL for new messages.
                     </b>
                   </p>
               </div>
@@ -206,7 +454,9 @@
                       Reasons for feed request errors include failure to parse the message and 
                       a message with a timestamp that is not later than the last successful 
                       feed request.<br/>
-                      (Default: 2)
+                      <span class="text-info">
+                        (Default: 2)
+                      </span>
                     </b>
                   </p>
               </div>
@@ -216,7 +466,9 @@
                     <b>
                       The maximum number of feed read retries before simply waiting for the next
                       regularly scheduled feed read.<br/>
-                      (Default: 10)
+                      <span class="text-info">
+                        (Default: 10)
+                      </span>
                     </b>
                   </p>
               </div>
@@ -225,19 +477,38 @@
                   <p>
                   <b>
                     The .proto file used to parse the GTFS-Realtime feed.<br/>
-                    (Default: The gtfs-realtime.proto file provided by Google.)
+                    <span class="text-info">
+                      (Default: The gtfs-realtime.proto file provided by Google.)
+                    </span>
                     <!--<a href="https://developers.google.com/transit/gtfs-realtime/gtfs-realtime-proto">-->
                       <!--Google's gtfs-realtime.proto file documentation.</a>-->
                   </b>
                   </p>
               </div>
+
+               <div id="GTFS-Realtime_reset_config_btn_description" class="displayNone">
+                  <p> 
+                    <b>
+                      Reset the values in the 'GTFS-Realtime Feed Configuration' form.
+                    </b> 
+                  </p>
+              </div>
+
+                <div id="GTFS-Realtime_update_config_btn_description" class="displayNone">
+                  <p> 
+                    <b>
+                      Update the GTFS-Realtime feed configuration.<br/>
+                      <span class="text-info">
+                        (Note: Effects will be immediate. Can be run while the converter is running.)
+                      </span>
+                    </b> 
+                  </p>
+              </div>
+
+ 
             </div>
           </div>
         </div>
-
-            <div id="GTFS_notifications_div"></div>
-            <div id="GTFS-Realtime_notifications_div"></div>
-
 
           <div class="col-lg-6">
 
@@ -289,18 +560,39 @@
                     </div>
                   </div>
 
-                  <button type="reset" class="btn btn-primary btn-sm">
-                    Reset
-                  </button>
-                  <button id="update_GTFS-Realtime_config_btn" type="submit" class="btn btn-primary btn-sm">
-                    Update Config
-                  </button>
+                  <div id="GTFS-Realtime_form_btn_row" class="row">
+                    <div id="GTFS-Realtime_reset_config_btn_div" class="float-left-btn pad-left-10 ">
+                      <button type="reset" class="btn btn-primary btn-sm">
+                        Reset
+                      </button>
+                    </div>
 
-                </form>
+                    <div id="GTFS-Realtime_update_config_btn_div" class="float-left-btn">
+                      <button id="GTFS-Realtime_update_config_btn"
+                          type="submit" 
+                          class="btn btn-primary btn-sm">
+                            Update GTFS Config
+                      </button>
+                    </div>
+                  </div>
+
+                  <!--<button type="reset" class="btn btn-primary btn-sm">-->
+                    <!--Reset-->
+                  <!--</button>-->
+                  <!--<button id="update_GTFS-Realtime_config_btn" type="submit" class="btn btn-primary btn-sm">-->
+                    <!--Update Config-->
+                  <!--</button>-->
+
+              </form>
             </div>
-            </div>
+          </div>
 
 
+          </div>
+
+          <div class="col-lg-12 thinner-reveal">
+            <div id="GTFS_notifications_div"></div>
+            <div id="GTFS-Realtime_notifications_div"></div>
           </div>
 
         </div>
@@ -546,3 +838,72 @@
 </body>
 
 </html>
+
+                <!--<nav class="navbar navbar-default">-->
+                  <!--<div class="container-fluid">-->
+                    <!--<div class="navbar-header">-->
+                      <!--<button type="button" -->
+                              <!--class="navbar-toggle collapsed" -->
+                              <!--data-toggle="collapse" -->
+                              <!--data-target="#bs-example-navbar-collapse-1" -->
+                              <!--aria-expanded="false">-->
+                        <!--<span class="sr-only"><b>Toggle navigation</b></span>-->
+                      <!--</button>-->
+                    <!--</div>-->
+
+                    <!--[> Collect the nav links, forms, and other content for toggling <]-->
+                    <!--<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">-->
+                      <!--<ul class="nav navbar-nav">-->
+                        <!--<li class="dropdown">-->
+                          
+                          <!--<a href="#" -->
+                             <!--class="dropdown-toggle" -->
+                             <!--data-toggle="dropdown" -->
+                             <!--role="button" -->
+                             <!--aria-haspopup="true" -->
+                             <!--aria-expanded="false">-->
+                            <!--<b>Monitored Components</b><span class="caret">&nbsp;</span>-->
+                          <!--</a>-->
+
+                          <!--<ul class="dropdown-menu">-->
+                            <!--<li><a href="#">System Overview</a></li>-->
+                            <!--<li role="separator" class="divider">&nbsp;</li>-->
+                            <!--<li><a href="#">GTFS Feed Handler</a></li>-->
+                            <!--<li><a href="#">GTFS-Realtime Feed Handler</a></li>-->
+                            <!--<li><a href="#">GTFS-Realtime to Siri Converter</a></li>-->
+                            <!--<li role="separator" class="divider">&nbsp;</li>-->
+                            <!--<li><a href="#">Data Anomalies</a></li>-->
+                            <!--<li><a href="#">Errors</a></li>-->
+                            <!--<li role="separator" class="divider">&nbsp;</li>-->
+                            <!--<li><a href="#">Logging</a></li>-->
+                          <!--</ul>-->
+                        <!--</li>-->
+                      <!--</ul>-->
+
+                      <!--<ul class="nav navbar-nav navbar-right">-->
+                        <!--<li class="dropdown">-->
+                          <!--<a href="#" -->
+                             <!--class="dropdown-toggle" -->
+                             <!--data-toggle="dropdown" -->
+                             <!--role="button" -->
+                             <!--aria-haspopup="true" -->
+                             <!--aria-expanded="false"><b>Detail Level</b><span class="caret">&nbsp;</span></a>-->
+                          <!--<ul class="dropdown-menu">-->
+                            <!--<li class="bg-danger">-->
+                              <!--<a href="#"><span class="btn btn-danger btn-xs pull-right">Error</span></a>-->
+                            <!--</li>-->
+                            <!--<li class="bg-warning">-->
+                              <!--<a href="#"><span class="btn btn-warning btn-xs pull-right">Warn</span></a>-->
+                            <!--</li>-->
+                            <!--<li class="bg-info">-->
+                              <!--<a href="#"><span class="btn btn-info btn-xs pull-right">Info</span></a>-->
+                            <!--</li>-->
+                            <!--<li class="bg-success">-->
+                              <!--<a href="#"><span class="btn btn-default btn-xs pull-right">Debug</span></a>-->
+                            <!--</li>-->
+                          <!--</ul>-->
+                        <!--</li>-->
+                      <!--</ul>-->
+                    <!--</div>[> /.navbar-collapse <]-->
+                  <!--</div>[> /.container-fluid <]-->
+                <!--</nav>-->

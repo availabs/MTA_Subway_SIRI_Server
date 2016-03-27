@@ -1,6 +1,12 @@
 'use strict'; 
 
 
+var _ = require('lodash') ,
+
+    ConverterService = require('./ConverterService') ;
+
+
+
 var arrayMaxLength = 100;
 
 
@@ -145,12 +151,16 @@ function sortDescendingByTimestamp (arr) {
 
 
 function getSystemStatus () {
+    var converterState = _.clone(converter);
+
+    converterState.isRunning = ConverterService.isRunning() ;
+
     return {
         system : system ,
         logging : logging ,
         gtfs : gtfs ,
         gtfsrt : gtfsrt ,
-        converter : converter ,
+        converter : converterState ,
         recentDataAnomalies : recentDataAnomalies ,
         recentErrors : recentErrors ,
     };
@@ -182,3 +192,4 @@ module.exports = {
 	logError                               : logError ,
 
 } ;
+

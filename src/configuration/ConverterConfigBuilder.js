@@ -75,13 +75,14 @@ function validateHotConfigSync (hotConfig) {
         supportedKeys   = _.intersection(fieldMutatorsKeys, supportedFieldMutatorKeys) ;
         unsupportedKeys = _.difference(fieldMutatorsKeys, supportedFieldMutatorKeys) ;
 
+
         for ( i = 0; i < supportedKeys.length; ++i) {
             if (!utils.mutatorIsValid(hotConfig.fieldMutators[supportedKeys[i]])) {
                 validationMessage['fieldMutators_' + supportedKeys[i]] = { 
                     error: 'The ' + fieldMutatorsKeys[i] + ' fieldMutator must be an array of two strings.' ,
                 };
                 validationMessage.__isValid = false;
-            } else {
+            } else if (hotConfig.fieldMutators[supportedKeys[i]][0] || hotConfig.fieldMutators[supportedKeys[i]][1]) {
                 validationMessage['fieldMutators_' + supportedKeys[i]] = { 
                     info: 'The ' + fieldMutatorsKeys[i] + ' fieldMutator is valid.' ,
                 };
@@ -124,8 +125,7 @@ function build (hotConfig, gtfsConfig, gtfsrtConfig, loggingConfig) {
 
     var newConfig =  _.merge( _.cloneDeep(staticConfig) ,
                               hotConfig ,
-                              gtfsConfig, 
-                              gtfsrtConfig ,
+                              { gtfsConfig: gtfsConfig, gtfsrtConfig: gtfsrtConfig },
                               _.pick(loggingConfig, relevantLoggingConfigFields));
 
     // The first elem of the fields mutators array must be a RegExp.

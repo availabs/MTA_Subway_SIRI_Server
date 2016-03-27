@@ -4,7 +4,9 @@
 
 var GTFSFeedHandler = require ('MTA_Subway_GTFS-Realtime_to_SIRI_Converter').MTA_Subway_GTFS_Toolkit.FeedHandler ,
 
-    ConfigsService = require('./ConfigsService') ;
+    ConfigsService = require('./ConfigsService') ,
+
+    eventCreator = require('../events/ServerEventCreator');
 
 
 
@@ -35,6 +37,11 @@ function start () {
     configUpdateListener = feedHandler.updateConfig.bind(feedHandler);
 
     ConfigsService.addGTFSConfigUpdateListener(configUpdateListener);
+
+    eventCreator.emitGTFSServiceStatus({
+        info: 'GTFS FeedHandler started.',
+        timestamp: (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
+    });
 } 
 
 
@@ -45,6 +52,11 @@ function stop () {
 
     configUpdateListener = null;
     feedHandler = null ;
+
+    eventCreator.emitGTFSServiceStatus({
+        info: 'GTFS FeedHandler stopped.',
+        timestamp: (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
+    });
 }
 
 
@@ -56,7 +68,22 @@ function restart () {
 
 
 function updateFeedHandler(src, gtfsDataUpdateCallback) {
-    feedHandler.update(src, gtfsDataUpdateCallback) ;
+    var feedHandlerRunning = !!feedHandler;
+
+    if (!feedHandlerRunning) {
+        try {
+            start();
+        } catch (err) {
+            return gtfsDataUpdateCallback(err);
+        }
+    }
+
+    feedHandler.update(src, function (err, data) {
+        if (!feedHandlerRunning) {
+            stop();
+        }
+        return gtfsDataUpdateCallback(err, data);
+    }) ;
 }
 
 

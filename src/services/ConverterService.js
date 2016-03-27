@@ -28,16 +28,16 @@ function isRunning () { return !!converterStream; }
 function start (callback) {
 
     eventCreator.emitConverterServiceStatus({
-        info: 'ConverterService start called.' ,
-        timestamp: parseInt(process.hrtime().join(''))/1000 ,
+        debug: 'ConverterService start called.' ,
+        timestamp: (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
     });
 
     // Idempotent
     if (converterStream) { 
 
         eventCreator.emitConverterServiceStatus({
-            info: 'ConverterService was already running.' ,
-            timestamp: parseInt(process.hrtime().join(''))/1000 ,
+            debug: 'ConverterService was already running.' ,
+            timestamp: (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
         });
 
         return callback(null); 
@@ -49,33 +49,33 @@ function start (callback) {
         
         eventCreator.emitConverterServiceStatus({
             debug: 'ConverterService starting the GTFS_FeedHandlerService.' ,
-            timestamp: parseInt(process.hrtime().join(''))/1000 ,
+            timestamp: (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
         });
 
         GTFS_FeedHandlerService.start() ;
 
         eventCreator.emitConverterServiceStatus({
             debug: 'GTFS_FeedHandlerService.start returned control to ConverterService.' ,
-            timestamp: parseInt(process.hrtime().join(''))/1000 ,
+            timestamp: (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
         });
 
 
         eventCreator.emitConverterServiceStatus({
             debug: 'ConverterService starting the GTFSRealtime_FeedReaderService.' ,
-            timestamp: parseInt(process.hrtime().join(''))/1000 ,
+            timestamp: (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
         });
 
         GTFSRealtime_FeedReaderService.start() ;
 
         eventCreator.emitConverterServiceStatus({
             debug: 'GTFSRealtime_FeedReaderService.start returned control to the ConverterService.' ,
-            timestamp: parseInt(process.hrtime().join(''))/1000 ,
+            timestamp: (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
         });
 
 
         eventCreator.emitConverterServiceStatus({
             debug: 'ConverterService calling the ConverterStream constructor.' ,
-            timestamp: parseInt(process.hrtime().join(''))/1000 ,
+            timestamp: (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
         });
 
 
@@ -91,7 +91,7 @@ function start (callback) {
 
         eventCreator.emitConverterServiceStatus({
             debug: 'ConverterStream constructor returned control to the ConverterService.' ,
-            timestamp: parseInt(process.hrtime().join(''))/1000 ,
+            timestamp: (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
         });
 
 
@@ -105,23 +105,23 @@ function start (callback) {
 
         eventCreator.emitConverterServiceStatus({
             debug: 'ConverterService calling converterStream.start.' ,
-            timestamp: parseInt(process.hrtime().join(''))/1000 ,
+            timestamp: (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
         });
 
         converterStream.start();
 
         eventCreator.emitConverterServiceStatus({
             debug: 'converterStream.start returned control to the ConverterService.' ,
-            timestamp: parseInt(process.hrtime().join(''))/1000 ,
+            timestamp: (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
         });
 
         eventCreator.emitConverterServiceStartedEvent({
-            timestamp: parseInt(process.hrtime().join(''))/1000 ,
+            timestamp: (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
         });
 
         eventCreator.emitConverterServiceStatus({
             info: 'ConverterStream startup process complete.' ,
-            timestamp: parseInt(process.hrtime().join(''))/1000 ,
+            timestamp: (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
         });
 
 
@@ -130,12 +130,12 @@ function start (callback) {
     } catch (err) {
 
         eventCreator.emitConverterServiceStatus({
-            error: 'ConverterStream startup process encountered the following error:' + 
-                   '\n\t' + err.message + '\n' +
+            error: 'ConverterStream startup process encountered the following error: ' + 
+                   err.message + 
                    ' GTFS-Realtime to Siri conversion will not be available' +
                    ' until the configuration problems are fixed.',
             debug: (err.stack || err) ,
-            timestamp: parseInt(process.hrtime().join(''))/1000 ,
+            timestamp: (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
         });
 
         if (GTFSRealtime_FeedReaderService) {
@@ -158,16 +158,16 @@ function start (callback) {
 function stop (callback) {
 
     eventCreator.emitConverterServiceStatus({
-        info: 'ConverterService stop called.' ,
-        timestamp: parseInt(process.hrtime().join(''))/1000 ,
+        debug: 'ConverterService stop called.' ,
+        timestamp: (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
     });
 
     // Idempotent
     if (!converterStream) { 
 
         eventCreator.emitConverterServiceStatus({
-            info: 'ConverterStream was already stopped.' ,
-            timestamp: parseInt(process.hrtime().join(''))/1000 ,
+            debug: 'ConverterStream was already stopped.' ,
+            timestamp: (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
         });
 
         return callback(null); }
@@ -176,7 +176,7 @@ function stop (callback) {
 
         eventCreator.emitConverterServiceStatus({
             debug: 'ConverterService shutdown process started.' ,
-            timestamp: parseInt(process.hrtime().join(''))/1000 ,
+            timestamp: (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
         });
 
         // Deregisters listeners from the GTFS FeedHandler and the GTFS-Realtime FeedReader.
@@ -198,12 +198,12 @@ function stop (callback) {
 
 
         eventCreator.emitConverterServiceStoppedEvent({
-            timestamp: parseInt(process.hrtime().join(''))/1000 ,
+            timestamp: (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
         });
 
         eventCreator.emitConverterServiceStatus({
             info: 'ConverterStream shutdown process complete.' ,
-            timestamp: parseInt(process.hrtime().join(''))/1000 ,
+            timestamp: (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
         });
 
 
@@ -213,7 +213,7 @@ function stop (callback) {
         eventCreator.emitConverterServiceStatus({
             error: 'ConverterStream shutdown process encountered an error.' ,
             debug: (err.stack || err) ,
-            timestamp: parseInt(process.hrtime().join(''))/1000 ,
+            timestamp: (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
         });
 
         return callback && callback(err); 

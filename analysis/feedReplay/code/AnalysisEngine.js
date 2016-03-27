@@ -3,8 +3,8 @@
 
 var path = require('path') ,
     ConverterService = require(path.join(__dirname, '/MockConverterService')) ,
-    //listener = require(path.join(__dirname, '/LocationTrackingAnalysis')) ;
-    listener = require(path.join(__dirname, '/DumpBothGTFSrtAndSiri')) ;
+    listener = require(path.join(__dirname, '/LocationTrackingAnalysis')) ;
+    //listener = require(path.join(__dirname, '/DumpBothGTFSrtAndSiri')) ;
 
 
 

@@ -12,11 +12,11 @@ function mutatorIsValid (mutator) {
 function validateNumericField (hotConfig, fieldName, validationMessage) {
     if (isNaN(parseInt(hotConfig[fieldName]))) { 
         validationMessage[fieldName] = { 
-            error: ('GTFS-Realtime configuration field "' + fieldName + '" must be a numeric value.') ,
+            error: ('GTFS-Realtime configuration field \'' + fieldName + '\' must be a numeric value.') ,
         };
     } else {
         validationMessage[fieldName] = { 
-            info: ('GTFS-Realtime configuration field "' + fieldName + '" looks valid.') ,
+            info: ('GTFS-Realtime configuration field \'' + fieldName + '\' looks valid.') ,
         };
     }
 }

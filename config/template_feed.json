@@ -1,15 +1,13 @@
 {
     "gtfs": {
-        "feedURL": "http://transitfeeds.com/p/mta/79/latest/download",
-        "zipfile": ""
+        "feedURL": "http://transitfeeds.com/p/mta/79/latest/download"
     },
     "gtfsrt": {
-        "feedURL": "",
+        "feedURL": "http://datamine.mta.info/mta_esi.php?&key=5dadd04378cc60cc4ae447da5756ddaa",
         "readInterval": 30,
         "retryInterval": 4,
         "maxNumRetries": 2,
-        "protofileName": "gtfs-realtime.proto",
-        "useLastStoptimeUpdateAsDestination": false
+        "protofile": null
     },
     "converter": {
         "fieldMutators": {

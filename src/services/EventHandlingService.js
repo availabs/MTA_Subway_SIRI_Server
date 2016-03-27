@@ -49,6 +49,7 @@ function handleGTFSLastDataUpdateLogReset () {
 }
 
 function handleGTFSDataUpdateStatusUpdate (update) {
+    SystemStatusService.updateGTFSStatus(update);
     SystemStatusService.updateGTFSLastDataUpdateLog(update);
     loggingService.logSystemStatusUpdate({ payload: update });
 }
@@ -141,13 +142,13 @@ function handleTrainTrackingErrors (debuggingInfo) {
 
 function handleDataAnomaly (anomalyInfo) {
     loggingService.logDataAnomaly({ payload: anomalyInfo }) ;
-    SystemStatusService.addAnomaly(anomalyInfo) ;
+    SystemStatusService.logAnomaly(anomalyInfo) ;
 }
 
 function handleSystemError (errorEvent) {
     loggingService.logError({ payload: errorEvent }) ;
 
-    SystemStatusService.addError(errorEvent) ;
+    SystemStatusService.logError(errorEvent) ;
 }
 
 
@@ -233,3 +234,5 @@ serverEventEmitter.on(serverEventEmitter.eventTypes.DATA_ANOMALY,
                       handleDataAnomaly) ;
 serverEventEmitter.on(serverEventEmitter.eventTypes.ERROR,
                       handleSystemError) ;
+
+

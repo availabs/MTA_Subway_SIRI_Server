@@ -14,8 +14,6 @@ var fs    = require('fs') ,
 
     eventCreator = require('../events/ServerEventCreator') ,
 
-    utils = require('../configuration/Utils') ,
-
     hotConfigGetters       = require('../configuration/HotConfigGetters') ,
 
     serverConfigBuilder    = require('../configuration/ServerConfigBuilder') ,
@@ -56,7 +54,6 @@ var fs    = require('fs') ,
 
 //Initializer
 (function () {
-console.log('### start');
 
     var validationMessage ,
         activeFeedHotConfig ;
@@ -64,7 +61,7 @@ console.log('### start');
     
     eventCreator.emitSystemStatus({
         info: 'ConfigsService initializing the various configurations' ,
-        timestamp: parseInt(process.hrtime().join(''))/1000 ,
+        timestamp: (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
     });
         
     serverHotConfig    = null ;
@@ -78,14 +75,15 @@ console.log('### start');
 
 
     validationMessage = serverConfigBuilder.validateHotConfigSync(serverHotConfig) ;
-    validationMessage.__timestamp = parseInt(process.hrtime().join(''))/1000;
+    validationMessage.__timestamp = (Date.now() + (process.hrtime()[1]%1000000)/1000000);
 
-    serverConfig = serverConfigBuilder.build(serverHotConfig) ;  
+    serverConfig = serverConfigBuilder.build(_.cloneDeep(serverHotConfig)) ;  
     eventCreator.emitSystemConfigStatus(validationMessage);
 
     validationMessage = loggingConfigBuilder.validateHotConfigSync(loggingHotConfig) ;
+    validationMessage.__timestamp = (Date.now() + (process.hrtime()[1]%1000000)/1000000);
 
-    loggingConfig = loggingConfigBuilder.build(loggingHotConfig, serverConfig) ;
+    loggingConfig = loggingConfigBuilder.build(_.cloneDeep(loggingHotConfig), _.cloneDeep(serverConfig)) ;
     eventCreator.emitLoggingConfigStatus(validationMessage);
 
     try {
@@ -100,18 +98,22 @@ console.log('### start');
     converterHotConfig = activeFeedHotConfig && activeFeedHotConfig.converter;
 
     validationMessage = gtfsConfigBuilder.validateHotConfigSync(gtfsHotConfig) ;
-    gtfsConfig = gtfsConfigBuilder.build(gtfsHotConfig, loggingConfig) ;
+    validationMessage.__timestamp = (Date.now() + (process.hrtime()[1]%1000000)/1000000);
+    gtfsConfig = gtfsConfigBuilder.build(_.cloneDeep(gtfsHotConfig),_.cloneDeep(loggingConfig)) ;
     eventCreator.emitGTFSServiceConfigStatus(validationMessage);
 
     validationMessage = gtfsrtConfigBuilder.validateHotConfigSync(gtfsrtHotConfig) ;
-    gtfsrtConfig = gtfsrtConfigBuilder.build(gtfsrtHotConfig) ;
+    validationMessage.__timestamp = (Date.now() + (process.hrtime()[1]%1000000)/1000000);
+    gtfsrtConfig = gtfsrtConfigBuilder.build(_.cloneDeep(gtfsrtHotConfig)) ;
     eventCreator.emitGTFSRealtimeServiceConfigStatus(validationMessage);
 
     validationMessage = converterConfigBuilder.validateHotConfigSync(converterHotConfig) ;
-    converterConfig = converterConfigBuilder.build(converterHotConfig, gtfsConfig, gtfsrtConfig, loggingConfig) ;
+    validationMessage.__timestamp = (Date.now() + (process.hrtime()[1]%1000000)/1000000);
+    converterConfig = converterConfigBuilder.build(_.cloneDeep(converterHotConfig), 
+                                                   _.cloneDeep(gtfsConfig), 
+                                                   _.cloneDeep(gtfsrtConfig), 
+                                                   _.cloneDeep(loggingConfig)) ;
     eventCreator.emitConverterServiceConfigStatus(validationMessage);
-
-console.log('************');
 }());
 
 
@@ -139,11 +141,13 @@ function updateFeedConfig (feedComponentName, newHotConfig, callback) {
     }
 
     configBuilder.validateHotConfig(newHotConfig, function (validationMessage) {
+        validationMessage.__timestamp = (Date.now() + (process.hrtime()[1]%1000000)/1000000);
+
         if (!validationMessage.__isValid) { 
 
             eventCreator.emitSystemStatus({
                 error: 'New ' + feedComponentName + ' validation failed.' ,
-                timestamp: parseInt(process.hrtime().join(''))/1000 ,
+                timestamp: (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
             });
 
             return callback(new Error(JSON.stringify(validationMessage))); 
@@ -155,22 +159,24 @@ function updateFeedConfig (feedComponentName, newHotConfig, callback) {
         switch (feedComponentName) {
             case 'gtfs':
                 eventCreator.emitGTFSServiceConfigStatus(validationMessage);
-                gtfsHotConfig = _.cloneDeep(newHotConfig);
-                gtfsConfig = _.cloneDeep(gtfsConfigBuilder.build(newHotConfig, _.cloneDeep(loggingConfig)));
+                gtfsHotConfig = _.merge(_.cloneDeep(gtfsHotConfig), _.cloneDeep(newHotConfig));
+                gtfsConfig = _.cloneDeep(
+                    gtfsConfigBuilder.build(_.cloneDeep(gtfsHotConfig),_.cloneDeep(loggingConfig))
+                );
                 newComponentConfig = gtfsConfig;
                 listeners = gtfsConfigUpdateListeners;
                 break;
             case 'gtfsrt':
                 eventCreator.emitGTFSRealtimeServiceConfigStatus(validationMessage);
-                gtfsrtHotConfig = _.cloneDeep(newHotConfig);
-                gtfsrtConfig = _.cloneDeep(gtfsrtConfigBuilder.build(newHotConfig));
+                gtfsrtHotConfig = _.merge(_.cloneDeep(gtfsrtHotConfig), _.cloneDeep(newHotConfig));
+                gtfsrtConfig = _.cloneDeep(gtfsrtConfigBuilder.build(_.cloneDeep(gtfsrtHotConfig)));
                 newComponentConfig = gtfsrtConfig;
                 listeners = gtfsrtConfigUpdateListeners;
                 break;
             case 'converter':
                 eventCreator.emitConverterServiceConfigStatus(validationMessage);
-                converterHotConfig = _.cloneDeep(newHotConfig);
-                converterConfig = _.cloneDeep(converterConfigBuilder.build(newHotConfig, 
+                converterHotConfig = _.merge(_.cloneDeep(converterHotConfig), newHotConfig);
+                converterConfig = _.cloneDeep(converterConfigBuilder.build(_.cloneDeep(converterHotConfig), 
                                                                            _.cloneDeep(gtfsConfig), 
                                                                            _.cloneDeep(gtfsrtConfig), 
                                                                            _.cloneDeep(loggingConfig)));
@@ -193,7 +199,7 @@ function updateFeedConfig (feedComponentName, newHotConfig, callback) {
                 eventCreator.emitSystemStatus({
                     error: 'New ' + feedComponentName + ' configuration could not be persisted to disk.' ,
                     debug: (err.stack || err) ,
-                    timestamp: parseInt(process.hrtime().join(''))/1000 ,
+                    timestamp: (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
                 });
 
                 return callback(err) ;
@@ -201,7 +207,7 @@ function updateFeedConfig (feedComponentName, newHotConfig, callback) {
 
             eventCreator.emitSystemStatus({
                 info: 'New ' + feedComponentName + ' configuration persisted to disk.' ,
-                timestamp: parseInt(process.hrtime().join(''))/1000 ,
+                timestamp: (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
             });
 
             listeners = listeners.map(function (listener) { 
@@ -220,25 +226,25 @@ var api = {
 
 
     getServerConfig : function () {
-        return serverConfig;
+        return _.cloneDeep(serverConfig);
     },
 
     getServerHotConfig : function () {
-        return serverHotConfig;
+        return _.cloneDeep(serverHotConfig);
     },
 
 
     // ASSUMES that the converter is taken off-line if activeFeed changes.
     updateServerConfig : function (newHotConfig, callback) {
         serverConfigBuilder.validateHotConfig(newHotConfig, function (validationMessage) {
+            validationMessage.__timestamp = (Date.now() + (process.hrtime()[1]%1000000)/1000000);
             
-            var errMsgs = utils.extractValidationErrorMessages(validationMessage),
-                activeFeedChanged,
+            var activeFeedChanged,
                 aFHC;
 
 
-            if (errMsgs) { 
-                return callback(new Error(JSON.stringify(errMsgs, null, 4))); 
+            if (!validationMessage.__isValid) { 
+                return callback(new Error(JSON.stringify(validationMessage))); 
             }
         
             if (!activeFeedChanged) {
@@ -265,24 +271,21 @@ var api = {
                 }
 
                 gtfsConfigBuilder.validateHotConfig(aFHC.gtfs, function (validationMsg) {
-                    var errMsgs = utils.extractValidationErrorMessages(validationMsg);
 
-                    if (errMsgs) { 
-                        return callback(new Error(JSON.stringify(errMsgs, null, 4))); 
+                    if (validationMsg.__isValid) { 
+                        return callback(new Error(JSON.stringify(validationMessage))); 
                     }
 
                     gtfsrtConfigBuilder.validateHotConfig(aFHC.gtfsrt, function (validationMsg) {
-                        var errMsgs = utils.extractValidationErrorMessages(validationMsg);
 
-                        if (errMsgs) { 
-                            return callback(new Error(JSON.stringify(errMsgs, null, 4))); 
+                        if (validationMsg.__isValid) { 
+                            return callback(new Error(JSON.stringify(validationMessage))); 
                         }
 
                         converterConfigBuilder.validateHotConfig(aFHC.converter, function (validationMsg) {
-                            var errMsgs = utils.extractValidationErrorMessages(validationMsg) ;
 
-                            if (errMsgs) { 
-                                return callback(new Error(JSON.stringify(errMsgs, null, 4))); 
+                            if (validationMsg.__isValid) { 
+                                return callback(new Error(JSON.stringify(validationMessage))); 
                             }
 
                             fs.writeFile(serverHotConfigPath, JSON.stringify(newHotConfig, null, 4), function (err) {
@@ -352,11 +355,11 @@ var api = {
 
 
     getLoggingConfig : function () {
-        return loggingConfig;
+        return _.cloneDeep(loggingConfig);
     },
 
     getLoggingHotConfig : function () {
-        return loggingHotConfig;
+        return _.cloneDeep(loggingHotConfig);
     },
 
     updateLoggingConfig : function (newHotConfig, callback) {
@@ -364,10 +367,12 @@ var api = {
         if (!newHotConfig) { callback(new Error('undefined new hot config.')); }
 
         loggingConfigBuilder.validateHotConfig(newHotConfig, function (validationMessage) {
-                
-            var errMsgs = utils.extractValidationErrorMessages(validationMessage);
 
-            if (errMsgs) { return callback(new Error(JSON.stringify(errMsgs, null, 4))); }
+            validationMessage.__timestamp = (Date.now() + (process.hrtime()[1]%1000000)/1000000);
+                
+            if (!validationMessage.__isValid) { 
+                return callback(new Error(JSON.stringify(validationMessage))); 
+            }
                
             fs.writeFile(loggingHotConfigPath, JSON.stringify(newHotConfig, null, 4), function (err) {
                 if (err) { return callback(err); }
@@ -416,11 +421,11 @@ var api = {
 
 
     getGTFSConfig : function () {
-        return gtfsConfig;
+        return _.cloneDeep(gtfsConfig);
     },
 
     getGTFSHotConfig : function () {
-        return gtfsHotConfig;
+        return _.cloneDeep(gtfsHotConfig);
     },
 
     addGTFSConfigUpdateListener : function (listener) {
@@ -445,11 +450,11 @@ var api = {
 
 
     getGTFSRealtimeConfig : function () {
-        return gtfsrtConfig;
+        return _.cloneDeep(gtfsrtConfig);
     },
 
     getGTFSRealtimeHotConfig : function () {
-        return gtfsrtHotConfig;
+        return _.cloneDeep(gtfsrtHotConfig);
     },
 
     updateGTFSRealtimeConfig : updateFeedConfig.bind(null, 'gtfsrt') ,
@@ -477,11 +482,11 @@ var api = {
 
 
     getConverterConfig : function () {
-        return converterConfig;
+        return _.cloneDeep(converterConfig);
     },
 
     getConverterHotConfig : function () {
-        return converterHotConfig;
+        return _.cloneDeep(converterHotConfig);
     },
 
     updateConverterConfig : updateFeedConfig.bind(null, 'converter'),

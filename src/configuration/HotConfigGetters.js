@@ -125,7 +125,7 @@ function getActiveFeedHotConfigSync (serverHotConfig) {
 
     eventCreator.emitSystemStatus({
         debug: 'The active feed is set to ' + activeFeed + '.',
-        timestamp: parseInt(process.hrtime().join(''))/1000 ,
+        timestamp: (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
     });
 
 
@@ -134,7 +134,7 @@ function getActiveFeedHotConfigSync (serverHotConfig) {
 
         eventCreator.emitSystemStatus({
             debug: activeFeed + ' configuration file read from disk.' ,
-            timestamp: parseInt(process.hrtime().join(''))/1000 ,
+            timestamp: (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
         });
 
         try {
@@ -142,13 +142,13 @@ function getActiveFeedHotConfigSync (serverHotConfig) {
 
             eventCreator.emitSystemStatus({
                 debug: 'Successfuly parsed the configuration file for ' + activeFeed + '.' ,
-                timestamp: parseInt(process.hrtime().join(''))/1000 ,
+                timestamp: (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
             });
 
             if (!activeFeedConfig) {
                 eventCreator.emitSystemStatus({
                     error: 'The configuration file for ' + activeFeed + 'is not valid.' ,
-                    timestamp: parseInt(process.hrtime().join(''))/1000 ,
+                    timestamp: (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
                 });
             } 
 
@@ -163,7 +163,7 @@ function getActiveFeedHotConfigSync (serverHotConfig) {
             eventCreator.emitSystemStatus({
                 error: 'Could not parse the configuration file for ' + activeFeed + '.' ,
                 debug: (parseErr.stack || parseErr) ,
-                timestamp: parseInt(process.hrtime().join(''))/1000 ,
+                timestamp: (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
             });
             
             throw parseErr;
@@ -173,7 +173,7 @@ function getActiveFeedHotConfigSync (serverHotConfig) {
         eventCreator.emitSystemStatus({
             error: 'Could not read the configuration file for the feed named ' + activeFeed + '.' ,
             debug: (fileReadError.stack || fileReadError) ,
-            timestamp: parseInt(process.hrtime().join(''))/1000 ,
+            timestamp: (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
         });
 
         throw fileReadError;

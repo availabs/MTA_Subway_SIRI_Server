@@ -50,13 +50,11 @@ function validator (hotConfig, callback) {
             error: 'No configuration provided for the GTFS-Realtime component.' 
         } ;
         validationMessage.__isValid = false ;
-        return validationMessage ;
     } else if (Object.prototype.toString.call(hotConfig) !== '[object Object]') {
         validationMessage.configuration = { 
             error: 'The logging config should be a simple Object.' 
         } ;
         validationMessage.__isValid = false ;
-        return validationMessage ;
     }
 
     
@@ -119,7 +117,7 @@ function validator (hotConfig, callback) {
                                 'The GTFS-Realtime feed cannot be parsed without a .proto file.';
 
         if (callback) { // Async
-            fs.access(protofilePath, fs.F_OK, function (err) {
+            return fs.access(protofilePath, fs.F_OK, function (err) {
                 if (err) {
                     validationMessage.protofile = { 
                         error: protofileErrorMessage 
@@ -157,7 +155,8 @@ function validator (hotConfig, callback) {
 
         
     if (callback) {
-        return process.nextTick(function () { callback(validationMessage); });
+        //return process.nextTick(function () { callback(validationMessage); });
+        callback(validationMessage);
     } else {
         return validationMessage;
     }
