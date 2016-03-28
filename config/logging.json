@@ -1,11 +1,11 @@
 {
-    "logIndexingStatistics": false,
+    "logIndexingStatistics": true,
     "logDataAnomalies": false,
-    "logErrors": false,
-    "logTrainLocations": false,
-    "logTrainTrackingStats": false,
-    "logUnscheduledTrips": false,
-    "logNoSpatialDataTrips": false,
-    "logTrainTrackingErrors": false,
+    "logErrors": true,
+    "logTrainLocations": true,
+    "logTrainTrackingStats": true,
+    "logUnscheduledTrips": true,
+    "logNoSpatialDataTrips": true,
+    "logTrainTrackingErrors": true,
     "daysToKeepLogsBeforeDeleting": "1"
 }

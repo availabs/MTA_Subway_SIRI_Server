@@ -65,6 +65,11 @@ function updateSystemConfigStatus (update) {
 
 
 //==================== Logging ==================== 
+
+function resetLoggingStatus () {
+    logging.statusLog.length = 0;
+}
+
 function updateLoggingStatus (update) {
     addToLog(logging.statusLog, update) ;
 }
@@ -76,6 +81,11 @@ function updateLoggingConfigStatus (update) {
 
 
 //==================== GTFS ==================== 
+
+function resetGTFSStatus () {
+    gtfs.statusLog.length = 0;
+}
+
 function updateGTFSStatus (update) {
     addToLog(gtfs.statusLog, update) ;
 }
@@ -94,6 +104,11 @@ function updateGTFSLastDataUpdateLog (update) {
 
 
 //==================== GTFS-Realtime ==================== 
+
+function resetGTFSRealtimeStatus () {
+    gtfsrt.statusLog.length = 0;
+}
+
 function updateGTFSRealtimeStatus (update) {
     addToLog(gtfsrt.statusLog, update) ;
 }
@@ -108,6 +123,11 @@ function logGTFSrtFeedReaderSuccessfulReadEvent (event) {
 
 
 //==================== Converter ==================== 
+
+function resetConverterStatus () {
+    converter.statusLog.length = 0;
+}
+
 function logConverterServiceStartedEvent (serviceStartedEvent) {
     converter.lastStartedEvent = serviceStartedEvent ;
 }
@@ -173,12 +193,18 @@ module.exports = {
 
 	updateSystemStatusLog                  : updateSystemStatusLog ,
 	updateSystemConfigStatus               : updateSystemConfigStatus ,
+
+    resetLoggingStatus                     : resetLoggingStatus ,
 	updateLoggingStatus                    : updateLoggingStatus ,
 	updateLoggingConfigStatus              : updateLoggingConfigStatus ,
+
+    resetGTFSStatus                        : resetGTFSStatus ,
 	updateGTFSStatus                       : updateGTFSStatus ,
 	updateGTFSConfigStatus                 : updateGTFSConfigStatus ,
 	resetGTFSLastDataUpdateLog             : resetGTFSLastDataUpdateLog ,
 	updateGTFSLastDataUpdateLog            : updateGTFSLastDataUpdateLog ,
+
+    resetGTFSRealtimeStatus                : resetGTFSRealtimeStatus ,
 	updateGTFSRealtimeStatus               : updateGTFSRealtimeStatus ,
 	updateGTFSRealtimeConfigStatus         : updateGTFSRealtimeConfigStatus ,
 
@@ -186,10 +212,11 @@ module.exports = {
 	logConverterServiceStartedEvent        : logConverterServiceStartedEvent ,
 	logConverterServiceStoppedEvent        : logConverterServiceStoppedEvent ,
 
+    resetConverterStatus                   : resetConverterStatus ,
 	updateConverterStatus                  : updateConverterStatus ,
 	updateConverterConfigStatus            : updateConverterConfigStatus ,
+
 	logAnomaly                             : logAnomaly ,
 	logError                               : logError ,
-
 } ;
 

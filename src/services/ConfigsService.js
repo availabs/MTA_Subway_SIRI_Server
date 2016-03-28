@@ -6,6 +6,7 @@ var fs    = require('fs') ,
     async = require('async') ,
     _     = require('lodash') ,
 
+
     projectRoot = path.join(__dirname, '../../') ,
     configDirPath = path.join(projectRoot, '/config/') ,
     serverHotConfigPath = path.join(configDirPath, 'server,json') ,
@@ -42,7 +43,16 @@ var fs    = require('fs') ,
     gtfsrtConfigUpdateListeners    = [] ,
     converterConfigUpdateListeners = [] ,
     loggingConfigUpdateListeners   = [] ,
-    serverConfigUpdateListeners    = [] ;
+    serverConfigUpdateListeners    = [] ,
+
+
+    configValidityStatus = {
+        server    : false,
+        logging   : false,
+        gtfs      : false,
+        gtfsrt    : false,
+        converter : false,
+    };
 
 
 
@@ -76,12 +86,14 @@ var fs    = require('fs') ,
 
     validationMessage = serverConfigBuilder.validateHotConfigSync(serverHotConfig) ;
     validationMessage.__timestamp = (Date.now() + (process.hrtime()[1]%1000000)/1000000);
+    configValidityStatus.server = validationMessage.__isValid;
 
     serverConfig = serverConfigBuilder.build(_.cloneDeep(serverHotConfig)) ;  
     eventCreator.emitSystemConfigStatus(validationMessage);
 
     validationMessage = loggingConfigBuilder.validateHotConfigSync(loggingHotConfig) ;
     validationMessage.__timestamp = (Date.now() + (process.hrtime()[1]%1000000)/1000000);
+    configValidityStatus.logging = validationMessage.__isValid;
 
     loggingConfig = loggingConfigBuilder.build(_.cloneDeep(loggingHotConfig), _.cloneDeep(serverConfig)) ;
     eventCreator.emitLoggingConfigStatus(validationMessage);
@@ -99,16 +111,19 @@ var fs    = require('fs') ,
 
     validationMessage = gtfsConfigBuilder.validateHotConfigSync(gtfsHotConfig) ;
     validationMessage.__timestamp = (Date.now() + (process.hrtime()[1]%1000000)/1000000);
+    configValidityStatus.gtfs = validationMessage.__isValid;
     gtfsConfig = gtfsConfigBuilder.build(_.cloneDeep(gtfsHotConfig),_.cloneDeep(loggingConfig)) ;
     eventCreator.emitGTFSServiceConfigStatus(validationMessage);
 
     validationMessage = gtfsrtConfigBuilder.validateHotConfigSync(gtfsrtHotConfig) ;
     validationMessage.__timestamp = (Date.now() + (process.hrtime()[1]%1000000)/1000000);
+    configValidityStatus.gtfsrt = validationMessage.__isValid;
     gtfsrtConfig = gtfsrtConfigBuilder.build(_.cloneDeep(gtfsrtHotConfig)) ;
     eventCreator.emitGTFSRealtimeServiceConfigStatus(validationMessage);
 
     validationMessage = converterConfigBuilder.validateHotConfigSync(converterHotConfig) ;
     validationMessage.__timestamp = (Date.now() + (process.hrtime()[1]%1000000)/1000000);
+    configValidityStatus.converter = validationMessage.__isValid;
     converterConfig = converterConfigBuilder.build(_.cloneDeep(converterHotConfig), 
                                                    _.cloneDeep(gtfsConfig), 
                                                    _.cloneDeep(gtfsrtConfig), 
@@ -128,14 +143,26 @@ function writeFeedConfig (feedName, feedHotConfig, callback) {
 // use this for reuse
 function updateFeedConfig (feedComponentName, newHotConfig, callback) {
 
-    var configBuilder, listeners;
+    var configBuilder , 
+        listeners ,
+        configWasValid ,
+        msg;
 
     if (feedComponentName === 'gtfs') {
         configBuilder = gtfsConfigBuilder;
+        if (!(configWasValid = configValidityStatus.gtfs)) {
+            require('./SystemStatusService').resetGTFSStatus();
+        }
     } else if (feedComponentName === 'gtfsrt') {
         configBuilder = gtfsrtConfigBuilder;
+        if (!(configWasValid = configValidityStatus.gtfsrt)) {
+            require('./SystemStatusService').resetGTFSRealtimeStatus();
+        }
     } else if (feedComponentName === 'converter') {
         configBuilder = converterConfigBuilder;
+        if (!(configWasValid = configValidityStatus.converter)) {
+            require('./SystemStatusService').resetConverterStatus();
+        }
     } else {
         return callback(new Error('Unrecognized feedComponentName name.'));
     }
@@ -144,14 +171,16 @@ function updateFeedConfig (feedComponentName, newHotConfig, callback) {
         validationMessage.__timestamp = (Date.now() + (process.hrtime()[1]%1000000)/1000000);
 
         if (!validationMessage.__isValid) { 
+            msg = { timestamp: (Date.now() + (process.hrtime()[1]%1000000)/1000000) } ;
+            msg[configWasValid ? 'info' : 'error'] = 'New ' + feedComponentName + ' validation failed.\n' +
+                                                     'No changes will be made on the server.\n' +
+                                                     JSON.stringify(validationMessage, null, 4) ;
+            eventCreator.emitSystemStatus(msg);
 
-            eventCreator.emitSystemStatus({
-                error: 'New ' + feedComponentName + ' validation failed.' ,
-                timestamp: (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
-            });
+            return callback(new Error(JSON.stringify(validationMessage, null, 2))); 
+        } 
 
-            return callback(new Error(JSON.stringify(validationMessage))); 
-        }
+        configValidityStatus[feedComponentName] = true;
 
 
         var newComponentConfig, newFeedConfig;
@@ -428,6 +457,8 @@ var api = {
         return _.cloneDeep(gtfsHotConfig);
     },
 
+    gtfsIsConfigured: function () { return configValidityStatus.gtfs; },
+
     addGTFSConfigUpdateListener : function (listener) {
         if ((typeof listener) === "function") {
             gtfsConfigUpdateListeners.push(listener);
@@ -456,6 +487,8 @@ var api = {
     getGTFSRealtimeHotConfig : function () {
         return _.cloneDeep(gtfsrtHotConfig);
     },
+
+    gtfsrtIsConfigured: function () { return configValidityStatus.gtfsrt; },
 
     updateGTFSRealtimeConfig : updateFeedConfig.bind(null, 'gtfsrt') ,
 
@@ -488,6 +521,8 @@ var api = {
     getConverterHotConfig : function () {
         return _.cloneDeep(converterHotConfig);
     },
+    
+    converterIsConfigured: function () { return configValidityStatus.converter; },
 
     updateConverterConfig : updateFeedConfig.bind(null, 'converter'),
 

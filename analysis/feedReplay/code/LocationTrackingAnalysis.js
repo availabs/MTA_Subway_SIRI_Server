@@ -160,60 +160,60 @@ function analyzeTripAppearances () {
 
 
 
-function analyzeDistancesTraveled () {
+//function analyzeDistancesTraveled () {
 
-    var allSpeeds = [];
+    //var allSpeeds = [];
 
-    var tripKeyToSpeedsArr =  _.reduce(tripTrackingMap, function (acc, locArrArr, key) {
+    //var tripKeyToSpeedsArr =  _.reduce(tripTrackingMap, function (acc, locArrArr, key) {
 
 
-            var locArr = _.flatten(locArrArr) ,
+            //var locArr = _.flatten(locArrArr) ,
 
-                locArrFiltered = locArr.filter(function (locObj) { 
-                    return (locObj && locObj.timestamp && !isNaN(parseInt(locObj.distTraveled)));
-                }) ,
+                //locArrFiltered = locArr.filter(function (locObj) { 
+                    //return (locObj && locObj.timestamp && !isNaN(parseInt(locObj.distTraveled)));
+                //}) ,
 
-                distTimestampPairs = locArrFiltered.map(function (locObj) {
-                    return { d:locObj.distTraveled, t: locObj.timestamp } ;
-                }),
+                //distTimestampPairs = locArrFiltered.map(function (locObj) {
+                    //return { d:locObj.distTraveled, t: locObj.timestamp } ;
+                //}),
 
-                speeds = _.tail(distTimestampPairs).map(function (pair, i) {
-                    var dX = (pair.d - distTimestampPairs[i].d) ,
-                        dT = (pair.t - distTimestampPairs[i].t) ,
+                //speeds = _.tail(distTimestampPairs).map(function (pair, i) {
+                    //var dX = (pair.d - distTimestampPairs[i].d) ,
+                        //dT = (pair.t - distTimestampPairs[i].t) ,
 
-                        kmPerSec =  dX / dT ,
+                        //kmPerSec =  dX / dT ,
 
-                        // km/s * m/km * s/h = m/h
-                        mph = kmPerSec * 0.62137 * (60 * 60) ;
+                        //// km/s * m/km * s/h = m/h
+                        //mph = kmPerSec * 0.62137 * (60 * 60) ;
 
-                    if (mph) { allSpeeds.push(mph); }
+                    //if (mph) { allSpeeds.push(mph); }
 
-                    return { pair: pair, dX: dX, dT: dT, mph: mph } ;
-                }) ,
+                    //return { pair: pair, dX: dX, dT: dT, mph: mph } ;
+                //}) ,
                 
-                trimDwellAtOrigin = speeds.reduce(function (acc2, speed) {
-                    if (speed.mph || acc2.length) { acc2.push(speed); }
+                //trimDwellAtOrigin = speeds.reduce(function (acc2, speed) {
+                    //if (speed.mph || acc2.length) { acc2.push(speed); }
 
-                    return acc2;
-                }, []);
+                    //return acc2;
+                //}, []);
 
-            if (trimDwellAtOrigin.length) { acc[key] = trimDwellAtOrigin; }
+            //if (trimDwellAtOrigin.length) { acc[key] = trimDwellAtOrigin; }
 
-            return acc ;
-    }, {});
+            //return acc ;
+    //}, {});
 
-    var speedStats = {
-        mean: ss.mean(allSpeeds) ,
-        variance : ss.variance(allSpeeds) ,
-        standardDeviation : ss.standardDeviation(allSpeeds) ,
-        max: ss.max(allSpeeds) ,
-    };
+    //var speedStats = {
+        //mean: ss.mean(allSpeeds) ,
+        //variance : ss.variance(allSpeeds) ,
+        //standardDeviation : ss.standardDeviation(allSpeeds) ,
+        //max: ss.max(allSpeeds) ,
+    //};
 
-    return {
-        tripSpeeds : tripKeyToSpeedsArr ,
-        speedStats : speedStats , 
-    } ;
-}
+    //return {
+        //tripSpeeds : tripKeyToSpeedsArr ,
+        //speedStats : speedStats , 
+    //} ;
+//}
 
 
 process.on('exit', function () {
@@ -223,7 +223,7 @@ process.on('exit', function () {
             lostTrains           : analyzeLostTrainOccurances() ,
             appearances          : analyzeTripAppearances() ,
             stealthTrains        : stealthTrains ,
-            speeds: analyzeDistancesTraveled() ,
+            //speeds: analyzeDistancesTraveled() ,
         } ;
 
     require('fs').writeFileSync('analysis.json', JSON.stringify(analysis, null, 4));
@@ -332,47 +332,47 @@ function feedListener (err, gtfsrtJSON, siriJSON, converterCache) {
     //====================================================================
     // Collect all the distances traveled between messages for all trains.
 
-    (function () {
-        _.forEach(trackedTrainGTFSrtKeys, function (key) {
+    //(function () {
+        //_.forEach(trackedTrainGTFSrtKeys, function (key) {
 
-            if (!tripTrackingMap[key]) {
-                tripTrackingMap[key] = [];
-            }
+            //if (!tripTrackingMap[key]) {
+                //tripTrackingMap[key] = [];
+            //}
 
-            if (!coordsMap[key].Longitude) {
-                return;
-            }    
+            //if (!coordsMap[key].Longitude) {
+                //return;
+            //}    
 
-            var gtfsKey = gtfsrtKeyToGTFSKey[key] ,
+            //var gtfsKey = gtfsrtKeyToGTFSKey[key] ,
 
-                trainLocationEntry = converterCache.converter.trainTrackerSnapshot.trainLocations[gtfsKey] ,
+                //trainLocationEntry = converterCache.converter.trainTrackerSnapshot.trainLocations[gtfsKey] ,
 
-                stopInfo,
+                //stopInfo,
 
-                nodeData;
+                //nodeData;
 
-            if (!trainLocationEntry) { return ;}
+            //if (!trainLocationEntry) { return ;}
 
-            stopInfo = trainLocationEntry.immediateStopInfo ;
+            //stopInfo = trainLocationEntry.immediateStopInfo ;
 
-                 //['trainLocations', gtfsTripKey, 'locationGeoJSON', 'properties', 'start_dist_along_route_in_km'], 
-            nodeData = {
-                nextStopId   : stopInfo.stopId ,
-                distTraveled : trainLocationEntry.locationGeoJSON.properties.start_dist_along_route_in_km ,
-                timestamp    : stopInfo.timestamp ,
-                eta          : stopInfo.eta ,
-                atStop       : stopInfo.atStop ,
-            } ;
+                 ////['trainLocations', gtfsTripKey, 'locationGeoJSON', 'properties', 'start_dist_along_route_in_km'], 
+            //nodeData = {
+                //nextStopId   : stopInfo.stopId ,
+                //distTraveled : trainLocationEntry.locationGeoJSON.properties.start_dist_along_route_in_km ,
+                //timestamp    : stopInfo.timestamp ,
+                //eta          : stopInfo.eta ,
+                //atStop       : stopInfo.atStop ,
+            //} ;
 
-            if (prevCoordsMap[key] && prevCoordsMap[key].Longitude) {
-                _.last(tripTrackingMap[key]).push(nodeData);
-            } else {
-                tripTrackingMap[key].push([nodeData]) ;
-            }
+            //if (prevCoordsMap[key] && prevCoordsMap[key].Longitude) {
+                //_.last(tripTrackingMap[key]).push(nodeData);
+            //} else {
+                //tripTrackingMap[key].push([nodeData]) ;
+            //}
 
-            //console.log(tripTrackingMap[key]) ;
-        }) ;
-    }());
+            ////console.log(tripTrackingMap[key]) ;
+        //}) ;
+    //}());
 
     carryOverTrainsMap = trackedTrainGTFSrtKeys.reduce(function(acc, key) { acc[key] = 1; return acc; }, {}) ;
 

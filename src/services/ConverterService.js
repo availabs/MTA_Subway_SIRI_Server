@@ -27,6 +27,13 @@ function isRunning () { return !!converterStream; }
 
 function start (callback) {
 
+    var systemStatusService = require('./SystemStatusService');
+    
+    // Make sure the SystemStatusService is up and running.
+    if (systemStatusService && systemStatusService.resetConverterStatus) {
+        systemStatusService.resetConverterStatus();
+    }
+
     eventCreator.emitConverterServiceStatus({
         debug: 'ConverterService start called.' ,
         timestamp: (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,

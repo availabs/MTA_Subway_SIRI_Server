@@ -1,21 +1,20 @@
 {
-    "assigningCoordinates": null,
+    "assigningCoordinates": {
+        "messagesBeforeTrackingAll": 130,
+        "mad": 0,
+        "mean": null,
+        "variance": null,
+        "standardDeviation": null,
+        "min": 0.7096774193548387
+    },
     "lostTrains": {
         "description": "Describes the number of times we assigned a train a location,  to then in a following message have no location. Ideally zero.",
         "totalLostAcrossMessages": 0,
-        "totalAcrossMessagesTrackings": 0
+        "totalAcrossMessagesTrackings": 1614251
     },
     "appearances": {
         "tripKeyToGapsStartEndPairs": {},
         "byAppearanceCount": {}
     },
-    "stealthTrains": {},
-    "speeds": {
-        "tripSpeeds": {},
-        "speedStats": {
-            "mean": null,
-            "variance": null,
-            "standardDeviation": null
-        }
-    }
+    "stealthTrains": {}
 }

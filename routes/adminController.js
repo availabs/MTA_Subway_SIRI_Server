@@ -184,16 +184,20 @@ router.post('/update/GTFS/config', function(req, res) {
 
                     ConfigsService.updateGTFSConfig(newConfig, function (err) {
                         if (err) {
-                            eventCreator.emitGTFSServiceStatus({
-                                info: "An error occurred while updating the GTFS configuration:\n" + err.message ,
-                                debug: (err.stack || err) ,
-                                timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
-                            });
+                            var msg = {
+                                    debug: (err.stack || err) ,
+                                    timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
+                                } ,
+
+                                desc = 'Server encountered an error while updating the GTFS configuration:\n' + 
+                                        err.message ;
+
+                            msg[ConfigsService.gtfsIsConfigured() ? 'info' : 'error'] = desc;
+
+                            eventCreator.emitGTFSServiceStatus(msg);
                             eventCreator.emitError({ error: err });
 
-                            return res.status(500).send({ 
-                                error: "An error occurred while updating the GTFS configuration:\n" + err,
-                            });
+                            return res.status(500).send({ error: desc });
                         } else {
                             eventCreator.emitGTFSServiceStatus({
                                 info: 'GTFS configuration update successful. Changes will take place immediately.' ,
@@ -260,11 +264,16 @@ router.post('/update/GTFS/data', function(req, res) {
                 ConfigsService.updateGTFSConfig(newConfig, function (err) {
 
                     if (err) {
-                        eventCreator.emitGTFSServiceStatus({
-                            info: 'Server encountered an error while updating the GTFS config: \n' + err.message ,
+                        var msg = {
                             debug: (err.stack || err) ,
                             timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
-                        });
+                        } ;
+                        msg[ConfigsService.gtfsIsConfigured() ? 'info' : 'error'] = 
+                            'Server encountered an error while updating the GTFS configuration:\n' + 
+                            err.message ;
+
+                        eventCreator.emitGTFSServiceStatus(msg);
+
                         eventCreator.emitError({ error: err });
 
                         return res.status(500).send("Server error while updating the GTFS configuration.");
@@ -321,17 +330,22 @@ function finishGTFSrtUpdate (req, res) {
     // Note: The following function will send updates to the GTFS-Realtime_Toolkit.FeedReader.
     ConfigsService.updateGTFSRealtimeConfig(newConfig, function (err) {
         if (err) {
-            eventCreator.emitGTFSRealtimeServiceStatus({
-                info: 'Server encountered an error while updating the GTFS-Realtime configuration:\n' + err.message ,
-                debug: (err.stack || err) ,
-                timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
-            });
+            var msg = {
+                    debug: (err.stack || err) ,
+                    timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
+                } ,
+        
+                desc = 'Server encountered an error while updating the GTFS-Realtime configuration:\n' + err.message ;
+                    
+
+            msg[ConfigsService.gtfsrtIsConfigured() ? 'info' : 'error'] = desc ;
+
+            eventCreator.emitGTFSRealtimeServiceStatus(msg);
             eventCreator.emitError({ error: err });
 
             console.log(err);
 
-
-            return res.status(500).send({ error: err.message });
+            return res.status(500).send({ error: desc });
 
         } else {
             eventCreator.emitGTFSRealtimeServiceStatus({
@@ -488,17 +502,22 @@ router.post('/update/Converter/config', function(req, res) {
     ConfigsService.updateConverterConfig(newConfig, function (err) {
         if (err) {
 
-            eventCreator.emitConverterServiceStatus({
-                info: 'Converter configuration update encountered an error:\n' + err.message ,
-                debug: (err.stack || err),
-                timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
-            });
+            var msg = {
+                    debug: (err.stack || err) ,
+                    timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
+                } ,
+
+                desc = 'Server encountered an error while updating the Converter configuration:\n' + err.message ;
+
+
+            msg[ConfigsService.converterIsConfigured() ? 'info' : 'error'] = desc ;
+
+            eventCreator.emitConverterServiceStatus(msg);
             eventCreator.emitError({ error: err });
 
-            return res.status(500).send({ error: err.message });
+            return res.status(500).send({ error: desc });
 
         } else {
-
             eventCreator.emitConverterServiceStatus({
                 info: 'Converter configuration update successful.' ,
                 timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,

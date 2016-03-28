@@ -22,12 +22,22 @@ function start () {
         throw new Error('No GTFS-Realtime configuration.');
     }
 
-    feedReader = new GTFSrtFeedReader(feedReaderConfig) ;
+    if (!feedReader) {
+        feedReader = new GTFSrtFeedReader(feedReaderConfig) ;
+
+        // Need to preserve the context.
+        configUpdateListener = feedReader.updateConfig.bind(feedReader);
+
+        ConfigsService.addGTFSRealtimeConfigUpdateListener(configUpdateListener); 
+    }
+
+    // We need one feedReader. Starting and stopping it suffices.
+    //feedReader = feedReader || new GTFSrtFeedReader(feedReaderConfig) ;
 
     // Need to preserve the context.
-    configUpdateListener = feedReader.updateConfig.bind(feedReader);
+    //configUpdateListener = feedReader.updateConfig.bind(feedReader);
 
-    ConfigsService.addGTFSRealtimeConfigUpdateListener(configUpdateListener); 
+    //ConfigsService.addGTFSRealtimeConfigUpdateListener(configUpdateListener); 
 
     eventCreator.emitGTFSRealtimeServiceStatus({
         info: 'GTFS-Realtime Feed Reader started.',
@@ -39,12 +49,13 @@ function start () {
 function stop () {
     if (!feedReader) { return; }
 
-    ConfigsService.removeGTFSRealtimeConfigUpdateListener(configUpdateListener);
+    //ConfigsService.removeGTFSRealtimeConfigUpdateListener(configUpdateListener);
 
-    configUpdateListener = null;
+    //configUpdateListener = null;
 
-    feedReader.stop();
-    feedReader = null ;
+    // The ConverterStream's removing itself as a listener suffices.
+    //feedReader.stop();
+    //feedReader = null ;
 
     eventCreator.emitGTFSRealtimeServiceStatus({
         info: 'GTFS-Realtime Feed Reader stopped.',

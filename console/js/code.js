@@ -252,7 +252,9 @@
             } 
 
            if (entry && entry.replace) {
-               alertMessage += JSON.stringify(entry.replace('\n', '<br/>').replace(' ', '&nbsp;')) + '</div>' ;
+               alertMessage += entry.replace('\n', '<br/>')
+                                    .replace(' ', '&nbsp;')
+                                    .replace('\"', '"') + '</div>' ;
            }
 
            return alertMessage;
@@ -375,6 +377,12 @@
             configStatus_content.html('No validation info available.');
         }
 
+
+        configStatus_div.removeClass('panel-danger') 
+                        .removeClass('panel-warning') 
+                        .removeClass('panel-success') 
+                        .removeClass('panel-info') ;
+
         configStatus_div.addClass('panel-' + configStatusMessageLevel);
 
 
@@ -437,7 +445,19 @@
             statusLogMessageLevel = 'info' ;
         }
 
+        statusLog_div.removeClass('panel-danger') 
+                     .removeClass('panel-warning') 
+                     .removeClass('panel-success') 
+                     .removeClass('panel-info') ;
+
         statusLog_div.addClass('panel-' + statusLogMessageLevel);
+
+
+        $('#SystemStatus_' + components[i] + '_div').removeClass('panel-danger') 
+                                                    .removeClass('panel-warning') 
+                                                    .removeClass('panel-success') 
+                                                    .removeClass('panel-info') ;
+
 
         if (!(configStatusMessageLevel || statusLogMessageLevel)) {
             $('#SystemStatus_' + components[i] + '_div').addClass('panel-info') ;
@@ -469,7 +489,11 @@
     } // End loadSystemStatusData
 
     function setConverterButtonToStart (startButtonEnabled) {
+
+        // reset 
+        $('#Converter_start_btn').unbind('click', sendConverterStartPost);
         $('#Converter_start_btn').unbind('click', sendConverterStopPost);
+
         $('#Converter_start_btn').removeClass('btn-danger');
 
         $('#Converter_start_btn').bind('click', sendConverterStartPost);
@@ -498,7 +522,11 @@
     }
 
     function setConverterButtonToStop () {
+        
+        // reset 
         $('#Converter_start_btn').unbind('click', sendConverterStartPost);
+        $('#Converter_start_btn').unbind('click', sendConverterStopPost);
+
         $('#Converter_start_btn').removeClass('btn-success');
 
         $('#Converter_start_btn').bind('click', sendConverterStopPost);
