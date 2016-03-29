@@ -4,8 +4,11 @@
 var process = require('process') ,
     fs = require('fs') ,
     path = require('path') ,
+    _ = require('lodash') ,
 
     projectRoot = path.join(__dirname, '../../') ,
+
+    apiKeysPath = path.join(projectRoot, 'apiKeys/keys.json') ,
 
     configDirPath = path.join(projectRoot, '/config') ;
 
@@ -134,7 +137,7 @@ function validateHotConfigSync (hotConfig) {
 }
 
 function build (hotConfig) {
-    return hotConfig ;
+    return _.merge(_.cloneDeep({ apiKeysPath: apiKeysPath }), hotConfig );
 }
 
 module.exports = {

@@ -35,6 +35,27 @@
     var statusDetailPanelComponent ,
         statusDetailPanelStatusField;
 
+    //http://stackoverflow.com/a/901144
+    function getParameterByName(name, url) {
+        if (!url) { url = window.location.href; }
+
+        // This is just to avoid case sensitiveness  
+        url = url.toLowerCase(); 
+
+        // This is just to avoid case sensitiveness for query parameter name
+        name = name.replace(/[\[\]]/g, "\\$&").toLowerCase();
+        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+            results = regex.exec(url);
+
+        if (!results) { return null; }
+        if (!results[2]) { return ''; }
+        return decodeURIComponent(results[2].replace(/\+/g, " "));
+    }
+
+    var key = getParameterByName('key');
+console.log('==================' + key + '==================');
+    //$("#GTFS_hidden_key").prop('defaultValue', key);
+    //$("#GTFS-Realtime_hidden_key").prop('defaultValue', key);
 
     (function () {
         var descriptionDivs = [
@@ -189,24 +210,43 @@
         return false;
     });
 
+
+
+
     function sendGTFSUpdatePost(url) {
         /*jshint validthis: true */
-        $("#GTFS_form").ajaxSubmit({
+        var data = $('#GTFS_form').serializeArray()
+                                  .reduce(function (acc, pair) {
+                                      acc[pair.name] = pair.value;
+                                          return acc;
+                                  }, { key: key });
+        $.ajax({
             type    : "POST",
+            data    : data ,
             url     : url,
-            error   : function(xhr)      { notify('GTFS', xhr.responseText, 'danger'); },
+            error   : function(xhr) { 
+                notify('GTFS', xhr.responseText, 'danger'); 
+            },
             success : function(response) { 
                 notify('GTFS', response, 'success'); 
-            } ,
+            },
         });
+
+        return false;
     }
 
 
 
     $('#GTFS-Realtime_update_config_btn').bind('click', function () {
-        $('#GTFS-Realtime_form').ajaxSubmit({
+        var data = $('#GTFS-Realtime_form').serializeArray()
+                                           .reduce(function (acc, pair) {
+                                                acc[pair.name] = pair.value;
+                                                return acc;
+                                           }, { key: key });
+        $.ajax({
             type    : "POST",
-            url     : '/admin/update/GTFS-Realtime/config',
+            data    : data ,
+            url     : '/admin/update/GTFS-Realtime/config' ,
             error   : function(xhr) { 
                 notify('GTFS-Realtime', xhr.responseText, 'danger'); 
             },
@@ -219,16 +259,30 @@
     });
 
 
-    $('#LoggingConfig_form').submit(function () {
-        $(this).ajaxSubmit({
-            type    : "POST",
-            url     : '/admin/update/Logging/config',
-            error   : function(xhr) { notify('Logging', xhr.responseText, 'danger'); },
-            success : function(response) { notify('Logging', response, 'success'); }
-        });
+    //$('#GTFS-Realtime_form').submit(function () {
+        //$(this).ajaxSubmit({
+            //type    : "POST",
+            //data    : { key : key } ,
+            //url     : '/admin/update/GTFS-Realtime/config' ,
+            //error   : function(xhr) { notify('GTFS-Realtime', xhr.responseText, 'danger'); },
+            //success : function(response) { notify('GTFS-Realtime', response, 'success'); }
+        //});
 
-        return false;
-    });
+        //return false;
+    //});
+
+
+    //$('#LoggingConfig_form').submit(function () {
+        //$(this).ajaxSubmit({
+            //type    : "POST",
+            //data    : { key : key } ,
+            //url     : '/admin/update/Logging/config',
+            //error   : function(xhr) { notify('Logging', xhr.responseText, 'danger'); },
+            //success : function(response) { notify('Logging', response, 'success'); }
+        //});
+
+        //return false;
+    //});
 
 
     function formatStatusContent (content) {
@@ -544,6 +598,7 @@
         $.ajax({
             type    : "POST",
             url     : '/admin/start/Converter',
+            data    : { key : key } ,
             //error   : function(xhr)      { notify('GTFS', xhr.responseText, 'danger'); },
             success : setConverterButtonToStop,
         });
@@ -553,6 +608,7 @@
         $.ajax({
             type    : "POST",
             url     : '/admin/stop/Converter',
+            data    : { key : key } ,
             //error   : function(xhr)      { notify('GTFS', xhr.responseText, 'danger'); },
             success : setConverterButtonToStart.bind(null, true),
         });
@@ -562,7 +618,7 @@
 
     (function pollSystemStatus () {
          $.ajax({
-             url: '/admin/get/system/status',
+             url: '/admin/get/system/status/?key=' + key,
              dataType : 'json',
              success: function(data) {
                 fillStatusDetailPanel();
@@ -575,7 +631,7 @@
     }());
 
      $.ajax({
-         url: '/admin/get/GTFS/config',
+         url: '/admin/get/GTFS/config/?key=' + key,
          dataType : 'json',
          success: function(data) {
             gtfsConfig = data;
@@ -583,7 +639,7 @@
          }
      });
      $.ajax({
-         url: '/admin/get/GTFS-Realtime/config',
+         url: '/admin/get/GTFS-Realtime/config/?key=' + key,
          dataType : 'json',
          success: function(data) {
             gtfsrtConfig = data;
@@ -591,7 +647,7 @@
          }
      });
      $.ajax({
-         url: '/admin/get/Logging/config',
+         url: '/admin/get/Logging/config/?key=' + key,
          dataType : 'json',
          success: function(data) {
             loggingConfig = data;
