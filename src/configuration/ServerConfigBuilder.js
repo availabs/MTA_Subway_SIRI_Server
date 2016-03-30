@@ -4,6 +4,8 @@
 var process = require('process') ,
     fs = require('fs') ,
     path = require('path') ,
+
+    validUrl = require('valid-url') ,
     _ = require('lodash') ,
 
     projectRoot = path.join(__dirname, '../../') ,
@@ -53,6 +55,21 @@ function validator (hotConfig, callback) {
         }
     }
 
+    if (!hotConfig.registrationURL) {
+        validationMessage.registrationURL = { 
+            info: 'No registrationURL provided in the server configuration. ' + 
+                  'Unauthorized requests will be directed to this server\'s URL + /register' ,
+        } ;
+    } else if (!(validUrl.isHttpUri(hotConfig.registrationURL) || validUrl.isHttpsUri(hotConfig.registrationURL))) { 
+        validationMessage.registrationURL = { 
+            error: 'An invalid registrationURL was supplied for server configuration.' ,
+        } ;
+        validationMessage.__isValid = false ;
+    } else {
+        validationMessage.registrationURL = { info: 'server registrationURL is a valid URL.' } ;
+    }
+
+
     if ((hotConfig.defaultPortNumber !== null) && (hotConfig.defaultPortNumber !== undefined)) {
     
         var defaultPortNumber = parseInt(hotConfig.defaultPortNumber);
@@ -68,7 +85,6 @@ function validator (hotConfig, callback) {
             };
         }
     }
-
 
     // This must be the last validation check due to the async file access check.
     if (typeof hotConfig.activeFeed === 'string') {

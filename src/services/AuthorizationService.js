@@ -13,7 +13,7 @@ var fs   = require('fs') ,
 
 
 try {
-    apiKeys = fs.readFileSync(apiKeysPath);
+    apiKeys = JSON.parse(fs.readFileSync(apiKeysPath)) ;
 } catch (e) {
     console.error('Could not read the authorized keys file. Starting with a blank slate.');
     apiKeys = {};
@@ -23,6 +23,8 @@ try {
 
 
 function isAuthorized (key) {
+console.log('\n\n', apiKeys, ':', key, '\n\n');
+
     return !!apiKeys[key];
 }
 
