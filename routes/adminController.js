@@ -58,7 +58,11 @@ function authChecker (key, req, res, f) {
         } 
 
         if (isAuthd) {
-            f();
+            try {
+                f();
+            } catch (err) {
+                return res.status(500).send('An error occurred while processing the admin task.');
+            }
         } else {
             return res.status(403).send('Admin authorization failed.');
         }
@@ -70,7 +74,7 @@ function authChecker (key, req, res, f) {
 
 router.post('/start/Converter', function (req, res) {
     
-    var key = req.body && req.body.key;
+    var key = (req.body && req.body.key) || (req.query && req.query.key) ;
 
     authChecker(key, res, res, function () {
         ConverterService.start(function (err) {
@@ -89,7 +93,7 @@ router.post('/start/Converter', function (req, res) {
 
 router.post('/stop/Converter', function (req, res) {
     
-    var key = req.body && req.body.key;
+    var key = (req.body && req.body.key) || (req.query && req.query.key) ;
 
     authChecker(key, res, res, function () {
         ConverterService.stop(function (err) {
@@ -111,7 +115,7 @@ router.post('/stop/Converter', function (req, res) {
 
 router.get('/get/Logging/config', function (req, res) {
     
-    var key = req.query && req.query.key;
+    var key = (req.body && req.body.key) || (req.query && req.query.key) ;
 
     authChecker(key, res, res, function () {
         return res.send(ConfigsService.getLoggingHotConfig());
@@ -130,6 +134,7 @@ router.get('/get/GTFS/config', function (req, res) {
 
 
 router.get('/get/GTFS-Realtime/config', function (req, res) {
+
     var key = req.query && req.query.key;
 
     authChecker(key, res, res, function () {
@@ -138,6 +143,7 @@ router.get('/get/GTFS-Realtime/config', function (req, res) {
 });
 
 router.get('/get/Converter/config', function (req, res) {
+
     var key = req.query && req.query.key;
 
     authChecker(key, res, res, function () {
@@ -146,6 +152,7 @@ router.get('/get/Converter/config', function (req, res) {
 });
 
 router.get('/get/GTFS-Realtime/currentTimestamp', function (req, res) {
+
     var key = req.query && req.query.key;
 
     authChecker(key, res, res, function () {
@@ -154,6 +161,7 @@ router.get('/get/GTFS-Realtime/currentTimestamp', function (req, res) {
 });
 
 router.get('/get/GTFS-Realtime/feed-reader/state', function (req, res) {
+
     var key = req.query && req.query.key;
 
     authChecker(key, res, res, function () {
@@ -163,6 +171,7 @@ router.get('/get/GTFS-Realtime/feed-reader/state', function (req, res) {
 
 
 router.get('/get/server/memory-usage', function (req, res) {
+
     var key = req.query && req.query.key;
 
     authChecker(key, res, res, function () {
@@ -171,6 +180,7 @@ router.get('/get/server/memory-usage', function (req, res) {
 });
 
 router.get('/get/server/state', function (req, res) {
+
     var key = req.query && req.query.key;
 
     authChecker(key, res, res, function () {
@@ -182,9 +192,8 @@ router.get('/get/server/state', function (req, res) {
  
 
 router.post('/update/GTFS/config', function(req, res) {
-    console.log("===== UPDATE GTFS Config =====");
 
-    var key = req.body && req.body.key;
+    var key = (req.body && req.body.key) || (req.query && req.query.key) ;
 
     authChecker(key, res, res, function () {
         try {
@@ -299,7 +308,7 @@ router.post('/update/GTFS/config', function(req, res) {
 router.post('/update/GTFS/data', function(req, res) {
     // TODO: Implement lock to ensure only one update at a time.
 
-    var key = req.body && req.body.key;
+    var key = (req.body && req.body.key) || (req.query && req.query.key) ;
 
     authChecker(key, res, res, function () {
         try {
@@ -438,7 +447,7 @@ function finishGTFSrtUpdate (req, res) {
 
 router.post('/update/GTFS-Realtime/config', function (req, res) {
 
-    var key = req.body && req.body.key;
+    var key = (req.body && req.body.key) || (req.query && req.query.key) ;
 
     authChecker(key, res, res, function () {
 
@@ -522,7 +531,7 @@ router.post('/update/GTFS-Realtime/config', function (req, res) {
 
 router.post('/update/Logging/config', function (req, res) {
 
-    var key = req.body && req.body.key;
+    var key = (req.body && req.body.key) || (req.query && req.query.key) ;
 
     authChecker(key, res, res, function () {
         try {
@@ -567,7 +576,7 @@ router.post('/update/Logging/config', function (req, res) {
 
 router.post('/update/Converter/config', function(req, res) {
 
-    var key = req.body && req.body.key;
+    var key = (req.body && req.body.key) || (req.query && req.query.key) ;
 
     authChecker(key, res, res, function () {
 
@@ -633,6 +642,26 @@ router.get('/get/system/status', function (req, res) {
         return res.status(200).send(sysStatus);
     });
 });
+
+
+
+router.post('/authentication/keys/reinstate', function(req, res) {
+
+    var key = (req.body && req.body.key) || (req.query && req.query.key) ;
+
+    authChecker(key, res, res, function () {
+        if (req.body.reinstatedKey) {
+            AuthorizationService.reinstateKey(req.body.reinstatedKey) ;
+            res.status(200).send({ success: 'The key is reinstatened.' });
+        } else {
+            res.status(422).send({ 
+                error: 'To reinstate a key, send a POST with a "reinstatedKey" field in the body.'
+            });
+        }
+    });
+});
+
+
 
 
 function gtfsDataUpdateCallback (err) {
