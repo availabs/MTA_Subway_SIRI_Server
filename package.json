@@ -33,6 +33,7 @@
     "multer": "^1.1.0",
     "node-cache": "^3.2.1",
     "node-schedule": "^1.1.0",
+    "request": "^2.69.0",
     "rmdir": "^1.1.0",
     "simple-statistics": "^1.0.1",
     "toobusy-js": "^0.4.2",

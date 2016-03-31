@@ -7,7 +7,8 @@ var ConverterService = require('../src/services/ConverterService') ,
 
     router = require('express').Router() ,
 
-    toobusyErrorMessage = "Server is temporarily too busy. Please try again.";
+    toobusyErrorMessage = "Service Unavailable: Back-end server is at capacity.";
+                          
 
 
 

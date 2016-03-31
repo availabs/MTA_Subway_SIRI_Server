@@ -22,7 +22,7 @@ var latestConverter = null;
 
 
 
-function isRunning () { return !!converterStream; }
+function isRunning () { return !!latestConverter; }
 
 
 function start (callback) {
@@ -231,7 +231,7 @@ function stop (callback) {
 
 // Callback passed to MTA_Subway_GTFS-Realtime_to_SIRI.ConverterStream
 function converterUpdateListener (converterUpdate) {
-    if (converterUpdate) {
+    if (converterStream) {
         latestConverter = converterUpdate;
     }
 }
@@ -240,37 +240,52 @@ function converterUpdateListener (converterUpdate) {
 function getStopMonitoringResponse (query, dataFormat, callback) {
     if (!converterStream) {
         throw new Error('The Converter is not running.') ;
+    } else if (!latestConverter) {
+        throw new Error('The Converter has not completed the startup process.') ;
     }
-    latestConverter.getStopMonitoringResponse(query, dataFormat, callback);
+
+    return latestConverter.getStopMonitoringResponse(query, dataFormat, callback);
 }
 
 function getVehicleMonitoringResponse (query, dataFormat, callback) {
     if (!converterStream) {
         throw new Error('The Converter is not running.') ;
+    } else if (!latestConverter) {
+        throw new Error('The Converter has not completed the startup process.') ;
     }
-    latestConverter.getVehicleMonitoringResponse(query, dataFormat, callback);
+
+    return latestConverter.getVehicleMonitoringResponse(query, dataFormat, callback);
 }
 
 
 function getErrorResponse (message, callType, dataFormat, callback) {
     if (!converterStream) {
         throw new Error('The Converter is not running.') ;
+    } else if (!latestConverter) {
+        throw new Error('The Converter has not completed the startup process.') ;
     }
-    latestConverter.getErrorResponse(message, callType, dataFormat, callback);
+
+    return latestConverter.getErrorResponse(message, callType, dataFormat, callback);
 }
 
 
 function getCurrentGTFSRealtimeTimestamp () {
     if (!converterStream) {
         throw new Error('The Converter is not running.') ;
+    } else if (!latestConverter) {
+        throw new Error('The Converter has not completed the startup process.') ;
     }
+
     return latestConverter.getCurrentGTFSRealtimeTimestamp();
 }
 
 function getState () {
     if (!converterStream) {
         throw new Error('The Converter is not running.') ;
+    } else if (!latestConverter) {
+        throw new Error('The Converter has not completed the startup process.') ;
     }
+
     return latestConverter.getState() ;
 }
 
