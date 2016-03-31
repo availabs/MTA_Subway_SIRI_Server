@@ -1,61 +1,17 @@
 "use strict";
 
-var fs   = require('fs') ,
-    crypto = require('crypto') ,
 
-    ConfigsService = require('./ConfigsService') ,
+var ConfigsService = require('./ConfigsService') ,
 
-    serverConfig = ConfigsService.getServerConfig(),
+    serverConfig = ConfigsService.getServerConfig() ,
 
-    apiKeysPath = serverConfig.apiKeysPath ,
-
-    apiKeys;
+    authenticatorModulePath = '../authentication/' + (serverConfig.authenticator || 'openAccess');
 
 
-try {
-    apiKeys = JSON.parse(fs.readFileSync(apiKeysPath)) ;
-} catch (e) {
-    console.error('Could not read the authorized keys file. Starting with a blank slate.');
-    apiKeys = {};
-}
-    
-
-
-
-function isAuthorized (key) {
-console.log('\n\n', apiKeys, ':', key, '\n\n');
-
-    return !!apiKeys[key];
+if (!serverConfig.authenticator) {
+    console.log('\n\n-------------------------------\n' + 
+                'No authenticator specified in /config/server.json. User API key validation is turned off.') ;
 }
 
-function isAdminAuthorized (key) {
-    return (serverConfig.adminKey === key);
-}
-
-function generateNewAPIKey (email, callback) {
-
-    return crypto.randomBytes(28, function (err, buf) {
-        if (err) { callback(err); }
-
-        var newKey = buf.toString('hex');
-
-        if (apiKeys[newKey]) {
-            return generateNewAPIKey(email, callback);
-        } else {
-            apiKeys[newKey] = email;
-            return fs.writeFile(apiKeysPath, JSON.stringify(apiKeys), function (err) {
-                if (err) {
-                    return callback(err);
-                } else {
-                    return callback(null, newKey);
-                }
-            });
-        }
-    }) ;
-}
-
-module.exports = {
-    isAuthorized      : isAuthorized ,
-    isAdminAuthorized : isAdminAuthorized ,
-    generateNewAPIKey : generateNewAPIKey ,
-};
+console.error(authenticatorModulePath);
+module.exports = require(authenticatorModulePath) ;

@@ -5,14 +5,13 @@ var process = require('process') ,
     fs = require('fs') ,
     path = require('path') ,
 
-    validUrl = require('valid-url') ,
-    _ = require('lodash') ,
+    async = require('async') ,
 
     projectRoot = path.join(__dirname, '../../') ,
 
-    apiKeysPath = path.join(projectRoot, 'apiKeys/keys.json') ,
+    configDirPath = path.join(projectRoot, '/config') ,
 
-    configDirPath = path.join(projectRoot, '/config') ;
+    authenticationDirPath = path.join(projectRoot, '/src/authentication/') ;
 
 
 
@@ -40,6 +39,24 @@ function validator (hotConfig, callback) {
         }
     }
 
+
+    if (!hotConfig.adminKey) {
+        if (hotConfig.authenticator) {
+            validationMessage.adminKey = { 
+                info: 'No server adminKey provided in /config/server.json. ' + 
+                      'If an alternative method of administrator authentication is not ' + 
+                      'implemented in the ' + hotConfig.authenticator + ' authenticator, then ' +
+                      'the adinistrator console and admin server routes are not protected.'
+            };
+        } else {
+            validationMessage.adminKey = { 
+                warning: 'No server adminKey provided in /config/server.json. ' + 
+                         'The adinistrator console and admin server routes are not protected.'
+            };
+        }
+    }
+
+
     if (hotConfig.daysToKeepLogsBeforeDeleting !== undefined) {
         numDays = parseInt(hotConfig.daysToKeepLogsBeforeDeleting);
 
@@ -53,20 +70,6 @@ function validator (hotConfig, callback) {
                 info: 'Valid daysToKeepLogsBeforeDeleting in server.json' 
             };
         }
-    }
-
-    if (!hotConfig.registrationURL) {
-        validationMessage.registrationURL = { 
-            info: 'No registrationURL provided in the server configuration. ' + 
-                  'Unauthorized requests will be directed to this server\'s URL + /register' ,
-        } ;
-    } else if (!(validUrl.isHttpUri(hotConfig.registrationURL) || validUrl.isHttpsUri(hotConfig.registrationURL))) { 
-        validationMessage.registrationURL = { 
-            error: 'An invalid registrationURL was supplied for server configuration.' ,
-        } ;
-        validationMessage.__isValid = false ;
-    } else {
-        validationMessage.registrationURL = { info: 'server registrationURL is a valid URL.' } ;
     }
 
 
@@ -86,59 +89,114 @@ function validator (hotConfig, callback) {
         }
     }
 
-    // This must be the last validation check due to the async file access check.
-    if (typeof hotConfig.activeFeed === 'string') {
-        activeFeedHotConfigFileName = hotConfig.activeFeed + '.json';
-        activeFeedHotConfigPath = path.join(configDirPath, activeFeedHotConfigFileName) ;
 
-        activeFeedHotConfigDNEMessage = 'Configuration file ' + activeFeedHotConfigFileName + ' does not exist.';
 
-        if (callback) {
-            fs.access(activeFeedHotConfigPath, fs.F_OK, function (err) {
-                if (err) {
-                    validationMessage.activeFeedConfigurationFile = { 
-                        error: activeFeedHotConfigDNEMessage ,
-                        debug: err.stack ,
-                    } ;
+    if (callback) {
 
-                    validationMessage.__isValid = false ;
-                } else {
-                    validationMessage.feedConfigurationFile = { 
-                        info: activeFeedHotConfigFileName + ' was found on the server.' ,
-                    } ;
-                }
+        var checkForActiveFeedConfigFile = function (cb) {
+            if (typeof hotConfig.activeFeed === 'string') {
+                activeFeedHotConfigFileName = hotConfig.activeFeed + '.json';
+                activeFeedHotConfigPath     = path.join(configDirPath, activeFeedHotConfigFileName) ;
 
-                if (validationMessage) {
-                    callback(validationMessage) ;
-                }
-            });
-        } else {
+                activeFeedHotConfigDNEMessage = 
+                    'Configuration file ' + activeFeedHotConfigFileName + ' does not exist.';
+
+                fs.access(activeFeedHotConfigPath, fs.F_OK, function (err) {
+                    if (err) {
+                        validationMessage.activeFeedConfigurationFile = { 
+                            error: activeFeedHotConfigDNEMessage ,
+                            debug: err.stack ,
+                        } ;
+
+                        validationMessage.__isValid = false ;
+                    } else {
+                        validationMessage.feedConfigurationFile = { 
+                            info: activeFeedHotConfigFileName + ' was found on the server.' ,
+                        } ;
+                    }
+                    
+                    cb(null);
+                });
+            } else {
+                validationMessage.activeFeed = { 
+                    error: 'The activeFeed for the server must be specified.' ,
+                };
+                validationMessage.__isValid = false ;
+                cb(null);
+            }
+        } ;
+
+        var checkForAuthenticatorModule = function (cb) {
+            if (hotConfig.authenticator) {
+                fs.access(path.join(authenticationDirPath, hotConfig.authenticator), function (err) {
+                    if (err) {
+                         validationMessage.authenticator = { 
+                             error: "The authenticator " + hotConfig.authenticator + 
+                                    "specified in config/server.json could not be found" ,
+                             debug: (err.stack || err),
+                         };
+                         validationMessage.__isValid = false ;
+                    } else {
+                        validationMessage.authenticator = {
+                            info: "User API key authentication module found." ,
+                        } ;
+                    }
+                    cb(null);
+                });
+            } else {
+                validationMessage.authenticator = {
+                    info: "An API key authenticator was not provided in config/server.json.  " + 
+                          "There is be no API key authentication for Siri requests."
+                };
+                cb(null);
+            }
+        } ;
+
+        async.parallel([checkForActiveFeedConfigFile, checkForAuthenticatorModule], function (err) {
+            if (err) {
+                validationMessage.fileValidationError = { 
+                        error: "There was an error while validating server configuration files." ,
+                        debug: (err.stack || err),
+                };
+            }
+
+            callback(validationMessage) ;
+        });
+
+    } else {
+
+        try {
+            fs.accessSync(activeFeedHotConfigPath, fs.F_OK);
+        } catch (fileDoesNotExistsError) {
+            validationMessage.feedConfigurationFile = { 
+                error: activeFeedHotConfigDNEMessage ,
+            };
+            validationMessage.__isValid = false ;
+        }
+
+        if (hotConfig.authenticator) {
             try {
-                fs.accessSync(activeFeedHotConfigPath, fs.F_OK);
-            } catch (fileDoesNotExistsError) {
-                 validationMessage.feedConfigurationFile = { 
-                     error: activeFeedHotConfigDNEMessage ,
+                fs.accessSync(path.join(authenticationDirPath, hotConfig.authenticator)) ;
+                validationMessage.authenticator = {
+                    info: "User API key authentication module found." ,
+                } ;
+            } catch (err) {
+                 validationMessage.authenticator = { 
+                     error: "The authenticator " + hotConfig.authenticator + 
+                            "specified in config/server.json could not be found" ,
+                     debug: (err.stack || err),
                  };
                  validationMessage.__isValid = false ;
-            } finally {
-                return validationMessage;
             }
+        } else {
+            validationMessage.authenticator = {
+                info: "An API key authenticator was not provided in config/server.json.  " + 
+                      "There is be no API key authentication for Siri requests."
+            };
         }
-    } else {
-        validationMessage.activeFeed = { 
-            error: 'The activeFeed for the server must be specified.' ,
-        };
-        validationMessage.__isValid = false ;
-    }
 
-        
-    if (callback) {
-        return process.nextTick(function () { callback(validationMessage); });
-    } else {
         return validationMessage;
     }
-
-    return true;
 }
 
 
@@ -153,7 +211,7 @@ function validateHotConfigSync (hotConfig) {
 }
 
 function build (hotConfig) {
-    return _.merge(_.cloneDeep({ apiKeysPath: apiKeysPath }), hotConfig );
+    return hotConfig;
 }
 
 module.exports = {

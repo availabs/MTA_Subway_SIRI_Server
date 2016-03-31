@@ -46,12 +46,33 @@ var ConfigsService     = require('../src/services/ConfigsService') ,
 
 
 
+function authChecker (key, req, res, f) {
+    if (!key) {
+        return res.status(403).send('Admin authorization key required.');
+    }
+
+    AuthorizationService.isAdminAuthorized(key, function (err, isAuthd) {
+    
+        if (err) {
+            return res.status(500).send('An error occurred while attempting admin authorization.');
+        } 
+
+        if (isAuthd) {
+            f();
+        } else {
+            return res.status(403).send('Admin authorization failed.');
+        }
+    });
+}
+
+
+
 
 router.post('/start/Converter', function (req, res) {
     
     var key = req.body && req.body.key;
 
-    if (key && AuthorizationService.isAdminAuthorized(key)) {
+    authChecker(key, res, res, function () {
         ConverterService.start(function (err) {
             if (err) {
                 return res.status(500).send({ 
@@ -62,17 +83,15 @@ router.post('/start/Converter', function (req, res) {
                 return res.status(200).send('Converter service started.') ;
             }
         }) ;
-    } else {
-        return res.status(401).send('Admin authorization key required.');
-    }
+    });
 });
 
 
 router.post('/stop/Converter', function (req, res) {
-
+    
     var key = req.body && req.body.key;
 
-    if (key && AuthorizationService.isAdminAuthorized(key)) {
+    authChecker(key, res, res, function () {
         ConverterService.stop(function (err) {
             if (err) {
                 return res.status(500).send({ 
@@ -83,9 +102,7 @@ router.post('/stop/Converter', function (req, res) {
                 return res.status(200).send('Converter service stopped.') ;
             }
         }) ;
-    } else {
-        return res.status(401).send('Admin authorization key required.');
-    }
+    });
 });
 
 
@@ -93,84 +110,72 @@ router.post('/stop/Converter', function (req, res) {
 //================ Config GET endpoints ================\\
 
 router.get('/get/Logging/config', function (req, res) {
+    
     var key = req.query && req.query.key;
 
-    if (key && AuthorizationService.isAdminAuthorized(key)) {
+    authChecker(key, res, res, function () {
         return res.send(ConfigsService.getLoggingHotConfig());
-    } else {
-        return res.status(401).send('Admin authorization key required.');
-    }
+    });
 });
+
 
 router.get('/get/GTFS/config', function (req, res) {
+    
     var key = req.query && req.query.key;
 
-    if (key && AuthorizationService.isAdminAuthorized(key)) {
+    authChecker(key, res, res, function () {
         return res.send(ConfigsService.getGTFSHotConfig());
-    } else {
-        return res.status(401).send('Admin authorization key required.');
-    }
+    });
 });
+
 
 router.get('/get/GTFS-Realtime/config', function (req, res) {
     var key = req.query && req.query.key;
 
-    if (key && AuthorizationService.isAdminAuthorized(key)) {
+    authChecker(key, res, res, function () {
         return res.send(ConfigsService.getGTFSRealtimeHotConfig());
-    } else {
-        return res.status(401).send('Admin authorization key required.');
-    }
+    });
 });
 
 router.get('/get/Converter/config', function (req, res) {
     var key = req.query && req.query.key;
 
-    if (key && AuthorizationService.isAdminAuthorized(key)) {
+    authChecker(key, res, res, function () {
         return res.send(ConfigsService.getConverterHotConfig());
-    } else {
-        return res.status(401).send('Admin authorization key required.');
-    }
+    });
 });
 
 router.get('/get/GTFS-Realtime/currentTimestamp', function (req, res) {
     var key = req.query && req.query.key;
 
-    if (key && AuthorizationService.isAdminAuthorized(key)) {
+    authChecker(key, res, res, function () {
         return res.send(JSON.stringify(ConverterService.getCurrentGTFSRealtimeTimestamp()));
-    } else {
-        return res.status(401).send('Admin authorization key required.');
-    }
+    });
 });
 
 router.get('/get/GTFS-Realtime/feed-reader/state', function (req, res) {
     var key = req.query && req.query.key;
 
-    if (key && AuthorizationService.isAdminAuthorized(key)) {
+    authChecker(key, res, res, function () {
         return res.send(util.inspect(GTFSRealtime_FeedService.getFeedReaderState()) + '\n');
-    } else {
-        return res.status(401).send('Admin authorization key required.');
-    }
+    });
 });
 
 
 router.get('/get/server/memory-usage', function (req, res) {
     var key = req.query && req.query.key;
 
-    if (key && AuthorizationService.isAdminAuthorized(key)) {
+    authChecker(key, res, res, function () {
         return res.send(process.memoryUsage());
-    } else {
-        return res.status(401).send('Admin authorization key required.');
-    }
+    });
 });
 
 router.get('/get/server/state', function (req, res) {
     var key = req.query && req.query.key;
 
-    if (key && AuthorizationService.isAdminAuthorized(key)) {
+    authChecker(key, res, res, function () {
         return res.send(ConverterService.getState());
-    } else {
-        return res.status(401).send('Admin authorization key required.');
-    }
+    });
 });
 
 //================ Config POST endpoints ================\\
@@ -181,7 +186,7 @@ router.post('/update/GTFS/config', function(req, res) {
 
     var key = req.body && req.body.key;
 
-    if (key && AuthorizationService.isAdminAuthorized(key)) {
+    authChecker(key, res, res, function () {
         try {
             gtfsMulter(req, res, function (err) {
                 var gtfsConfig,
@@ -287,9 +292,7 @@ router.post('/update/GTFS/config', function(req, res) {
 
             return res.status(500).send({ error: err.message });
         }
-    } else {
-        return res.status(401).send('Admin authorization key required.');
-    }
+    });
 });
 
 
@@ -298,7 +301,7 @@ router.post('/update/GTFS/data', function(req, res) {
 
     var key = req.body && req.body.key;
 
-    if (key && AuthorizationService.isAdminAuthorized(key)) {
+    authChecker(key, res, res, function () {
         try {
             SystemStatusService.resetGTFSLastDataUpdateLog() ;
 
@@ -376,9 +379,7 @@ router.post('/update/GTFS/data', function(req, res) {
 
             return res.status(500).send("Server error while updating the GTFS feed data.");
         }
-    } else {
-        return res.status(401).send('Admin authorization key required.');
-    }
+    });
 });
 
 
@@ -411,7 +412,8 @@ function finishGTFSrtUpdate (req, res) {
                     timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
                 } ,
         
-                desc = 'Server encountered an error while updating the GTFS-Realtime configuration:\n' + err.message ;
+                desc = 'Server encountered an error while updating the GTFS-Realtime configuration:\n' + 
+                        err.message ;
                     
 
             msg[ConfigsService.gtfsrtIsConfigured() ? 'info' : 'error'] = desc ;
@@ -438,7 +440,7 @@ router.post('/update/GTFS-Realtime/config', function (req, res) {
 
     var key = req.body && req.body.key;
 
-    if (key && AuthorizationService.isAdminAuthorized(key)) {
+    authChecker(key, res, res, function () {
 
         var oldConfig = ConfigsService.getGTFSRealtimeConfig();
 
@@ -514,9 +516,7 @@ router.post('/update/GTFS-Realtime/config', function (req, res) {
             return res.status(500).send({ error: err.message });
         }
 
-    } else {
-        return res.status(401).send('Admin authorization key required.');
-    }
+    });
 });
 
 
@@ -524,7 +524,7 @@ router.post('/update/Logging/config', function (req, res) {
 
     var key = req.body && req.body.key;
 
-    if (key && AuthorizationService.isAdminAuthorized(key)) {
+    authChecker(key, res, res, function () {
         try {
             var loggingHotConfig = ConfigsService.getLoggingHotConfig(),
                 
@@ -562,16 +562,14 @@ router.post('/update/Logging/config', function (req, res) {
         } catch (err) {
             return res.status(500).send({ error: err.message });
         }
-    } else {
-        return res.status(401).send('Admin authorization key required.');
-    }
+    });
 });
 
 router.post('/update/Converter/config', function(req, res) {
 
     var key = req.body && req.body.key;
 
-    if (key && AuthorizationService.isAdminAuthorized(key)) {
+    authChecker(key, res, res, function () {
 
         var newConfig  = {},
             configKeys = ((req.body !== null) && (typeof req.body === 'object')) && Object.keys(req.body),
@@ -621,9 +619,7 @@ router.post('/update/Converter/config', function(req, res) {
                 return res.status(200).send('Update successful.');
             }
         });
-    } else {
-        return res.status(401).send('Admin authorization key required.');
-    }
+    });
 });
 
 
@@ -632,12 +628,10 @@ router.post('/update/Converter/config', function(req, res) {
 router.get('/get/system/status', function (req, res) {
     var key = req.query && req.query.key;
 
-    if (key && AuthorizationService.isAdminAuthorized(key)) {
+    authChecker(key, res, res, function () {
         var sysStatus = SystemStatusService.getSystemStatus() ;
         return res.status(200).send(sysStatus);
-    } else {
-        return res.status(401).send('Admin authorization key required.');
-    }
+    });
 });
 
 

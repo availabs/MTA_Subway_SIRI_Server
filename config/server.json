@@ -1,5 +1,6 @@
 {
     "activeFeed": "mta_subway",
     "defaultPortNumber": 16181,
-    "adminKey" : "foo"
+    "adminKey" : "foo",
+    "authenticator": "mtaAuth"
 }
