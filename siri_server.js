@@ -73,9 +73,8 @@ app.use('/admin', adminController);
 
 app.use('/api/siri', monitoringCallController);
 
-
-// THE STATIC ADMIN CONSOLE FILE
-app.use('/console', express.static('console'));
+//THE STATIC ADMIN CONSOLE FILE
+app.use('/console', express.static('console')) ;
 
 
 // START THE SERVER

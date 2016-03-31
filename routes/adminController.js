@@ -8,7 +8,9 @@ var fs      = require('fs'),
     multer  = require('multer') ,
     router  = express.Router() ,
     util    = require('util') ,
-    rmdir   = require('rmdir') ;
+    rmdir   = require('rmdir') ,
+
+    AuthorizationService = require('../src/services/AuthorizationService') ;
 
 
     // Merge the static and hot config files.
@@ -44,32 +46,67 @@ var ConfigsService     = require('../src/services/ConfigsService') ,
 
 
 
+function authChecker (key, req, res, f) {
+    if (!key) {
+        return res.status(403).send('Admin authorization key required.');
+    }
+
+    AuthorizationService.isAdminAuthorized(key, function (err, isAuthd) {
+    
+        if (err) {
+            return res.status(500).send('An error occurred while attempting admin authorization.');
+        } 
+
+        if (isAuthd) {
+            try {
+                f();
+            } catch (err) {
+                return res.status(500).send('An error occurred while processing the admin task.');
+            }
+        } else {
+            return res.status(403).send('Admin authorization failed.');
+        }
+    });
+}
+
+
+
 
 router.post('/start/Converter', function (req, res) {
-    ConverterService.start(function (err) {
-        if (err) {
-            return res.status(500).send({ 
-                message: 'An error occurred while starting the Converter.', 
-                error: (err.stack | err)
-            });
-        } else {
-            return res.status(200).send('Converter service started.') ;
-        }
-    }) ;
+    
+    var key = (req.body && req.body.key) || (req.query && req.query.key) ;
+
+    authChecker(key, res, res, function () {
+        ConverterService.start(function (err) {
+            if (err) {
+                return res.status(500).send({ 
+                    message: 'An error occurred while starting the Converter.', 
+                    error: (err.stack | err)
+                });
+            } else {
+                return res.status(200).send('Converter service started.') ;
+            }
+        }) ;
+    });
 });
 
 
 router.post('/stop/Converter', function (req, res) {
-    ConverterService.stop(function (err) {
-        if (err) {
-            return res.status(500).send({ 
-                message: 'An error occurred while stopping the Converter.', 
-                error: (err.stack | err)
-            });
-        } else {
-            return res.status(200).send('Converter service stopped.') ;
-        }
-    }) ;
+    
+    var key = (req.body && req.body.key) || (req.query && req.query.key) ;
+
+    authChecker(key, res, res, function () {
+        ConverterService.stop(function (err) {
+            if (err) {
+                return res.status(500).send({ 
+                    message: 'An error occurred while stopping the Converter.', 
+                    error: (err.stack | err)
+                });
+            } else {
+                return res.status(200).send('Converter service stopped.') ;
+            }
+        }) ;
+    });
 });
 
 
@@ -77,232 +114,281 @@ router.post('/stop/Converter', function (req, res) {
 //================ Config GET endpoints ================\\
 
 router.get('/get/Logging/config', function (req, res) {
-    return res.send(ConfigsService.getLoggingHotConfig());
+    
+    var key = (req.body && req.body.key) || (req.query && req.query.key) ;
+
+    authChecker(key, res, res, function () {
+        return res.send(ConfigsService.getLoggingHotConfig());
+    });
 });
+
 
 router.get('/get/GTFS/config', function (req, res) {
-    return res.send(ConfigsService.getGTFSHotConfig());
+    
+    var key = req.query && req.query.key;
+
+    authChecker(key, res, res, function () {
+        return res.send(ConfigsService.getGTFSHotConfig());
+    });
 });
 
+
 router.get('/get/GTFS-Realtime/config', function (req, res) {
-    return res.send(ConfigsService.getGTFSRealtimeHotConfig());
+
+    var key = req.query && req.query.key;
+
+    authChecker(key, res, res, function () {
+        return res.send(ConfigsService.getGTFSRealtimeHotConfig());
+    });
 });
 
 router.get('/get/Converter/config', function (req, res) {
-    return res.send(ConfigsService.getConverterHotConfig());
+
+    var key = req.query && req.query.key;
+
+    authChecker(key, res, res, function () {
+        return res.send(ConfigsService.getConverterHotConfig());
+    });
 });
 
 router.get('/get/GTFS-Realtime/currentTimestamp', function (req, res) {
-    return res.send(JSON.stringify(ConverterService.getCurrentGTFSRealtimeTimestamp()));
+
+    var key = req.query && req.query.key;
+
+    authChecker(key, res, res, function () {
+        return res.send(JSON.stringify(ConverterService.getCurrentGTFSRealtimeTimestamp()));
+    });
 });
 
 router.get('/get/GTFS-Realtime/feed-reader/state', function (req, res) {
-    return res.send(util.inspect(GTFSRealtime_FeedService.getFeedReaderState()) + '\n');
+
+    var key = req.query && req.query.key;
+
+    authChecker(key, res, res, function () {
+        return res.send(util.inspect(GTFSRealtime_FeedService.getFeedReaderState()) + '\n');
+    });
 });
 
 
 router.get('/get/server/memory-usage', function (req, res) {
-    return res.send(process.memoryUsage());
+
+    var key = req.query && req.query.key;
+
+    authChecker(key, res, res, function () {
+        return res.send(process.memoryUsage());
+    });
 });
 
 router.get('/get/server/state', function (req, res) {
-    
-    return res.send(ConverterService.getState());
+
+    var key = req.query && req.query.key;
+
+    authChecker(key, res, res, function () {
+        return res.send(ConverterService.getState());
+    });
 });
 
 //================ Config POST endpoints ================\\
  
 
 router.post('/update/GTFS/config', function(req, res) {
-    console.log("===== UPDATE GTFS Config =====");
 
-    try {
-        gtfsMulter(req, res, function (err) {
-            var gtfsConfig,
-                newConfig,
-                errorMessage ;
+    var key = (req.body && req.body.key) || (req.query && req.query.key) ;
 
-            if (err) {
-                eventCreator.emitGTFSServiceStatus({
-                    error: "An error occurred while updating the GTFS configuration." ,
-                    debug: (err.stack || err) ,
-                    timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
-                });
-                eventCreator.emitError({ error: err });
+    authChecker(key, res, res, function () {
+        try {
+            gtfsMulter(req, res, function (err) {
+                var gtfsConfig,
+                    newConfig,
+                    errorMessage ;
 
-                return res.status(500).send({ error: err.message });
-            } else {
-
-                eventCreator.emitGTFSServiceStatus({
-                    info: 'Server received request to update the GTFS configuration (but not the feed data).' ,
-                    timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
-                });
-
-                if (req.file) {
-                    errorMessage = "ERROR: Non-null data file send to admin/update/GTFS/config.\n" +
-                                   "GTFS data updates must use the /admin/update/GTFS/data route.\n" +
-                                   "All configuration changes sent with the file will be discarded.\n";
-
-                    gtfsConfig = ConfigsService.getGTFSConfig();
-
-                    rmdir(gtfsConfig.workDirPath, function (err) {
-                        if (err) {
-                            eventCreator.emitError({ error: err });
-                            errorMessage += 
-                                "\n\tAn error occurred while attempting to delete the uploaded file:\n" + err;
-
-                            eventCreator.emitGTFSServiceStatus({
-                                error: errorMessage ,
-                                debug: (err.stack || err) ,
-                                timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
-                            });
-
-                        } else {
-                            errorMessage += "\n\tThe uploaded file was deleted.";
-
-                            eventCreator.emitGTFSServiceStatus({
-                                error: errorMessage ,
-                                timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
-                            });
-                        } 
-
-                        return res.status(500).send({ error: errorMessage });
-                    }); 
-                } else {
+                if (err) {
                     eventCreator.emitGTFSServiceStatus({
-                        debug: 'Sending the GTFS config request to the ConfigsService.' ,
+                        error: "An error occurred while updating the GTFS configuration." ,
+                        debug: (err.stack || err) ,
+                        timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
+                    });
+                    eventCreator.emitError({ error: err });
+
+                    return res.status(500).send({ error: err.message });
+                } else {
+
+                    eventCreator.emitGTFSServiceStatus({
+                        info: 'Server received request to update the GTFS configuration (but not the feed data).' ,
                         timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
                     });
 
-                    Object.keys(req.body).reduce(function (acc, key) {
-                        if (key !== 'zipfile') {
-                            acc[key] = req.body[key] ;
-                        } 
-                    
-                        return acc;
-                    }, (newConfig = {}));
+                    if (req.file) {
+                        errorMessage = "ERROR: Non-null data file send to admin/update/GTFS/config.\n" +
+                                       "GTFS data updates must use the /admin/update/GTFS/data route.\n" +
+                                       "All configuration changes sent with the file will be discarded.\n";
 
-                    ConfigsService.updateGTFSConfig(newConfig, function (err) {
-                        if (err) {
-                            var msg = {
+                        gtfsConfig = ConfigsService.getGTFSConfig();
+
+                        rmdir(gtfsConfig.workDirPath, function (err) {
+                            if (err) {
+                                eventCreator.emitError({ error: err });
+                                errorMessage += 
+                                    "\n\tAn error occurred while attempting to delete the uploaded file:\n" + err;
+
+                                eventCreator.emitGTFSServiceStatus({
+                                    error: errorMessage ,
                                     debug: (err.stack || err) ,
                                     timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
-                                } ,
+                                });
 
-                                desc = 'Server encountered an error while updating the GTFS configuration:\n' + 
-                                        err.message ;
+                            } else {
+                                errorMessage += "\n\tThe uploaded file was deleted.";
 
-                            msg[ConfigsService.gtfsIsConfigured() ? 'info' : 'error'] = desc;
+                                eventCreator.emitGTFSServiceStatus({
+                                    error: errorMessage ,
+                                    timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
+                                });
+                            } 
 
-                            eventCreator.emitGTFSServiceStatus(msg);
-                            eventCreator.emitError({ error: err });
+                            return res.status(500).send({ error: errorMessage });
+                        }); 
+                    } else {
+                        eventCreator.emitGTFSServiceStatus({
+                            debug: 'Sending the GTFS config request to the ConfigsService.' ,
+                            timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
+                        });
 
-                            return res.status(500).send({ error: desc });
-                        } else {
-                            eventCreator.emitGTFSServiceStatus({
-                                info: 'GTFS configuration update successful. Changes will take place immediately.' ,
-                                timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
-                            });
+                        Object.keys(req.body).reduce(function (acc, key) {
+                            if (key !== 'zipfile') {
+                                acc[key] = req.body[key] ;
+                            } 
+                        
+                            return acc;
+                        }, (newConfig = {}));
 
-                            return res.status(200).send("GTFS configuration update successful.\n" +
-                                                 "Changes will take place immediately.");
-                        }
-                    });
+                        ConfigsService.updateGTFSConfig(newConfig, function (err) {
+                            if (err) {
+                                var msg = {
+                                        debug: (err.stack || err) ,
+                                        timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
+                                    } ,
+
+                                    desc = 'Server encountered an error while updating the GTFS configuration:\n' + 
+                                            err.message ;
+
+                                msg[ConfigsService.gtfsIsConfigured() ? 'info' : 'error'] = desc;
+
+                                eventCreator.emitGTFSServiceStatus(msg);
+                                eventCreator.emitError({ error: err });
+
+                                return res.status(500).send({ error: desc });
+                            } else {
+                                eventCreator.emitGTFSServiceStatus({
+                                    info: 'GTFS configuration update successful. Changes will take place immediately.' ,
+                                    timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
+                                });
+
+                                return res.status(200).send("GTFS configuration update successful.\n" +
+                                                     "Changes will take place immediately.");
+                            }
+                        });
+                    }
                 }
-            }
-        });
-    } catch (err) {
-        eventCreator.emitGTFSServiceStatus({
-            error: "An error occurred while updating the GTFS configuration." ,
-            debug: (err.stack || err) ,
-            timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
-        });
-        eventCreator.emitError({ error: err });
+            });
+        } catch (err) {
+            eventCreator.emitGTFSServiceStatus({
+                error: "An error occurred while updating the GTFS configuration." ,
+                debug: (err.stack || err) ,
+                timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
+            });
+            eventCreator.emitError({ error: err });
 
-        return res.status(500).send({ error: err.message });
-    }
+            return res.status(500).send({ error: err.message });
+        }
+    });
 });
 
 
 router.post('/update/GTFS/data', function(req, res) {
     // TODO: Implement lock to ensure only one update at a time.
-    try {
-        SystemStatusService.resetGTFSLastDataUpdateLog() ;
 
-        eventCreator.emitGTFSDataUpdateStatus({
-            info: 'Server received request to update the GTFS feed data.' ,
-            timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
-        });
+    var key = (req.body && req.body.key) || (req.query && req.query.key) ;
 
-        console.log("===== UPDATE GTFS Data =====");
+    authChecker(key, res, res, function () {
+        try {
+            SystemStatusService.resetGTFSLastDataUpdateLog() ;
 
-        gtfsMulter(req, res, function (err) {
-            var newConfig = {},
-                keys,
-                i;
+            eventCreator.emitGTFSDataUpdateStatus({
+                info: 'Server received request to update the GTFS feed data.' ,
+                timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
+            });
 
-            if (err) {
+            console.log("===== UPDATE GTFS Data =====");
 
-                eventCreator.emitGTFSDataUpdateStatus({
-                    error: 'Server encountered an error while updating the GTFS feed data.' ,
-                    debug: (err.stack || err) ,
-                    timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
-                });
-                eventCreator.emitError({ error: err });
+            gtfsMulter(req, res, function (err) {
+                var newConfig = {},
+                    keys,
+                    i;
 
-                return res.status(500).send("Server error while updating the GTFS feed data.");
+                if (err) {
 
-            } else {
-                keys = Object.keys(req.body);
+                    eventCreator.emitGTFSDataUpdateStatus({
+                        error: 'Server encountered an error while updating the GTFS feed data.' ,
+                        debug: (err.stack || err) ,
+                        timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
+                    });
+                    eventCreator.emitError({ error: err });
 
-                for ( i = 0; i < keys.length; ++i ) {
-                    if (keys[i] !== 'zipfile') {
-                        newConfig[keys[i]] = req.body[keys[i]];
-                    } 
-                }
+                    return res.status(500).send("Server error while updating the GTFS feed data.");
 
-                ConfigsService.updateGTFSConfig(newConfig, function (err) {
+                } else {
+                    keys = Object.keys(req.body);
 
-                    if (err) {
-                        var msg = {
-                            debug: (err.stack || err) ,
-                            timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
-                        } ;
-                        msg[ConfigsService.gtfsIsConfigured() ? 'info' : 'error'] = 
-                            'Server encountered an error while updating the GTFS configuration:\n' + 
-                            err.message ;
-
-                        eventCreator.emitGTFSServiceStatus(msg);
-
-                        eventCreator.emitError({ error: err });
-
-                        return res.status(500).send("Server error while updating the GTFS configuration.");
-
-                    } else {
-
-                        GTFS_FeedService.updateFeedHandler((req.file) ? "file" : "url", gtfsDataUpdateCallback);
-
-                        eventCreator.emitGTFSDataUpdateStatus({
-                            debug: 'GTFS_Toolkit component data hot update started.' ,
-                            timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
-                        });
-                        
-                        // Immediate response. Client should poll for status updates.
-                        return res.status(200).send("GTFS update process started.");
+                    for ( i = 0; i < keys.length; ++i ) {
+                        if (keys[i] !== 'zipfile') {
+                            newConfig[keys[i]] = req.body[keys[i]];
+                        } 
                     }
-                });
-            }
-        });
-    } catch (err) {
-        eventCreator.emitGTFSDataUpdateStatus({
-            error: 'Server encountered an error while updating the GTFS feed data.' ,
-            debug: (err.stack || err) ,
-            timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
-        });
-        eventCreator.emitError({ error: err });
 
-        return res.status(500).send("Server error while updating the GTFS feed data.");
-    }
+                    ConfigsService.updateGTFSConfig(newConfig, function (err) {
+
+                        if (err) {
+                            var msg = {
+                                debug: (err.stack || err) ,
+                                timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
+                            } ;
+                            msg[ConfigsService.gtfsIsConfigured() ? 'info' : 'error'] = 
+                                'Server encountered an error while updating the GTFS configuration:\n' + 
+                                err.message ;
+
+                            eventCreator.emitGTFSServiceStatus(msg);
+
+                            eventCreator.emitError({ error: err });
+
+                            return res.status(500).send("Server error while updating the GTFS configuration.");
+
+                        } else {
+
+                            GTFS_FeedService.updateFeedHandler((req.file) ? "file" : "url", gtfsDataUpdateCallback);
+
+                            eventCreator.emitGTFSDataUpdateStatus({
+                                debug: 'GTFS_Toolkit component data hot update started.' ,
+                                timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
+                            });
+                            
+                            // Immediate response. Client should poll for status updates.
+                            return res.status(200).send("GTFS update process started.");
+                        }
+                    });
+                }
+            });
+        } catch (err) {
+            eventCreator.emitGTFSDataUpdateStatus({
+                error: 'Server encountered an error while updating the GTFS feed data.' ,
+                debug: (err.stack || err) ,
+                timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
+            });
+            eventCreator.emitError({ error: err });
+
+            return res.status(500).send("Server error while updating the GTFS feed data.");
+        }
+    });
 });
 
 
@@ -335,7 +421,8 @@ function finishGTFSrtUpdate (req, res) {
                     timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
                 } ,
         
-                desc = 'Server encountered an error while updating the GTFS-Realtime configuration:\n' + err.message ;
+                desc = 'Server encountered an error while updating the GTFS-Realtime configuration:\n' + 
+                        err.message ;
                     
 
             msg[ConfigsService.gtfsrtIsConfigured() ? 'info' : 'error'] = desc ;
@@ -359,172 +446,188 @@ function finishGTFSrtUpdate (req, res) {
 
 
 router.post('/update/GTFS-Realtime/config', function (req, res) {
-    var oldConfig = ConfigsService.getGTFSRealtimeConfig();
 
-    try {
-        gtfsrtMulter(req, res, function (err) {
+    var key = (req.body && req.body.key) || (req.query && req.query.key) ;
 
-            if (err) {
-                eventCreator.emitGTFSRealtimeServiceStatus({
-                    error: 'Server encountered an error while updating the GTFS-Realtime configuration.' ,
-                    debug: (err.stack || err) ,
-                    timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
-                });
-                eventCreator.emitError({ error: err });
+    authChecker(key, res, res, function () {
 
-                return res.status(500).send({ error: "A server error occurred while processing the request." });
+        var oldConfig = ConfigsService.getGTFSRealtimeConfig();
 
-            } else {
-                // Was the protofile renamed? If so, we delete the old one.
-                if (req.file && (req.file.filename !== oldConfig.protofileName)) {
-                    
+        try {
+            gtfsrtMulter(req, res, function (err) {
+
+                if (err) {
                     eventCreator.emitGTFSRealtimeServiceStatus({
-                        debug: 'Removing the old GTFS-Realtime .proto file.',
+                        error: 'Server encountered an error while updating the GTFS-Realtime configuration.' ,
+                        debug: (err.stack || err) ,
                         timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
                     });
+                    eventCreator.emitError({ error: err });
 
-                    // Remove the old protofile
-                    fs.access(oldConfig.protofileName, fs.W_OK, function (err) {
-                        if (err) {
-                            // Previous protofile cannot be deleted.
-                            eventCreator.emitGTFSRealtimeServiceStatus({
-                                error: 'GTFS-Realtime config update cannot delete the old .proto file.' ,
-                                debug: (err.stack || err),
-                                timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
-                            });
-                            eventCreator.emitError({ error: err });
+                    return res.status(500).send({ error: "A server error occurred while processing the request." });
 
-                           return finishGTFSrtUpdate(req, res); 
-                        } else {
-                            fs.unlink(oldConfig.protofilePath, function (err) {
-                                if (err) {
-                                    eventCreator.emitGTFSRealtimeServiceStatus({
-                                        error: 'GTFS-Realtime config update failed to delete the old .proto file.' ,
-                                        debug: (err.stack || err),
-                                        timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
-                                    });
-                                    eventCreator.emitError({ error: err });
+                } else {
+                    // Was the protofile renamed? If so, we delete the old one.
+                    if (req.file && (req.file.filename !== oldConfig.protofileName)) {
+                        
+                        eventCreator.emitGTFSRealtimeServiceStatus({
+                            debug: 'Removing the old GTFS-Realtime .proto file.',
+                            timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
+                        });
 
-                                   return res.status(500).send({ error: err.message });
-                                } else {
-                                    eventCreator.emitGTFSRealtimeServiceStatus({
-                                        debug: 'Successfully deleted the old GTFS-Realtime .proto file.',
-                                        timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
-                                    });
-                                   return finishGTFSrtUpdate(req, res);
-                                }
-                            });
-                        }
-                    });
+                        // Remove the old protofile
+                        fs.access(oldConfig.protofileName, fs.W_OK, function (err) {
+                            if (err) {
+                                // Previous protofile cannot be deleted.
+                                eventCreator.emitGTFSRealtimeServiceStatus({
+                                    error: 'GTFS-Realtime config update cannot delete the old .proto file.' ,
+                                    debug: (err.stack || err),
+                                    timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
+                                });
+                                eventCreator.emitError({ error: err });
 
-                } else { //
-                    return finishGTFSrtUpdate(req, res);
+                               return finishGTFSrtUpdate(req, res); 
+                            } else {
+                                fs.unlink(oldConfig.protofilePath, function (err) {
+                                    if (err) {
+                                        eventCreator.emitGTFSRealtimeServiceStatus({
+                                            error: 'GTFS-Realtime config update failed to delete the old .proto file.' ,
+                                            debug: (err.stack || err),
+                                            timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
+                                        });
+                                        eventCreator.emitError({ error: err });
+
+                                       return res.status(500).send({ error: err.message });
+                                    } else {
+                                        eventCreator.emitGTFSRealtimeServiceStatus({
+                                            debug: 'Successfully deleted the old GTFS-Realtime .proto file.',
+                                            timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
+                                        });
+                                       return finishGTFSrtUpdate(req, res);
+                                    }
+                                });
+                            }
+                        });
+
+                    } else { //
+                        return finishGTFSrtUpdate(req, res);
+                    }
                 }
-            }
-        });
-    } catch (err) {
-        eventCreator.emitGTFSRealtimeServiceStatus({
-            error: 'GTFS-Realtime config update encountered an error.' ,
-            debug: (err.stack || err),
-            timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
-        });
-        eventCreator.emitError({ error: err });
+            });
+        } catch (err) {
+            eventCreator.emitGTFSRealtimeServiceStatus({
+                error: 'GTFS-Realtime config update encountered an error.' ,
+                debug: (err.stack || err),
+                timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
+            });
+            eventCreator.emitError({ error: err });
 
-        return res.status(500).send({ error: err.message });
-    }
+            return res.status(500).send({ error: err.message });
+        }
+
+    });
 });
 
 
 router.post('/update/Logging/config', function (req, res) {
 
-    try {
-        var loggingHotConfig = ConfigsService.getLoggingHotConfig(),
-            
-              newConfig = Object.keys(loggingHotConfig || {}).reduce(function (acc, key) {
-                                acc[key] = !!req.body[key];
-                                return acc;
-                            }, {});
+    var key = (req.body && req.body.key) || (req.query && req.query.key) ;
 
-        newConfig.daysToKeepLogsBeforeDeleting = req.body.daysToKeepLogsBeforeDeleting || 0;
+    authChecker(key, res, res, function () {
+        try {
+            var loggingHotConfig = ConfigsService.getLoggingHotConfig(),
+                
+                  newConfig = Object.keys(loggingHotConfig || {}).reduce(function (acc, key) {
+                                    acc[key] = !!req.body[key];
+                                    return acc;
+                                }, {});
 
-        eventCreator.emitLoggingStatus({
-            info: 'Server received request for Logging configuration update.' ,
+            newConfig.daysToKeepLogsBeforeDeleting = req.body.daysToKeepLogsBeforeDeleting || 0;
+
+            eventCreator.emitLoggingStatus({
+                info: 'Server received request for Logging configuration update.' ,
+                timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
+            });
+
+            ConfigsService.updateLoggingConfig(newConfig, function (err) {
+                if (err) {
+                    eventCreator.emitLoggingStatus({
+                        info: 'Logging configuration update failed with the following error:\n' + err.message ,
+                        debug: (err.stack || err) ,
+                        timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
+                    });
+
+                    return res.status(500).send({ error: err.message });
+                } else {
+                    eventCreator.emitLoggingStatus({
+                        info: 'Logging configuration update complete.' ,
+                        timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
+                    });
+
+                    return res.status(200).send('Update successful.');
+                }
+            });
+
+        } catch (err) {
+            return res.status(500).send({ error: err.message });
+        }
+    });
+});
+
+router.post('/update/Converter/config', function(req, res) {
+
+    var key = (req.body && req.body.key) || (req.query && req.query.key) ;
+
+    authChecker(key, res, res, function () {
+
+        var newConfig  = {},
+            configKeys = ((req.body !== null) && (typeof req.body === 'object')) && Object.keys(req.body),
+            onOffKey,
+            i;
+
+        SystemStatusService.resetConverterConfigUpdateLog() ;
+
+        eventCreator.emitConverterServiceStatus({
+            info: 'Server received request for Converter configuration update.' ,
             timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
         });
 
-        ConfigsService.updateLoggingConfig(newConfig, function (err) {
-            if (err) {
-                eventCreator.emitLoggingStatus({
-                    info: 'Logging configuration update failed with the following error:\n' + err.message ,
-                    debug: (err.stack || err) ,
-                    timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
-                });
 
-                return res.status(500).send({ error: err.message });
+        for ( i = 0; i < configKeys.length; ++i ) {
+            onOffKey = configKeys[i].replace('LoggingLevel', '');
+            onOffKey = 'log' + onOffKey[0].toUpperCase() + onOffKey.slice(1);
+
+            newConfig[configKeys[i]] = req.body[configKeys[i]];
+            newConfig[onOffKey]      = (req.body[configKeys[i]] !== 'off');
+        }
+
+        ConfigsService.updateConverterConfig(newConfig, function (err) {
+            if (err) {
+
+                var msg = {
+                        debug: (err.stack || err) ,
+                        timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
+                    } ,
+
+                    desc = 'Server encountered an error while updating the Converter configuration:\n' + err.message ;
+
+
+                msg[ConfigsService.converterIsConfigured() ? 'info' : 'error'] = desc ;
+
+                eventCreator.emitConverterServiceStatus(msg);
+                eventCreator.emitError({ error: err });
+
+                return res.status(500).send({ error: desc });
+
             } else {
-                eventCreator.emitLoggingStatus({
-                    info: 'Logging configuration update complete.' ,
+                eventCreator.emitConverterServiceStatus({
+                    info: 'Converter configuration update successful.' ,
                     timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
                 });
 
                 return res.status(200).send('Update successful.');
             }
         });
-
-  } catch (err) {
-      return res.status(500).send({ error: err.message });
-  }
-});
-
-router.post('/update/Converter/config', function(req, res) {
-
-    var newConfig  = {},
-        configKeys = ((req.body !== null) && (typeof req.body === 'object')) && Object.keys(req.body),
-        onOffKey,
-        i;
-
-    SystemStatusService.resetConverterConfigUpdateLog() ;
-
-    eventCreator.emitConverterServiceStatus({
-        info: 'Server received request for Converter configuration update.' ,
-        timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
-    });
-
-
-    for ( i = 0; i < configKeys.length; ++i ) {
-        onOffKey = configKeys[i].replace('LoggingLevel', '');
-        onOffKey = 'log' + onOffKey[0].toUpperCase() + onOffKey.slice(1);
-
-        newConfig[configKeys[i]] = req.body[configKeys[i]];
-        newConfig[onOffKey]      = (req.body[configKeys[i]] !== 'off');
-    }
-
-    ConfigsService.updateConverterConfig(newConfig, function (err) {
-        if (err) {
-
-            var msg = {
-                    debug: (err.stack || err) ,
-                    timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
-                } ,
-
-                desc = 'Server encountered an error while updating the Converter configuration:\n' + err.message ;
-
-
-            msg[ConfigsService.converterIsConfigured() ? 'info' : 'error'] = desc ;
-
-            eventCreator.emitConverterServiceStatus(msg);
-            eventCreator.emitError({ error: err });
-
-            return res.status(500).send({ error: desc });
-
-        } else {
-            eventCreator.emitConverterServiceStatus({
-                info: 'Converter configuration update successful.' ,
-                timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
-            });
-
-            return res.status(200).send('Update successful.');
-        }
     });
 });
 
@@ -532,9 +635,33 @@ router.post('/update/Converter/config', function(req, res) {
 
 //TODO: Move the lastGTFSDataUpdateResults to the SystemStatusService
 router.get('/get/system/status', function (req, res) {
-    var sysStatus = SystemStatusService.getSystemStatus() ;
-    return res.status(200).send(sysStatus);
+    var key = req.query && req.query.key;
+
+    authChecker(key, res, res, function () {
+        var sysStatus = SystemStatusService.getSystemStatus() ;
+        return res.status(200).send(sysStatus);
+    });
 });
+
+
+
+router.post('/authentication/keys/reinstate', function(req, res) {
+
+    var key = (req.body && req.body.key) || (req.query && req.query.key) ;
+
+    authChecker(key, res, res, function () {
+        if (req.body.reinstatedKey) {
+            AuthorizationService.reinstateKey(req.body.reinstatedKey) ;
+            res.status(200).send({ success: 'The key is reinstatened.' });
+        } else {
+            res.status(422).send({ 
+                error: 'To reinstate a key, send a POST with a "reinstatedKey" field in the body.'
+            });
+        }
+    });
+});
+
+
 
 
 function gtfsDataUpdateCallback (err) {

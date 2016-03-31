@@ -1,125 +1,156 @@
 'use strict';
 
-var util    = require('util'),
-    toobusy = require('toobusy-js');
+var toobusy = require('toobusy-js');
 
-var ConverterService = require('../src/services/ConverterService');
+var ConverterService = require('../src/services/ConverterService') ,
+    AuthorizationService = require('../src/services/AuthorizationService') ,
 
-var router = require('express').Router();
+    router = require('express').Router() ,
 
-var toobusyErrorMessage = "Server is temporarily too busy. Please try again.";
+    toobusyErrorMessage = "Service Unavailable: Back-end server is at capacity.";
+                          
 
 
 
-function sendReponse (res, contentType, error, callResponse) {
+function sendResponse (res, contentType, statusCode, error, callResponse) {
     if (error) {
-        res.status(500);
-        res.write(util.inspect(error));
-        res.end();
-        return;
+        return res.status(500).send({ error: "Server error occurred while processing the response." });
     }
 
-    res.writeHead(200, {
+    res.writeHead(statusCode, {
         'Content-Length': callResponse.toString().length,
         'Content-Type'  : contentType,
     });
 
-    res.end(callResponse);
+    return res.end(callResponse);
 }
 
 
 // Hand-off the requests.
 // NOTE: Because of the extensions on the routes, we need to use res.redirect.
 router.get('/stop-monitoring.json', function (req, res) {
-    if (!ConverterService.isRunning()) {
-        res.status(503).send({error : 'Converter service is not running.' });
-    } else if (toobusy()) {
-        res.status(503).send({error : toobusyErrorMessage });
-    } else {
-        handleRequest(req, res, 'StopMonitoringResponse', 'json');
-   } 
+    handleRequest(req, res, 'stopMonitoring', 'json');
 });
 
 router.get('/stop-monitoring.xml', function (req, res) {
-    if (!ConverterService.isRunning()) {
-        res.status(503).send({error : 'Converter service is not running.' });
-    } else if (toobusy()) {
-        res.status(503).send({error : toobusyErrorMessage });
-    } else {
-        handleRequest(req, res, 'StopMonitoringResponse', 'xml');
-    }
+    handleRequest(req, res, 'stopMonitoring', 'xml');
 });
 
 router.get('/vehicle-monitoring.json', function (req, res) {
-    if (!ConverterService.isRunning()) {
-        res.status(503).send({error : 'Converter service is not running.' });
-    } else if (toobusy()) {
-        res.status(503).send({error : toobusyErrorMessage });
-    } else {
-        handleRequest(req, res, 'VehicleMonitoringResponse', 'json');
-    }
+    handleRequest(req, res, 'vehicleMonitoring', 'json');
 });
 
 router.get('/vehicle-monitoring.xml', function (req, res) {
-    if (!ConverterService.isRunning()) {
-        res.status(503).send({error : 'Converter service is not running.' });
-    } else if (toobusy()) {
-        res.status(503).send({error : toobusyErrorMessage });
-    } else {
-        handleRequest(req, res, 'VehicleMonitoringResponse', 'xml');
-    }
+    handleRequest(req, res, 'vehicleMonitoring', 'xml');
 });
 
 
-function handleRequest (req, res, monitoringCallType, extension) {
-    var contentType = (extension === 'xml') ? 'application/xml' : 'application/json',
-        callback    = sendReponse.bind(null, res, contentType),
+function handleRequest (req, res, monitoringCallType, dataFormat) {
+    var contentType = (dataFormat === 'xml') ? 'application/xml' : 'application/json',
+        callback    = sendResponse.bind(null, res, contentType),
 
         caseInsensitiveQuery = {},
 
-        key, value,
-        queryKeys,
+        qParam, value,
+        queryParams,
+
         i;
 
-    if ((req.query !== null) && (typeof req.query === 'object')) {
-        queryKeys = Object.keys(req.query);
 
-        for ( i = 0; i < queryKeys.length; ++i ) {
-            key   = (queryKeys[i].toLowerCase) ?
-                        queryKeys[i].toLowerCase() : queryKeys[i];
-            value = (req.query[queryKeys[i]].toLowerCase) ? 
-                        req.query[queryKeys[i]].toLowerCase() : req.query[queryKeys[i]];
+    var apiKey = req.query && req.query.key;
 
-            caseInsensitiveQuery[key] = value;
-            caseInsensitiveQuery['_' + key] = req.query[queryKeys[i]];
-        }
 
-    } else {
-        caseInsensitiveQuery = req.query;
+    if ((monitoringCallType !== 'stopMonitoring')&&(monitoringCallType !== 'vehicleMonitoring')) {
+        return res.status(404).send('The resource you requested could not be found.');
     }
 
 
-    if (monitoringCallType === 'StopMonitoringResponse') {
-        try {
-            ConverterService.getStopMonitoringResponse(caseInsensitiveQuery, extension, callback);
-        } catch (e) {
-            if ( ! res.headersSent ) {
-                res.status(500).send({error : "Internal server error." });
-            }
-            console.error(e.stack);
-        }
-    } else if (monitoringCallType === 'VehicleMonitoringResponse') {
-        try {
-            ConverterService.getVehicleMonitoringResponse(caseInsensitiveQuery, extension, callback);
-        } catch (e) {
-            if ( ! res.headersSent ) {
-                res.status(500).send({error : "Internal server error." });
-            }
-            console.error(e.stack);
-        }
-    } else {
-        res.status(500).send({ error: 'Unrecognized monitoring call type.'});
+    if (!ConverterService.isRunning()) {
+        return res.status(503).send({error : 'Converter service is not running.' });
     }
+    
+
+    if (toobusy()) {
+        return ConverterService.getErrorResponse(toobusyErrorMessage, 
+                                                 monitoringCallType, 
+                                                 dataFormat, 
+                                                 callback.bind(null, 503));
+    }
+
+    if (!apiKey) {
+        return ConverterService.getErrorResponse("API key required.",
+                                                 monitoringCallType, 
+                                                 dataFormat, 
+                                                 callback.bind(null, 403));
+    }
+
+
+    AuthorizationService.isAuthorized(apiKey, function (err, isAuthd) {
+
+
+        if (err) {
+            return ConverterService.getErrorResponse('An error occurred during authorization.',
+                                                     monitoringCallType, 
+                                                     dataFormat, 
+                                                     callback.bind(null, 403));
+        }
+
+
+        if (!isAuthd) {
+            return ConverterService.getErrorResponse('API key is not authorized or rate exceeded.',
+                                                     monitoringCallType, 
+                                                     dataFormat, 
+                                                     callback.bind(null, 403));
+        }
+
+        if ((req.query !== null) && (typeof req.query === 'object')) {
+            queryParams = Object.keys(req.query);
+
+            for ( i = 0; i < queryParams.length; ++i ) {
+                qParam   = (queryParams[i].toLowerCase) ?
+                            queryParams[i].toLowerCase() : queryParams[i];
+                value = (req.query[queryParams[i]].toLowerCase) ? 
+                            req.query[queryParams[i]].toLowerCase() : req.query[queryParams[i]];
+
+                caseInsensitiveQuery[qParam] = value;
+                caseInsensitiveQuery['_' + qParam] = req.query[queryParams[i]];
+            }
+
+        } else {
+            caseInsensitiveQuery = req.query;
+        }
+
+
+        if (monitoringCallType === 'stopMonitoring') {
+            try {
+                ConverterService.getStopMonitoringResponse(caseInsensitiveQuery, 
+                                                           dataFormat, 
+                                                           callback.bind(null, 200));
+            } catch (e) {
+                if ( ! res.headersSent ) {
+                    return res.status(500).send({error : "Internal server error." });
+                }
+                try {
+                    res.end();
+                    console.error(e.stack);
+                } catch (e2) {
+                    console.error(e.stack);
+                    console.error(e2.stack);
+                }
+            }
+        } else {
+            try {
+                ConverterService.getVehicleMonitoringResponse(caseInsensitiveQuery, 
+                                                              dataFormat, 
+                                                              callback.bind(null, 200));
+            } catch (e) {
+                if ( ! res.headersSent ) {
+                    return res.status(500).send({error : "Internal server error." });
+                }
+                console.error(e.stack);
+            }
+        }
+    });
 }
 
 

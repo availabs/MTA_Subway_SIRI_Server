@@ -2,3 +2,4 @@ data/*
 logs/*
 analysis_out/*
 analysis.json
+*\.bak*
