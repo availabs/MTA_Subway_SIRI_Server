@@ -237,18 +237,26 @@ function converterUpdateListener (converterUpdate) {
 }
 
 
-function getStopMonitoringResponse (query, extension, callback) {
+function getStopMonitoringResponse (query, dataFormat, callback) {
     if (!converterStream) {
         throw new Error('The Converter is not running.') ;
     }
-    latestConverter.getStopMonitoringResponse(query, extension, callback);
+    latestConverter.getStopMonitoringResponse(query, dataFormat, callback);
 }
 
-function getVehicleMonitoringResponse (query, extension, callback) {
+function getVehicleMonitoringResponse (query, dataFormat, callback) {
     if (!converterStream) {
         throw new Error('The Converter is not running.') ;
     }
-    latestConverter.getVehicleMonitoringResponse(query, extension, callback);
+    latestConverter.getVehicleMonitoringResponse(query, dataFormat, callback);
+}
+
+
+function getErrorResponse (message, callType, dataFormat, callback) {
+    if (!converterStream) {
+        throw new Error('The Converter is not running.') ;
+    }
+    latestConverter.getErrorResponse(message, callType, dataFormat, callback);
 }
 
 
@@ -276,6 +284,7 @@ module.exports = {
     isRunning                       : isRunning ,
     getStopMonitoringResponse       : getStopMonitoringResponse ,
     getVehicleMonitoringResponse    : getVehicleMonitoringResponse ,
+    getErrorResponse                : getErrorResponse ,
     getCurrentGTFSRealtimeTimestamp : getCurrentGTFSRealtimeTimestamp ,
     getState                        : getState ,
 };

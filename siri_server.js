@@ -76,18 +76,6 @@ app.use('/api/siri', monitoringCallController);
 //THE STATIC ADMIN CONSOLE FILE
 app.use('/console', express.static('console')) ;
 
-//var staticMiddleware = express.static("console/");
-
-//app.use('/console', function (req, res, next) { 
-    ////var key = req.query && req.query.key ;
-
-    ////if (key && require('./src/services/AuthorizationService').isAdminAuthorized(key)) {
-        //return staticMiddleware(req, res, next);
-    ////} else {
-        ////return res.status(401).send('Admin authorization key required.');
-    ////}
- //});
-
 
 // START THE SERVER
 // =============================================================================

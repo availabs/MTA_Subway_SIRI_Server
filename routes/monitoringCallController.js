@@ -13,12 +13,12 @@ var ConfigsService = require('../src/services/ConfigsService') ,
 
 
 
-function sendResponse (res, contentType, error, callResponse) {
+function sendResponse (res, contentType, statusCode, error, callResponse) {
     if (error) {
         return res.status(500).send({ error: "Server error occurred while processing the response." });
     }
 
-    res.writeHead(200, {
+    res.writeHead(statusCode, {
         'Content-Length': callResponse.toString().length,
         'Content-Type'  : contentType,
     });
@@ -30,48 +30,67 @@ function sendResponse (res, contentType, error, callResponse) {
 // Hand-off the requests.
 // NOTE: Because of the extensions on the routes, we need to use res.redirect.
 router.get('/stop-monitoring.json', function (req, res) {
-    handleRequest(req, res, 'StopMonitoringResponse', 'json');
+    handleRequest(req, res, 'stopMonitoring', 'json');
 });
 
 router.get('/stop-monitoring.xml', function (req, res) {
-    handleRequest(req, res, 'StopMonitoringResponse', 'xml');
+    handleRequest(req, res, 'stopMonitoring', 'xml');
 });
 
 router.get('/vehicle-monitoring.json', function (req, res) {
-    handleRequest(req, res, 'VehicleMonitoringResponse', 'json');
+    handleRequest(req, res, 'vehicleMonitoring', 'json');
 });
 
 router.get('/vehicle-monitoring.xml', function (req, res) {
-    handleRequest(req, res, 'VehicleMonitoringResponse', 'xml');
+    handleRequest(req, res, 'vehicleMonitoring', 'xml');
 });
 
 
-function handleRequest (req, res, monitoringCallType, extension) {
-    var contentType = (extension === 'xml') ? 'application/xml' : 'application/json',
+function handleRequest (req, res, monitoringCallType, dataFormat) {
+    var contentType = (dataFormat === 'xml') ? 'application/xml' : 'application/json',
         callback    = sendResponse.bind(null, res, contentType),
 
         caseInsensitiveQuery = {},
 
         qParam, value,
         queryParams,
+
+        host,
+        authErrMsg,
+
         i;
 
 
     var apiKey = req.query && req.query.key;
 
-    if (apiKey && AuthorizationService.isAuthorized(apiKey)) {
-        if (!ConverterService.isRunning()) {
-            return res.status(503).send({error : 'Converter service is not running.' });
-        } else if (toobusy()) {
-            return res.status(503).send({error : toobusyErrorMessage });
-        }
-    } else {
-        var host = (serverConfig.registrationURL || req.protocol + '://' + req.get('host'));
 
-        return res.status(403).send('Admin authorization apiKey required. ' + 
-                                    ' Vist ' + host + '/register to get a apiKey.');
+    if ((monitoringCallType !== 'stopMonitoring')&&(monitoringCallType !== 'vehicleMonitoring')) {
+        return res.status(404).send('The resource you requested could not be found.');
     }
 
+
+    if (!ConverterService.isRunning()) {
+        return res.status(503).send({error : 'Converter service is not running.' });
+    }
+    
+
+    if (toobusy()) {
+        return ConverterService.getErrorResponse(toobusyErrorMessage, 
+                                                 monitoringCallType, 
+                                                 dataFormat, 
+                                                 callback.bind(null, 503));
+    }
+
+    if (!(apiKey && AuthorizationService.isAuthorized(apiKey))) {
+        host = (serverConfig.registrationURL || (req.protocol + '://' + req.get('host') + '/register')) ;
+
+        authErrMsg = 'API key is not authorized or rate exceeded.';
+
+        return ConverterService.getErrorResponse(authErrMsg, 
+                                                 monitoringCallType, 
+                                                 dataFormat, 
+                                                 callback.bind(null, 403));
+    }
 
     if ((req.query !== null) && (typeof req.query === 'object')) {
         queryParams = Object.keys(req.query);
@@ -91,9 +110,11 @@ function handleRequest (req, res, monitoringCallType, extension) {
     }
 
 
-    if (monitoringCallType === 'StopMonitoringResponse') {
+    if (monitoringCallType === 'stopMonitoring') {
         try {
-            ConverterService.getStopMonitoringResponse(caseInsensitiveQuery, extension, callback);
+            ConverterService.getStopMonitoringResponse(caseInsensitiveQuery, 
+                                                       dataFormat, 
+                                                       callback.bind(null, 200));
         } catch (e) {
             if ( ! res.headersSent ) {
                 return res.status(500).send({error : "Internal server error." });
@@ -106,17 +127,17 @@ function handleRequest (req, res, monitoringCallType, extension) {
                 console.error(e2.stack);
             }
         }
-    } else if (monitoringCallType === 'VehicleMonitoringResponse') {
+    } else {
         try {
-            ConverterService.getVehicleMonitoringResponse(caseInsensitiveQuery, extension, callback);
+            ConverterService.getVehicleMonitoringResponse(caseInsensitiveQuery, 
+                                                          dataFormat, 
+                                                          callback.bind(null, 200));
         } catch (e) {
             if ( ! res.headersSent ) {
                 return res.status(500).send({error : "Internal server error." });
             }
             console.error(e.stack);
         }
-    } else {
-        return res.status(500).send({ error: 'Unrecognized monitoring call type.'});
     }
 }
 
