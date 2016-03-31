@@ -2,7 +2,7 @@
 ## More instruction coming shortly.
 1. `npm install --production`
 2. `./bin/updateGTFSData.js`
-3. `node mta_siri_server.js`
+3. `node siri_server.js`
 
 ## To deploy on AWS
 1. Create a base Ubuntu 12.04 LTS Server
