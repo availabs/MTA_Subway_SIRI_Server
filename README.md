@@ -11,4 +11,4 @@
 3. `chmod +x init-script.sh`
 4. `./init-script.sh`
 5. `cd code/MTA_Subway_SIRI_Server`
-6. `node mta_siri_server.js`
+6. `node siri_server.js`
