@@ -2,11 +2,9 @@
 
 var toobusy = require('toobusy-js');
 
-var ConfigsService = require('../src/services/ConfigsService') ,
-    ConverterService = require('../src/services/ConverterService') ,
+var ConverterService = require('../src/services/ConverterService') ,
     AuthorizationService = require('../src/services/AuthorizationService') ,
 
-    serverConfig = ConfigsService.getServerConfig() ,
     router = require('express').Router() ,
 
     toobusyErrorMessage = "Server is temporarily too busy. Please try again.";
@@ -55,9 +53,6 @@ function handleRequest (req, res, monitoringCallType, dataFormat) {
         qParam, value,
         queryParams,
 
-        host,
-        authErrMsg,
-
         i;
 
 
@@ -81,64 +76,80 @@ function handleRequest (req, res, monitoringCallType, dataFormat) {
                                                  callback.bind(null, 503));
     }
 
-    if (!(apiKey && AuthorizationService.isAuthorized(apiKey))) {
-        host = (serverConfig.registrationURL || (req.protocol + '://' + req.get('host') + '/register')) ;
-
-        authErrMsg = 'API key is not authorized or rate exceeded.';
-
-        return ConverterService.getErrorResponse(authErrMsg, 
+    if (!apiKey) {
+        return ConverterService.getErrorResponse("API key required.",
                                                  monitoringCallType, 
                                                  dataFormat, 
                                                  callback.bind(null, 403));
     }
 
-    if ((req.query !== null) && (typeof req.query === 'object')) {
-        queryParams = Object.keys(req.query);
 
-        for ( i = 0; i < queryParams.length; ++i ) {
-            qParam   = (queryParams[i].toLowerCase) ?
-                        queryParams[i].toLowerCase() : queryParams[i];
-            value = (req.query[queryParams[i]].toLowerCase) ? 
-                        req.query[queryParams[i]].toLowerCase() : req.query[queryParams[i]];
+    AuthorizationService.isAuthorized(apiKey, function (err, isAuthd) {
 
-            caseInsensitiveQuery[qParam] = value;
-            caseInsensitiveQuery['_' + qParam] = req.query[queryParams[i]];
+
+        if (err) {
+            return ConverterService.getErrorResponse('An error occurred during authorization.',
+                                                     monitoringCallType, 
+                                                     dataFormat, 
+                                                     callback.bind(null, 403));
         }
 
-    } else {
-        caseInsensitiveQuery = req.query;
-    }
 
+        if (!isAuthd) {
+            return ConverterService.getErrorResponse('API key is not authorized or rate exceeded.',
+                                                     monitoringCallType, 
+                                                     dataFormat, 
+                                                     callback.bind(null, 403));
+        }
 
-    if (monitoringCallType === 'stopMonitoring') {
-        try {
-            ConverterService.getStopMonitoringResponse(caseInsensitiveQuery, 
-                                                       dataFormat, 
-                                                       callback.bind(null, 200));
-        } catch (e) {
-            if ( ! res.headersSent ) {
-                return res.status(500).send({error : "Internal server error." });
+        if ((req.query !== null) && (typeof req.query === 'object')) {
+            queryParams = Object.keys(req.query);
+
+            for ( i = 0; i < queryParams.length; ++i ) {
+                qParam   = (queryParams[i].toLowerCase) ?
+                            queryParams[i].toLowerCase() : queryParams[i];
+                value = (req.query[queryParams[i]].toLowerCase) ? 
+                            req.query[queryParams[i]].toLowerCase() : req.query[queryParams[i]];
+
+                caseInsensitiveQuery[qParam] = value;
+                caseInsensitiveQuery['_' + qParam] = req.query[queryParams[i]];
             }
+
+        } else {
+            caseInsensitiveQuery = req.query;
+        }
+
+
+        if (monitoringCallType === 'stopMonitoring') {
             try {
-                res.end();
+                ConverterService.getStopMonitoringResponse(caseInsensitiveQuery, 
+                                                           dataFormat, 
+                                                           callback.bind(null, 200));
+            } catch (e) {
+                if ( ! res.headersSent ) {
+                    return res.status(500).send({error : "Internal server error." });
+                }
+                try {
+                    res.end();
+                    console.error(e.stack);
+                } catch (e2) {
+                    console.error(e.stack);
+                    console.error(e2.stack);
+                }
+            }
+        } else {
+            try {
+                ConverterService.getVehicleMonitoringResponse(caseInsensitiveQuery, 
+                                                              dataFormat, 
+                                                              callback.bind(null, 200));
+            } catch (e) {
+                if ( ! res.headersSent ) {
+                    return res.status(500).send({error : "Internal server error." });
+                }
                 console.error(e.stack);
-            } catch (e2) {
-                console.error(e.stack);
-                console.error(e2.stack);
             }
         }
-    } else {
-        try {
-            ConverterService.getVehicleMonitoringResponse(caseInsensitiveQuery, 
-                                                          dataFormat, 
-                                                          callback.bind(null, 200));
-        } catch (e) {
-            if ( ! res.headersSent ) {
-                return res.status(500).send({error : "Internal server error." });
-            }
-            console.error(e.stack);
-        }
-    }
+    });
 }
 
 
