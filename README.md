@@ -1,6 +1,6 @@
 #Instructions
 ## More instruction coming shortly.
-1. `npm install`
+1. `npm install --production`
 2. `./bin/updateGTFSData.js`
 3. `node mta_siri_server.js`
 
