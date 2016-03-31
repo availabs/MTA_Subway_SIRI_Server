@@ -128,7 +128,7 @@ function validator (hotConfig, callback) {
 
         var checkForAuthenticatorModule = function (cb) {
             if (hotConfig.authenticator) {
-                fs.access(path.join(authenticationDirPath, hotConfig.authenticator), function (err) {
+                fs.access(path.join(authenticationDirPath, hotConfig.authenticator + '.js'), function (err) {
                     if (err) {
                          validationMessage.authenticator = { 
                              error: "The authenticator " + hotConfig.authenticator + 
@@ -176,7 +176,7 @@ function validator (hotConfig, callback) {
 
         if (hotConfig.authenticator) {
             try {
-                fs.accessSync(path.join(authenticationDirPath, hotConfig.authenticator)) ;
+                fs.accessSync(path.join(authenticationDirPath, hotConfig.authenticator + '.js')) ;
                 validationMessage.authenticator = {
                     info: "User API key authentication module found." ,
                 } ;
