@@ -10,8 +10,8 @@
     "gtfsrt": {
         "feedURL": "http://datamine.mta.info/mta_esi.php?&key=5dadd04378cc60cc4ae447da5756ddaa",
         "readInterval": 30,
-        "retryInterval": 5,
-        "maxNumRetries": 2,
+        "retryInterval": 2,
+        "maxNumRetries": 10,
         "protofileName": "nyct-subway.proto",
         "useLastStoptimeUpdateAsDestination": true
     },

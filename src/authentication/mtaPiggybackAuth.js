@@ -39,8 +39,6 @@ function isAuthorized (key, callback) {
         return callback(null, isAuthd) ;
     } else {
 
-console.log('\n\n============================== SENDING KEY AUTH REQUEST\n\n');
-
         return request(url, function (err, res) {
             if (err) {
                 return callback(err);
@@ -66,9 +64,13 @@ function isAdminAuthorized (key, callback) {
 }
 
 
-function banKey (key) { bannedKeys[key] = true; }
+function banKey (key) { 
+    bannedKeys[key] = true; 
+}
 
-function reinstateKey (key) { delete bannedKeys[key]; }
+function reinstateKey (key) { 
+    delete bannedKeys[key]; 
+}
 
 module.exports = {
     isAuthorized      : isAuthorized ,

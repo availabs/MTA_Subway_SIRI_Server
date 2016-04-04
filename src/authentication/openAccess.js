@@ -14,7 +14,7 @@ function openAuth (key, callback) { callback(null, !bannedKeys[key]); }
 
 
 function isAdminAuthorized (key, callback) {
-    return callback(null, serverConfig.adminKey === key);
+    return callback(null, ((!serverConfig.adminKey) || (serverConfig.adminKey === key)));
 }
 
 function banKey (key) { bannedKeys[key] = true; }

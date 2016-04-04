@@ -90,16 +90,26 @@ function validator (hotConfig, callback) {
     }
 
 
+    if (typeof hotConfig.activeFeed === 'string') {
+        activeFeedHotConfigFileName = hotConfig.activeFeed + '.json';
+        activeFeedHotConfigPath     = path.join(configDirPath, activeFeedHotConfigFileName);
+
+        activeFeedHotConfigDNEMessage = 'Configuration file '+activeFeedHotConfigFileName+' does not exist.';
+
+    } else {
+        activeFeedHotConfigPath = null;
+        validationMessage.activeFeed = { 
+            error: 'The activeFeed for the server must be specified.' ,
+        };
+        validationMessage.__isValid = false ;
+    }
+
+
 
     if (callback) {
 
         var checkForActiveFeedConfigFile = function (cb) {
-            if (typeof hotConfig.activeFeed === 'string') {
-                activeFeedHotConfigFileName = hotConfig.activeFeed + '.json';
-                activeFeedHotConfigPath     = path.join(configDirPath, activeFeedHotConfigFileName) ;
-
-                activeFeedHotConfigDNEMessage = 
-                    'Configuration file ' + activeFeedHotConfigFileName + ' does not exist.';
+            if (activeFeedHotConfigPath !== null) {
 
                 fs.access(activeFeedHotConfigPath, fs.F_OK, function (err) {
                     if (err) {
@@ -115,14 +125,11 @@ function validator (hotConfig, callback) {
                         } ;
                     }
                     
-                    cb(null);
+                    return cb(null); // Error handling via validation message. 
                 });
             } else {
-                validationMessage.activeFeed = { 
-                    error: 'The activeFeed for the server must be specified.' ,
-                };
-                validationMessage.__isValid = false ;
-                cb(null);
+                // Error message already added above.
+                return cb(null); // Error handling via validation message. 
             }
         } ;
 
@@ -167,6 +174,9 @@ function validator (hotConfig, callback) {
 
         try {
             fs.accessSync(activeFeedHotConfigPath, fs.F_OK);
+            validationMessage.feedConfigurationFile = { 
+                info: activeFeedHotConfigFileName + ' was found on the server.' ,
+            } ;
         } catch (fileDoesNotExistsError) {
             validationMessage.feedConfigurationFile = { 
                 error: activeFeedHotConfigDNEMessage ,

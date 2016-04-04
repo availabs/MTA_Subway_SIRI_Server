@@ -148,6 +148,7 @@ function updateFeedConfig (feedComponentName, newHotConfig, callback) {
         configWasValid ,
         msg;
 
+    // If the current config is not valid, we reset the status.  Otherwise, we simply append to it.
     if (feedComponentName === 'gtfs') {
         configBuilder = gtfsConfigBuilder;
         if (!(configWasValid = configValidityStatus.gtfs)) {
@@ -224,6 +225,7 @@ function updateFeedConfig (feedComponentName, newHotConfig, callback) {
 
         // Write the feed config to disk.
         writeFeedConfig(serverConfig.activeFeed, newFeedConfig, function (err) {
+
             if (err) {
                 eventCreator.emitSystemStatus({
                     error: 'New ' + feedComponentName + ' configuration could not be persisted to disk.' ,
@@ -239,11 +241,15 @@ function updateFeedConfig (feedComponentName, newHotConfig, callback) {
                 timestamp: (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
             });
 
-            listeners = listeners.map(function (listener) { 
-                            return function (cb) { listener(_.cloneDeep(newComponentConfig), cb); } ;
-                        });
+            if (listeners.length) {
+                listeners = listeners.map(function (listener) { 
+                                return function (cb) { listener(_.cloneDeep(newComponentConfig), cb); } ;
+                            });
 
-            async.series(listeners, callback);
+                async.series(listeners, callback);
+            } else {
+                callback(null);
+            }
         });
     });
 } 
