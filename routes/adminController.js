@@ -61,6 +61,7 @@ function authChecker (key, req, res, f) {
             try {
                 f();
             } catch (err) {
+                console.error(err.stack || err);
                 return res.status(500).send('An error occurred while processing the admin task.');
             }
         } else {
@@ -195,6 +196,7 @@ router.post('/update/GTFS/config', function(req, res) {
 
     var key = (req.body && req.body.key) || (req.query && req.query.key) ;
 
+
     authChecker(key, res, res, function () {
         try {
             gtfsMulter(req, res, function (err) {
@@ -254,13 +256,9 @@ router.post('/update/GTFS/config', function(req, res) {
                             timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
                         });
 
-                        Object.keys(req.body).reduce(function (acc, key) {
-                            if (key !== 'zipfile') {
-                                acc[key] = req.body[key] ;
-                            } 
-                        
-                            return acc;
-                        }, (newConfig = {}));
+
+                        newConfig = buildNewConfig(req.body);
+
 
                         ConfigsService.updateGTFSConfig(newConfig, function (err) {
                             if (err) {
@@ -310,6 +308,7 @@ router.post('/update/GTFS/data', function(req, res) {
 
     var key = (req.body && req.body.key) || (req.query && req.query.key) ;
 
+
     authChecker(key, res, res, function () {
         try {
             SystemStatusService.resetGTFSLastDataUpdateLog() ;
@@ -322,9 +321,9 @@ router.post('/update/GTFS/data', function(req, res) {
             console.log("===== UPDATE GTFS Data =====");
 
             gtfsMulter(req, res, function (err) {
-                var newConfig = {},
-                    keys,
-                    i;
+                var newConfig = {};
+                    //keys,
+                    //i;
 
                 if (err) {
 
@@ -338,13 +337,8 @@ router.post('/update/GTFS/data', function(req, res) {
                     return res.status(500).send("Server error while updating the GTFS feed data.");
 
                 } else {
-                    keys = Object.keys(req.body);
 
-                    for ( i = 0; i < keys.length; ++i ) {
-                        if (keys[i] !== 'zipfile') {
-                            newConfig[keys[i]] = req.body[keys[i]];
-                        } 
-                    }
+                    newConfig = buildNewConfig(req.body);
 
                     ConfigsService.updateGTFSConfig(newConfig, function (err) {
 
@@ -394,18 +388,9 @@ router.post('/update/GTFS/data', function(req, res) {
 
 function finishGTFSrtUpdate (req, res) {
     // Convert all stringified numbers in the request body to floats.
-    var newConfig = {};
+    //var newConfig = {};
 
-
-    Object.keys(req.body).reduce(function (acc, key) {
-        if (! isNaN(parseInt(req.body[key]))) {
-           acc[key] = parseFloat(req.body[key]); 
-        } else if (key !== "protofile") {
-            acc[key] = req.body[key];
-        }
-
-        return acc;
-    }, newConfig);
+    var newConfig = buildNewConfig(req.body);
 
     // We need to update the profileName after an upload. (User can set the filename.)
     if (req.file) {
@@ -468,7 +453,7 @@ router.post('/update/GTFS-Realtime/config', function (req, res) {
 
                 } else {
                     // Was the protofile renamed? If so, we delete the old one.
-                    if (req.file && (req.file.filename !== oldConfig.protofileName)) {
+                    if (req.file && (req.file.filename !== oldConfig.protofileName) && (req.file.filename !== "gtfs-realtime.proto")) {
                         
                         eventCreator.emitGTFSRealtimeServiceStatus({
                             debug: 'Removing the old GTFS-Realtime .proto file.',
@@ -533,23 +518,31 @@ router.post('/update/Logging/config', function (req, res) {
 
     var key = (req.body && req.body.key) || (req.query && req.query.key) ;
 
+
     authChecker(key, res, res, function () {
         try {
             var loggingHotConfig = ConfigsService.getLoggingHotConfig(),
+
+                newConfig = buildNewConfig(req.body) ,
                 
-                  newConfig = Object.keys(loggingHotConfig || {}).reduce(function (acc, key) {
-                                    acc[key] = !!req.body[key];
+                updatedConfig = Object.keys(loggingHotConfig || {}).reduce(function (acc, key) {
+                                    if (newConfig[key] === undefined) {
+                                        acc[key] = false;
+                                    } else {
+                                        acc[key] = newConfig[key];
+                                    }
+
                                     return acc;
                                 }, {});
 
-            newConfig.daysToKeepLogsBeforeDeleting = req.body.daysToKeepLogsBeforeDeleting || 0;
+            updatedConfig.daysToKeepLogsBeforeDeleting = newConfig.daysToKeepLogsBeforeDeleting || 0;
 
             eventCreator.emitLoggingStatus({
                 info: 'Server received request for Logging configuration update.' ,
                 timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
             });
 
-            ConfigsService.updateLoggingConfig(newConfig, function (err) {
+            ConfigsService.updateLoggingConfig(updatedConfig, function (err) {
                 if (err) {
                     eventCreator.emitLoggingStatus({
                         info: 'Logging configuration update failed with the following error:\n' + err.message ,
@@ -574,18 +567,39 @@ router.post('/update/Logging/config', function (req, res) {
     });
 });
 
+
+function buildNewConfig (body) {
+
+    if (!body || (typeof body !== 'object')) {
+        return {};
+    }
+
+    return Object.keys(body).reduce(function (acc, key) {
+        if ((key !== 'key') && (key !== 'protofile')) {
+            if ((typeof body[key] === 'boolean') || (typeof body[key] === 'number')) {
+                acc[key] = body[key];
+            } else if ((body[key] === 'on') || (body[key] === 'true')) {
+                acc[key] = true;
+            } else if (!isNaN(parseFloat(body[key]))){
+                acc[key] = parseFloat(body[key]);
+            } else if ((body[key] === 'off') || (body[key] === 'false')) {
+                acc[key] = false;
+            } else {
+                acc[key] = body[key];
+            }
+        }
+      
+        return acc;
+    }, {});
+}
+
 router.post('/update/Converter/config', function(req, res) {
 
     var key = (req.body && req.body.key) || (req.query && req.query.key) ;
 
     authChecker(key, res, res, function () {
 
-        var newConfig  = {},
-            configKeys = ((req.body !== null) && (typeof req.body === 'object')) && Object.keys(req.body),
-            onOffKey,
-            i;
-
-        SystemStatusService.resetConverterConfigUpdateLog() ;
+        var newConfig  = buildNewConfig(req.body);
 
         eventCreator.emitConverterServiceStatus({
             info: 'Server received request for Converter configuration update.' ,
@@ -593,15 +607,8 @@ router.post('/update/Converter/config', function(req, res) {
         });
 
 
-        for ( i = 0; i < configKeys.length; ++i ) {
-            onOffKey = configKeys[i].replace('LoggingLevel', '');
-            onOffKey = 'log' + onOffKey[0].toUpperCase() + onOffKey.slice(1);
-
-            newConfig[configKeys[i]] = req.body[configKeys[i]];
-            newConfig[onOffKey]      = (req.body[configKeys[i]] !== 'off');
-        }
-
         ConfigsService.updateConverterConfig(newConfig, function (err) {
+
             if (err) {
 
                 var msg = {
@@ -645,14 +652,32 @@ router.get('/get/system/status', function (req, res) {
 
 
 
-router.post('/authentication/keys/reinstate', function(req, res) {
+
+router.post('/authentication/key/ban', function(req, res) {
+
+    var key = (req.body && req.body.key) || (req.query && req.query.key) ;
+
+    authChecker(key, res, res, function () {
+        if (req.body.bannedKey) {
+            AuthorizationService.banKey(req.body.bannedKey) ;
+            res.status(200).send({ success: 'The key is banned.' });
+        } else {
+            res.status(422).send({ 
+                error: 'To ban a key, send a POST with a "bannedKey" field in the body.'
+            });
+        }
+    });
+});
+
+
+router.post('/authentication/key/reinstate', function(req, res) {
 
     var key = (req.body && req.body.key) || (req.query && req.query.key) ;
 
     authChecker(key, res, res, function () {
         if (req.body.reinstatedKey) {
             AuthorizationService.reinstateKey(req.body.reinstatedKey) ;
-            res.status(200).send({ success: 'The key is reinstatened.' });
+            res.status(200).send({ success: 'The key is reinstated.' });
         } else {
             res.status(422).send({ 
                 error: 'To reinstate a key, send a POST with a "reinstatedKey" field in the body.'
@@ -665,6 +690,18 @@ router.post('/authentication/keys/reinstate', function(req, res) {
 
 
 function gtfsDataUpdateCallback (err) {
+
+    // Without this hack, can only upload a gtfs.zip file once. No idea why, but this fixes it.
+    gtfsMulterStorage = multer.diskStorage({
+        destination : ConfigsService.getGTFSConfig().workDirPath,
+        filename    : function (req, file, cb) {
+            var feedDataZipFileName = ConfigsService.getGTFSConfig().feedDataZipFileName;
+            cb(null, feedDataZipFileName);
+        },
+    });
+
+    gtfsMulter = multer({ storage: gtfsMulterStorage }).single('zipfile');
+
     if (err) {
         eventCreator.emitGTFSDataUpdateStatus({
             debug: 'Admin console received an error from the GTFS_FeedService.update callback.' ,
@@ -675,9 +712,9 @@ function gtfsDataUpdateCallback (err) {
             debug: 'Admin console received an "all-clear" from the GTFS_FeedService.update callback.' ,
             timestamp : (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
         });
+
     }
 }
 
 
 module.exports = router;
-

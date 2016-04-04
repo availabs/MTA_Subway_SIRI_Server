@@ -47,7 +47,17 @@ function start (callback) {
             timestamp: (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
         });
 
-        return callback(null); 
+        return callback && callback(null); 
+    }
+
+    if (!(ConfigService.gtfsIsConfigured() && ConfigService.gtfsrtIsConfigured() && ConfigService.converterIsConfigured())) {
+        var errMsg = 'ConverterService cannot be started until the GTFS, GTFS-Realtime, and Converter configurations are valid.' ;
+         eventCreator.emitConverterServiceStatus({
+            error: errMsg, 
+            timestamp: (Date.now() + (process.hrtime()[1]%1000000)/1000000) ,
+        });
+
+        return callback && callback(new Error(errMsg));
     }
 
     try {
@@ -276,7 +286,7 @@ function getCurrentGTFSRealtimeTimestamp () {
         throw new Error('The Converter has not completed the startup process.') ;
     }
 
-    return latestConverter.getCurrentGTFSRealtimeTimestamp();
+    return converterStream.getCurrentGTFSRealtimeTimestamp();
 }
 
 function getState () {

@@ -13,5 +13,4 @@ if (!serverConfig.authenticator) {
                 'No authenticator specified in /config/server.json. User API key validation is turned off.') ;
 }
 
-console.error(authenticatorModulePath);
 module.exports = require(authenticatorModulePath) ;

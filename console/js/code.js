@@ -53,9 +53,7 @@
     }
 
     var key = getParameterByName('key');
-console.log('==================' + key + '==================');
-    //$("#GTFS_hidden_key").prop('defaultValue', key);
-    //$("#GTFS-Realtime_hidden_key").prop('defaultValue', key);
+    
 
     (function () {
         var descriptionDivs = [
@@ -201,44 +199,68 @@ console.log('==================' + key + '==================');
 
 
     $('#update_GTFS_config_btn').bind('click', function () {
-        sendGTFSUpdatePost('/admin/update/GTFS/config');
+        sendGTFSUpdatePost('/admin/update/GTFS/config?key=' + key);
         return false;
     });
 
     $('#update_GTFS_data_btn').bind('click', function () {
-        sendGTFSUpdatePost('/admin/update/GTFS/data');
+        sendGTFSUpdatePost('/admin/update/GTFS/data?key=' + key);
         return false;
     });
 
 
 
+    function sendGTFSUpdatePost (url) {
 
-    function sendGTFSUpdatePost(url) {
-        /*jshint validthis: true */
-        var data = $('#GTFS_form').serializeArray()
-                                  .reduce(function (acc, pair) {
-                                      acc[pair.name] = pair.value;
-                                          return acc;
-                                  }, { key: key });
+        var formData = new FormData($("#GTFS_form")[0]);
+
         $.ajax({
             type    : "POST",
-            data    : data ,
             url     : url,
             error   : function(xhr) { 
-                notify('GTFS', xhr.responseText, 'danger'); 
+                notify('GTFS-Realtime', xhr.responseText, 'danger'); 
             },
             success : function(response) { 
                 notify('GTFS', response, 'success'); 
             },
+            data: formData,
+            //Options to tell jQuery not to process data or worry about content-type.
+            cache: false,
+            contentType: false,
+            processData: false
         });
 
         return false;
     }
 
 
-
     $('#GTFS-Realtime_update_config_btn').bind('click', function () {
-        var data = $('#GTFS-Realtime_form').serializeArray()
+
+        var formData = new FormData($("#GTFS-Realtime_form")[0]);
+
+        $.ajax({
+            type    : "POST",
+            url     : '/admin/update/GTFS-Realtime/config?key=' + key ,
+            error   : function(xhr) { 
+                notify('GTFS-Realtime', xhr.responseText, 'danger'); 
+            },
+            success : function(response) { 
+                notify('GTFS-Realtime', response, 'success'); 
+            },
+            data: formData,
+            //Options to tell jQuery not to process data or worry about content-type.
+            cache: false,
+            contentType: false,
+            processData: false
+        });
+
+        return false;
+    });
+
+
+
+    $('#Logging_update_config_btn').bind('click', function () {
+        var data = $('#Logging_form').serializeArray()
                                            .reduce(function (acc, pair) {
                                                 acc[pair.name] = pair.value;
                                                 return acc;
@@ -246,7 +268,7 @@ console.log('==================' + key + '==================');
         $.ajax({
             type    : "POST",
             data    : data ,
-            url     : '/admin/update/GTFS-Realtime/config' ,
+            url     : '/admin/update/Logging/config' ,
             error   : function(xhr) { 
                 notify('GTFS-Realtime', xhr.responseText, 'danger'); 
             },
@@ -258,31 +280,6 @@ console.log('==================' + key + '==================');
         return false;
     });
 
-
-    //$('#GTFS-Realtime_form').submit(function () {
-        //$(this).ajaxSubmit({
-            //type    : "POST",
-            //data    : { key : key } ,
-            //url     : '/admin/update/GTFS-Realtime/config' ,
-            //error   : function(xhr) { notify('GTFS-Realtime', xhr.responseText, 'danger'); },
-            //success : function(response) { notify('GTFS-Realtime', response, 'success'); }
-        //});
-
-        //return false;
-    //});
-
-
-    //$('#LoggingConfig_form').submit(function () {
-        //$(this).ajaxSubmit({
-            //type    : "POST",
-            //data    : { key : key } ,
-            //url     : '/admin/update/Logging/config',
-            //error   : function(xhr) { notify('Logging', xhr.responseText, 'danger'); },
-            //success : function(response) { notify('Logging', response, 'success'); }
-        //});
-
-        //return false;
-    //});
 
 
     function formatStatusContent (content) {
