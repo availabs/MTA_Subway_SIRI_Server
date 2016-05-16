@@ -1,5 +1,5 @@
 #Instructions
-## More instruction coming shortly.
+## To install and deploy on a local server.
 1. `npm install --production`
 2. `./bin/updateGTFSData.js`
 3. `node siri_server.js`
