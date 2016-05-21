@@ -1,5 +1,5 @@
 #Instructions
-## More instruction coming shortly.
+## To install and deploy on a local server.
 1. `npm install --production`
 2. `./bin/updateGTFSData.js`
 3. `node siri_server.js`
@@ -8,7 +8,6 @@
 1. Create a base Ubuntu 12.04 LTS Server
 2. In the home directory, as the regular user, run
     `wget https://raw.githubusercontent.com/availabs/MTA_Subway_SIRI_Server/master/aws/init-script.sh`
-3. `chmod +x init-script.sh`
-4. `./init-script.sh`
-5. `cd code/MTA_Subway_SIRI_Server`
-6. `node siri_server.js`
+3. `sh ./init-script.sh`
+4. `cd code/MTA_Subway_SIRI_Server`
+5. `node siri_server.js`
