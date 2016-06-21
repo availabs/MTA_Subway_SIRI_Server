@@ -14,4 +14,4 @@ git clone https://github.com/availabs/MTA_Subway_SIRI_Server.git
 
 cd MTA_Subway_SIRI_Server
 sudo npm install --production
-./bin/updateGTFSData.js
+#./bin/updateGTFSData.js
