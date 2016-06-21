@@ -11,3 +11,7 @@
 3. `sh ./init-script.sh`
 4. `cd code/MTA_Subway_SIRI_Server`
 5. `node siri_server.js`
+
+## To test: 
+1. www.exampleserver.com/api/siri/vehicle-monitoring.json?key=a2aef3dc-3a02-4823-96e1-3347b535fe1a
+2. www.exampleserver.com/api/siri/vehicle-monitoring.xml?key=a2aef3dc-3a02-4823-96e1-3347b535fe1a
