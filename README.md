@@ -1,11 +1,14 @@
 #Instructions
+## System Requirements
+The server must have at least 2G of RAM. This means that at least a small instance is required on AWS.
+
 ## To install and deploy on a local server.
 1. `npm install --production`
 2. `./bin/updateGTFSData.js`
 3. `node siri_server.js`
 
 ## To deploy on AWS
-1. Create a base Ubuntu 12.04 LTS Server
+1. Create a base Ubuntu 12.04/14.04 LTS Server
 2. In the home directory, as the regular user, run
     `wget https://raw.githubusercontent.com/availabs/MTA_Subway_SIRI_Server/master/aws/init-script.sh`
 3. `sh ./init-script.sh`
