@@ -7,7 +7,9 @@ var ConverterService = require('../src/services/ConverterService') ,
 
     router = require('express').Router() ,
 
-    toobusyErrorMessage = "Service Unavailable: Back-end server is at capacity.";
+    toobusyErrorMessage = "Service Unavailable: Back-end server is at capacity.",
+
+    openAccessAuth = (require('../src/services/ConfigsService').getServerConfig().authenticator === 'openAccess');
                           
 
 
@@ -77,7 +79,7 @@ function handleRequest (req, res, monitoringCallType, dataFormat) {
                                                  callback.bind(null, 503));
     }
 
-    if (!apiKey) {
+    if (!(openAccessAuth || apiKey)) {
         return ConverterService.getErrorResponse("API key required.",
                                                  monitoringCallType, 
                                                  dataFormat, 
@@ -86,7 +88,6 @@ function handleRequest (req, res, monitoringCallType, dataFormat) {
 
 
     AuthorizationService.isAuthorized(apiKey, function (err, isAuthd) {
-
 
         if (err) {
             return ConverterService.getErrorResponse('An error occurred during authorization.',
