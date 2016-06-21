@@ -15,3 +15,11 @@
 ## To test: 
 1. www.exampleserver.com/api/siri/vehicle-monitoring.json?key=a2aef3dc-3a02-4823-96e1-3347b535fe1a
 2. www.exampleserver.com/api/siri/vehicle-monitoring.xml?key=a2aef3dc-3a02-4823-96e1-3347b535fe1a
+3. 
+
+## Port Forwarding with Apache
+1. sudo apt-get install apache2
+2. a2enmod proxy_http
+3. create vhost config in /etc/apache2/sites-available (see apache2-api-example.conf)
+4. ln -s  /etc/apache2/sites-available/apache2-api-example.conf /etc/apache2/sites-enabled/
+5. sudo service apache2 restart
