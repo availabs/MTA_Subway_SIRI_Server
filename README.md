@@ -26,3 +26,9 @@ The server must have at least 2G of RAM. This means that at least a small instan
 3. create vhost config in /etc/apache2/sites-available (see apache2-api-example.conf)
 4. ln -s  /etc/apache2/sites-available/apache2-api-example.conf /etc/apache2/sites-enabled/
 5. sudo service apache2 restart
+6. 
+
+## The Admin Console
+An Administrator Console is provided for convenience. To access the console, visit
+`www.exampleserver.com/console?key=adminKey`
+The adminKey is set in `config/server.json`. *You should change this key from the default value.*

@@ -60,7 +60,7 @@ function isAuthorized (key, callback) {
 
 
 function isAdminAuthorized (key, callback) {
-    return callback(null, (serverConfig.adminKey === key));
+    return callback(null, (serverConfig.adminKey.toLowerCase() === key.toLowerCase()));
 }
 
 
