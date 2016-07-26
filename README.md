@@ -32,3 +32,45 @@ The server must have at least 2G of RAM. This means that at least a small instan
 An Administrator Console is provided for convenience. To access the console, visit
 `www.exampleserver.com/console?key=adminKey`
 The adminKey is set in `config/server.json`. *You should change this key from the default value.*
+
+## Analysis
+The `analysis/` directory contains code to perform analysis on GTFS-Realtime and/or Siri feeds.
+Achived GTFS-Realtime data can be fed through the converter, and, using the internal data structures 
+of the converter, detailed analysis of the transit system can be conducted.
+
+The `analysis/feedReplay/code/MockConverterService.js` class provides access to all the
+internal data structures used in the GTFS-Realtime to Siri conversion process. These include:
++ The indexed GTFS static data.
++ The current GTFS-Realtime message JSON
++ The internal train tracking data.
+
+The `analysis/feedReplay/code/scrapeState.js` script uses this server's `admin/get/server/state`
+route to archive the GTFS-realtime feed to MongoDB. Currently, the scaper and the analysis code
+use docker-compose to create a MongoDB container. `analysis/feedReplay/code/MockGTFS-Realtime_Feed.js`
+pulls from the MongoDB archive to mock a GTFS-Feed that outputs messages as fast as possible.
+
+Two examples of analysis code are provided in this repository:
++ `analysis/feedReplay/code/ExpectedArrivalTimeReliabiltyAnalysis.js`
++ `analysis/feedReplay/code/LocationTrackingAnalysis.js`
+
+## Associated Projects
+
+### SIRI_Cache_Server
+https://github.com/availabs/SIRI_Cache_Server
+
+This project provides a Node server that will visualize the locations ov vehicles in a Siri feed. It keeps the locations data for the past 24 hours. See the README for deployment instructions.
+
+### sol-bot
+https://github.com/availabs/sol-bot
+
+This project will continuously make a high volume of requests to an MTA_Subway_SIRI_Server instance
+and logs problems.  It will optionally send notifications to Slack if it detects problems, if a Slack 
+token is provided. See the README for deployment instructions.
+
+### mta-transit-node-app 
+https://github.com/availabs/mta-transit-node-app
+
+This Node/Sails app was used for data exploration of the MTA Bus Siri feed and the MTA Subway GTFS-Realtime feed.
+It also was used to ensure the fidelity of the MTA GTFS-Realtime to Siri conversion server. See the README for deployment instructions.
+
+
