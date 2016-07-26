@@ -53,7 +53,7 @@ Two examples of analysis code are provided in this repository:
 + `analysis/feedReplay/code/ExpectedArrivalTimeReliabiltyAnalysis.js`
 + `analysis/feedReplay/code/LocationTrackingAnalysis.js`
 
-(Note: The `admin/get/server/state` route and the fact that the `MTA_Subway_GTFS-Realtime_to_SIRI_Converter/lib/caching/ConverterCache.js` exposes the internal data structures makes realtime analysis tools a not yet implemented possibility.)
+(Note: The `admin/get/server/state` route and the fact that the `MTA_Subway_GTFS-Realtime_to_SIRI_Converter/lib/caching/ConverterCache.js` exposes the converter's internal data structures makes realtime analysis tools a not-yet-implemented opportunity.)
 
 ## Associated Projects
 
