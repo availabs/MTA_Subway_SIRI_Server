@@ -50,8 +50,8 @@ use docker-compose to create a MongoDB container. `analysis/feedReplay/code/Mock
 pulls from the MongoDB archive to mock a GTFS-Feed that outputs messages as fast as possible.
 
 Two examples of analysis code are provided in this repository:
-+ `analysis/feedReplay/code/ExpectedArrivalTimeReliabiltyAnalysis.js`
-+ `analysis/feedReplay/code/LocationTrackingAnalysis.js`
++ [`analysis/feedReplay/code/ExpectedArrivalTimeReliabiltyAnalysis.js`](https://github.com/availabs/MTA_Subway_SIRI_Server/blob/master/analysis/feedReplay/code/ExpectedArrivalTimeReliabiltyAnalysis.js)
++ [`analysis/feedReplay/code/LocationTrackingAnalysis.js`](https://github.com/availabs/MTA_Subway_SIRI_Server/blob/master/analysis/feedReplay/code/LocationTrackingAnalysis.js)
 
 (Note: The `admin/get/server/state` route and the fact that the `MTA_Subway_GTFS-Realtime_to_SIRI_Converter/lib/caching/ConverterCache.js` exposes the converter's internal data structures makes realtime analysis tools a not-yet-implemented opportunity.)
 
