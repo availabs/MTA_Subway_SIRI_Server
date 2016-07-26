@@ -1,6 +1,9 @@
+#!/usr/bin/env node
+
 'use strict';
 
 var fs          = require('fs') ,
+    path        = require('path'),
     readline    = require('readline'),
     Converter   = require("csvtojson").Converter ,
     async       = require('async') ,
@@ -15,8 +18,10 @@ var configsService = require('../src/services/ConfigsService'),
 
     gtfsTripKeyMutator = (Array.isArray(gtfsConfig.tripKeyMutator)) ? gtfsConfig.tripKeyMutator : null,
 
-    gtfsTripsDataPath = './GTFS/trips.txt' ,
-    unscheduledTripsLogPath = converterConfig.unscheduledTripsLogPath ;
+    gtfsTripsDataPath = './GTFS/trips.txt';
+
+//var unscheduledTripsLogPath = converterConfig.unscheduledTripsLogPath ;
+var unscheduledTripsLogPath = path.join(__dirname, './feedReplay/logs/mta_subway_unscheduledTrips.log');
 
 
 

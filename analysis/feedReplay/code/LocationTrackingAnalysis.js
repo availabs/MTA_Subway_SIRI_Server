@@ -21,7 +21,7 @@ var prevCoordsMap = {} ,
     trainHadLocationCount = 0,
     lostTrainCount = 0 ,
 
-    // Trains that do not have locations, after the trackingAll flag set to true.
+    // Trains without locations, after the trackingAll flag set to true.
     stealthTrains = {} ,
 
     //stealthTrainKeys ,
@@ -40,9 +40,15 @@ function analyzeTripsWithCoords () {
     }
 
     var toFractions = tripsWithCoordsLog.slice(trackingAllIndex)
-                                        .map(function (pair) { return (pair[0] / pair[1]); });
+                                        .map(function (pair) { return (pair[0] / pair[1] * 100); });
 
     return {
+        description: 'Provides summary statistics regarding the percentage of trips with ' +
+                     'locations in the Siri feed to all trip occurrences. ' +
+                     'Starts keeping stats once tracking has begun for all trips ' + 
+                     'that have the requisite GTFS data. ' + 
+                     '"messagesBeforeTrackingAll" is the number of messages before this condition was met.',
+
         messagesBeforeTrackingAll: trackingAllIndex ,
        
         mad : ss.mad(toFractions) ,
@@ -50,6 +56,7 @@ function analyzeTripsWithCoords () {
         mean: ss.mean(toFractions) ,
 
         variance : ss.variance(toFractions) ,
+
         standardDeviation: ss.standardDeviation(toFractions) ,
     
         min: ss.min(toFractions) ,
@@ -57,10 +64,13 @@ function analyzeTripsWithCoords () {
 }
 
 
-function analyzeLostTrainOccurances () {
+function analyzeLostTrainOccurrences () {
     return {
         description: 'Describes the number of times we assigned a train a location, ' +
-                     ' to then in a following message have no location. Ideally zero.',
+                     ' to then in a following message have no location. Ideally zero. ' +
+                     '"totalLostAcrossMessages" represents the number of lost train occurrences. ' +
+                     '"totalAcrossMessagesTrackings" represents the total number of times ' +
+                     'a train was tracked across two GTFS-realtime messages.',
 
         totalLostAcrossMessages: lostTrainCount,
         totalAcrossMessagesTrackings: trainHadLocationCount ,
@@ -72,8 +82,8 @@ function analyzeLostTrainOccurances () {
 function analyzeTripAppearances () {
     var messageCountGapsBetweenAppearances = _.reduce(tripTrackingMap, function (acc, locArrArr, key) {
 
-        var firstOccurance = _.first(_.first(locArrArr)) ,
-            lastOccurance  = _.last(_.last(locArrArr)) ;
+        var firstOccurrence = _.first(_.first(locArrArr)) ,
+            lastOccurrence  = _.last(_.last(locArrArr)) ;
         
 
         var locArrArrFiltered = locArrArr.filter(function (locArr) { return locArr.length; }),
@@ -88,12 +98,11 @@ function analyzeTripAppearances () {
                     lastStopId     = _.last(locArr).stopId ;
                 
 
-                //if ((firstMsgNum === null) && (lastMsgNum === null)) { 
-                    //console.log('**************** Why nulls ? ****************');
-                    //console.log(firstMsgNum + ':' + lastMsgNum);
-                    //console.log(locArr); 
-                    //console.log('*********************************************');
-                //}
+                if ((firstMsgNum === null) && (lastMsgNum === null)) { 
+                    console.log('*** (firstMsgNum === null) && (lastMsgNum === null) ***');
+                    console.log(locArr); 
+                    console.log('*******************************************************');
+                }
 
                 return { 
                     timestamps:  [firstTimestamp, lastTimestamp] ,
@@ -133,10 +142,10 @@ function analyzeTripAppearances () {
         if (gaps && gaps.length) {
             acc[key] = { 
                 gaps: gaps, 
-                firstOccurance: firstOccurance, 
-                lastOccurance: lastOccurance,
-                timeInSystem: lastOccurance.timestamp - firstOccurance.timestamp ,
-                distTraveled: lastOccurance.distTraveled ,
+                firstOccurrence: firstOccurrence, 
+                lastOccurrence: lastOccurrence,
+                timeInSystem: lastOccurrence.timestamp - firstOccurrence.timestamp ,
+                distTraveled: lastOccurrence.distTraveled ,
             } ;
         }
 
@@ -160,80 +169,77 @@ function analyzeTripAppearances () {
 
 
 
-//function analyzeDistancesTraveled () {
+function analyzeDistancesTraveled () {
 
-    //var allSpeeds = [];
+    var allSpeeds = [];
 
-    //var tripKeyToSpeedsArr =  _.reduce(tripTrackingMap, function (acc, locArrArr, key) {
+    var tripKeyToSpeedsArr =  _.reduce(tripTrackingMap, function (acc, locArrArr, key) {
 
 
-            //var locArr = _.flatten(locArrArr) ,
+            var locArr = _.flatten(locArrArr) ,
 
-                //locArrFiltered = locArr.filter(function (locObj) { 
-                    //return (locObj && locObj.timestamp && !isNaN(parseInt(locObj.distTraveled)));
-                //}) ,
+                locArrFiltered = locArr.filter(function (locObj) { 
+                    return (locObj && locObj.timestamp && !isNaN(parseInt(locObj.distTraveled)));
+                }) ,
 
-                //distTimestampPairs = locArrFiltered.map(function (locObj) {
-                    //return { d:locObj.distTraveled, t: locObj.timestamp } ;
-                //}),
+                distTimestampPairs = locArrFiltered.map(function (locObj) {
+                    return { d:locObj.distTraveled, t: locObj.timestamp } ;
+                }),
 
-                //speeds = _.tail(distTimestampPairs).map(function (pair, i) {
-                    //var dX = (pair.d - distTimestampPairs[i].d) ,
-                        //dT = (pair.t - distTimestampPairs[i].t) ,
+                speeds = _.tail(distTimestampPairs).map(function (pair, i) {
 
-                        //kmPerSec =  dX / dT ,
+                    var dX = (pair.d - distTimestampPairs[i].d) ,
+                        dT = (pair.t - distTimestampPairs[i].t) ,
 
-                        //// km/s * m/km * s/h = m/h
-                        //mph = kmPerSec * 0.62137 * (60 * 60) ;
+                        kmPerSec =  dX / dT ,
 
-                    //if (mph) { allSpeeds.push(mph); }
+                        // km/s * m/km * s/h = m/h
+                        mph = kmPerSec * 0.62137 * (60 * 60) ;
 
-                    //return { pair: pair, dX: dX, dT: dT, mph: mph } ;
-                //}) ,
+                    // for the speed summary stats, we filter out the cases where the train is stopped, 
+                    // of was stopped at the previous stop, or will be stopped at the next stop.
+                    if ((distTimestampPairs[i+1] && distTimestampPairs[i] && distTimestampPairs[i-1]) && 
+                        (distTimestampPairs[i+1].d - distTimestampPairs[i].d) &&
+                        (distTimestampPairs[i].d - distTimestampPairs[i-1].d)) {
+
+                          allSpeeds.push(mph); 
+                    }
+
+                    return { pair: pair, dX: dX, dT: dT, mph: mph } ;
+                }) ,
                 
-                //trimDwellAtOrigin = speeds.reduce(function (acc2, speed) {
-                    //if (speed.mph || acc2.length) { acc2.push(speed); }
+                trimDwellAtOrigin = speeds.reduce(function (acc2, speed) {
+                    if (speed.mph || acc2.length) { acc2.push(speed); }
 
-                    //return acc2;
-                //}, []);
+                    return acc2;
+                }, []);
 
-            //if (trimDwellAtOrigin.length) { acc[key] = trimDwellAtOrigin; }
+            if (trimDwellAtOrigin.length) { acc[key] = trimDwellAtOrigin; }
 
-            //return acc ;
-    //}, {});
+            return acc ;
+    }, {});
 
-    //var speedStats = {
-        //mean: ss.mean(allSpeeds) ,
-        //variance : ss.variance(allSpeeds) ,
-        //standardDeviation : ss.standardDeviation(allSpeeds) ,
-        //max: ss.max(allSpeeds) ,
-    //};
+    var speedStats = {
+        mean: ss.mean(allSpeeds) ,
+        variance : ss.variance(allSpeeds) ,
+        standardDeviation : ss.standardDeviation(allSpeeds) ,
+        max: ss.max(allSpeeds) ,
+    };
 
-    //return {
-        //tripSpeeds : tripKeyToSpeedsArr ,
-        //speedStats : speedStats , 
-    //} ;
-//}
-
-
-process.on('exit', function () {
-    
-    var analysis = {
-            assigningCoordinates : analyzeTripsWithCoords() ,
-            lostTrains           : analyzeLostTrainOccurances() ,
-            appearances          : analyzeTripAppearances() ,
-            stealthTrains        : stealthTrains ,
-            //speeds: analyzeDistancesTraveled() ,
-        } ;
-
-    require('fs').writeFileSync('analysis.json', JSON.stringify(analysis, null, 4));
-});
-
+    return {
+        tripSpeeds : tripKeyToSpeedsArr ,
+        speedStats : speedStats , 
+    } ;
+}
 
 
 function feedListener (err, gtfsrtJSON, siriJSON, converterCache) {
     //========== Get the data to be reused by all analyzers =========
+    if (err) {
+      return console.err(err.stack || err);
+    }
 
+    // 
     var trainTrackerSnapshot = converterCache.converter.trainTrackerSnapshot ,
         __unscheduled        = trainTrackerSnapshot.trainLocations.__unscheduledTrips ,
         __noSpatialData      = trainTrackerSnapshot.trainLocations.__noSpatialDataTrips ,
@@ -249,6 +255,7 @@ function feedListener (err, gtfsrtJSON, siriJSON, converterCache) {
 
         vehicleActivity = siriJSON.Siri.ServiceDelivery.VehicleMonitoringDelivery[0].VehicleActivity,
 
+        // 
         trackedTrainGTFSrtKeys = [],
 
         gtfsrtKeyToGTFSKey = {} ,
@@ -268,8 +275,11 @@ function feedListener (err, gtfsrtJSON, siriJSON, converterCache) {
             gtfsrtKey = siriKey.split('_').slice(-2).join('_') ;
 
 
+        // If the train doesn't have the minimum amount of associated GTFS
+        // data required for tracking, skip it.
         if (unschedMap[gtfsrtKey] || noDataMap[gtfsrtKey]) { return; }
         
+        // This gtfsrtKey has the min amt of GTFS data, so it should be tracked.
         trackedTrainGTFSrtKeys.push(gtfsrtKey) ;
 
         gtfsrtKeyToGTFSKey[gtfsrtKey] = gtfsKey ;
@@ -278,17 +288,15 @@ function feedListener (err, gtfsrtJSON, siriJSON, converterCache) {
     }) ;
 
 
-    (function () {
-        if (!trackingAll) { return; }
-
-        _.forEach(trackedTrainGTFSrtKeys, function (key) {
-            if (!coordsMap[key].Longitude) {
-                if (!stealthTrains[key]) {
-                    stealthTrains[key] = gtfsrtTimestamp;
-                }
-            }
-        });
-    }());
+    if (trackingAll) { 
+      _.forEach(trackedTrainGTFSrtKeys, function (key) {
+          if (!coordsMap[key].Longitude) {
+              if (!stealthTrains[key]) {
+                  stealthTrains[key] = gtfsrtTimestamp;
+              }
+          }
+      });
+    }
 
     (function () {
         var tripsCount = 0,
@@ -300,6 +308,8 @@ function feedListener (err, gtfsrtJSON, siriJSON, converterCache) {
 
             if (coordsMap[key].Longitude) { ++withCoordsCounter ; }    
         });
+
+        trackingAll = trackingAll || (tripsCount === withCoordsCounter);
 
         if ((trackingAllIndex < 0) && (withCoordsCounter === tripsCount)) {
             trackingAllIndex =  tripsWithCoordsLog.length;
@@ -324,55 +334,53 @@ function feedListener (err, gtfsrtJSON, siriJSON, converterCache) {
                 }    
             }
         }) ;
-
-        //console.log('###', lostTrainCount + '/' + trainHadLocationCount);
     }());
 
 
     //====================================================================
     // Collect all the distances traveled between messages for all trains.
 
-    //(function () {
-        //_.forEach(trackedTrainGTFSrtKeys, function (key) {
+    (function () {
+        _.forEach(trackedTrainGTFSrtKeys, function (key) {
 
-            //if (!tripTrackingMap[key]) {
-                //tripTrackingMap[key] = [];
-            //}
+            if (!tripTrackingMap[key]) {
+                tripTrackingMap[key] = [];
+            }
 
-            //if (!coordsMap[key].Longitude) {
-                //return;
-            //}    
+            if (!coordsMap[key].Longitude) {
+                return;
+            }    
 
-            //var gtfsKey = gtfsrtKeyToGTFSKey[key] ,
+            var gtfsKey = gtfsrtKeyToGTFSKey[key] ,
 
-                //trainLocationEntry = converterCache.converter.trainTrackerSnapshot.trainLocations[gtfsKey] ,
+                trainLocationEntry = converterCache.converter.trainTrackerSnapshot.trainLocations[gtfsKey] ,
 
-                //stopInfo,
+                stopInfo,
 
-                //nodeData;
+                nodeData;
 
-            //if (!trainLocationEntry) { return ;}
+            if (!trainLocationEntry) { return ;}
 
-            //stopInfo = trainLocationEntry.immediateStopInfo ;
+            stopInfo = trainLocationEntry.immediateStopInfo ;
 
-                 ////['trainLocations', gtfsTripKey, 'locationGeoJSON', 'properties', 'start_dist_along_route_in_km'], 
-            //nodeData = {
-                //nextStopId   : stopInfo.stopId ,
-                //distTraveled : trainLocationEntry.locationGeoJSON.properties.start_dist_along_route_in_km ,
-                //timestamp    : stopInfo.timestamp ,
-                //eta          : stopInfo.eta ,
-                //atStop       : stopInfo.atStop ,
-            //} ;
+                 //['trainLocations', gtfsTripKey, 'locationGeoJSON', 'properties', 'start_dist_along_route_in_km'], 
+            nodeData = {
+                nextStopId   : stopInfo.stopId ,
+                distTraveled : trainLocationEntry.locationGeoJSON.properties.start_dist_along_route_in_km ,
+                timestamp    : stopInfo.timestamp ,
+                eta          : stopInfo.eta ,
+                atStop       : stopInfo.atStop ,
+            } ;
 
-            //if (prevCoordsMap[key] && prevCoordsMap[key].Longitude) {
-                //_.last(tripTrackingMap[key]).push(nodeData);
-            //} else {
-                //tripTrackingMap[key].push([nodeData]) ;
-            //}
+            if (prevCoordsMap[key] && prevCoordsMap[key].Longitude) {
+                _.last(tripTrackingMap[key]).push(nodeData);
+            } else {
+                tripTrackingMap[key].push([nodeData]) ;
+            }
 
-            ////console.log(tripTrackingMap[key]) ;
-        //}) ;
-    //}());
+            //console.log(tripTrackingMap[key]) ;
+        }) ;
+    }());
 
     carryOverTrainsMap = trackedTrainGTFSrtKeys.reduce(function(acc, key) { acc[key] = 1; return acc; }, {}) ;
 
@@ -388,3 +396,19 @@ function feedListener (err, gtfsrtJSON, siriJSON, converterCache) {
 
 
 module.exports = feedListener ;
+
+
+// NOTE: Uses process' exit event to trigger analysis.
+// TODO: Find a better way of doing this.
+process.on('exit', function () {
+    
+    var analysis = {
+            assigningCoordinates : analyzeTripsWithCoords() ,
+            lostTrains           : analyzeLostTrainOccurrences() ,
+            appearances          : analyzeTripAppearances() ,
+            stealthTrains        : stealthTrains ,
+            speeds               : analyzeDistancesTraveled() ,
+        } ;
+
+    require('fs').writeFileSync('analysis.json', JSON.stringify(analysis, null, 4));
+});

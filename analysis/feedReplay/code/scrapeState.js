@@ -1,7 +1,15 @@
 'use strict';
 
+
 var request = require('request') ,
     MongoClient = require('mongodb').MongoClient;
+
+var adminKey = JSON.parse(require('fs').readFileSync(__dirname + '/../../../config/server.json')).adminKey
+
+console.log(adminKey)
+
+//var siriServerURL = 'http://localhost:16181/admin/get/server/state?key=' + adminKey;
+var siriServerURL = 'http://siri.mta.availabs.org/admin/get/server/state?key=NoSuchPlace'
 
 
 var dotPlaceholder = '\u0466';
@@ -19,8 +27,16 @@ MongoClient.connect("mongodb://localhost:27017/siriServer", function(err, db) {
     var lastTimestamp = null;
 
     setInterval(function () {
-        request('http://localhost:16181/admin/get/server/state', function (error, response, body) {
-            if (error || response.statusCode !== 200) { return; }
+        request(siriServerURL, function (error, response, body) {
+            if (error) {
+              console.error(error);
+              return;
+            }
+
+            if (response.statusCode !== 200) { 
+              console.log('response.statusCode:', response.statusCode);
+              return;
+            }
 
             var serverState = JSON.parse(body) ,
                 timestamp   = serverState.gtfsrtTimestamp,

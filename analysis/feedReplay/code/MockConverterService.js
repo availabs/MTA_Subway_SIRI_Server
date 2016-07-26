@@ -1,3 +1,12 @@
+/*
+ * The core of the Analysis code.
+ * The MTA_Subway_GTFS-Realtime_to_SIRI_Converter's ConverterStream is passed 
+ *    mocks of the GTFS-RealtimeFeed and the SiriServer's ConfigService.
+ * Additionally, this Stream requests new data from the MongoDB archive
+ *    once all listeners have completed execution, allowing the archive
+ *    to stream through the converter at the fastest possible rate.
+ */
+
 'use strict';
 
 
@@ -17,6 +26,7 @@ var process = require('process') ,
 
 process.on('exit', function () { console.log("That's all, folks."); });
 
+var last100Timestamps = require('../meta/last100Timestamps')
 
 var ConverterStream  = require('MTA_Subway_GTFS-Realtime_to_SIRI_Converter').ConverterStream ,
 
@@ -24,11 +34,14 @@ var ConverterStream  = require('MTA_Subway_GTFS-Realtime_to_SIRI_Converter').Con
 
     MockGTFSrtFeed = require(path.join(__dirname, '/MockGTFS-Realtime_Feed')) ,
 
+    // The MockFeedReader's constructor:
+    //   MockFeedReader (_requestedTrain, startTimestamp, endTimestamp) {
+
     //mockGTFSrtFeed = new MockGTFSrtFeed(null, null, 1457428587) ,
     //mockGTFSrtFeed = new MockGTFSrtFeed(null, null, 1457500000) ,
     //mockGTFSrtFeed = new MockGTFSrtFeed(null, null, 1457431189) ,
-    //mockGTFSrtFeed = new MockGTFSrtFeed(null, null, 1457428024) ,
-    mockGTFSrtFeed = new MockGTFSrtFeed() ,
+    mockGTFSrtFeed = new MockGTFSrtFeed(null, last100Timestamps[last100Timestamps.length - 1], last100Timestamps[50]) ,
+    //mockGTFSrtFeed = new MockGTFSrtFeed() ,
 
     mockConfigService = require(path.join(__dirname, 'MockConfigsService')) ,
 
@@ -38,6 +51,7 @@ var ConverterStream  = require('MTA_Subway_GTFS-Realtime_to_SIRI_Converter').Con
 
     converterStream  ;
 
+console.log(last100Timestamps[0], last100Timestamps[last100Timestamps.length - 1]);
 
 GTFS_FeedHandlerService.start() ;
 
@@ -122,16 +136,6 @@ function converterUpdateListener (converterUpdate) {
 
 }
 
-
-//function compareStates(a,b) {
-    //var diff = _.reduce(a, function(result, value, key) {
-                    //return _.isEqual(value, b[key]) ?  result : result.concat(key);
-               //}, []);
-
-    //if (diff.length) {
-        //console.log(diff);
-    //}
-//}
 
 
 function getStopMonitoringResponse (query, extension, callback) {

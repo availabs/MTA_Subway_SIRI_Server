@@ -1,3 +1,7 @@
+/*
+ *  Mock of the MTA_Subway_GTFS-Realtime_to_SIRI_Converter's ConverterEventEmitter.
+ */
+
 'use strict';
 
 var converterEventEmitter = require('MTA_Subway_GTFS-Realtime_to_SIRI_Converter').ConverterEventEmitter ,

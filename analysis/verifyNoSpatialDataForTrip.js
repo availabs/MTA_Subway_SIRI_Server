@@ -1,6 +1,9 @@
+#!/usr/bin/env node
+
 'use strict';
 
 var fs          = require('fs') ,
+    path        = require('path'),
     readline    = require('readline'),
     Converter   = require("csvtojson").Converter ,
     async       = require('async') ,
@@ -12,6 +15,7 @@ var configsService = require('../src/services/ConfigsService'),
     gtfsConfig = configsService.getGTFSConfig() ,
     converterConfig = configsService.getConverterConfig() ;
 
+var noSpatialDataTripsLogPath = path.join(__dirname, './feedReplay/logs/mta_subway_noSpatialDataTrips.log');
 
 
 function getTripKeysToShapeIDs (callback) {
@@ -57,8 +61,7 @@ function getShapeIDs (callback) {
 
 
 function getNoSpatialDataTrips (callback) {
-    var noSpatialDataTripsLogPath = converterConfig.noSpatialDataTripsLogPath ,
-        noSpatialDataTrips = {} ;
+    var noSpatialDataTrips = {} ;
 
     var lineReader = readline.createInterface({
         input: fs.createReadStream(noSpatialDataTripsLogPath) ,

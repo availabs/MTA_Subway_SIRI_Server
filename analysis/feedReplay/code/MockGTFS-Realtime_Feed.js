@@ -1,3 +1,10 @@
+/*
+ * This module is a mock of the GTFS-Realtime_Toolkit's FeedReader.
+ * Rather than pull GTFS-realtime messages from a transit agency's server,
+ * it pulls from the MongoDB archive of GTFS-Realtime messages.
+ */
+
+
 'use strict';
 
 
@@ -40,7 +47,8 @@ MockFeedReader.prototype.getTrainTrackerInitialState = function (callback) {
 
     trainTrackerCollection.findOne(mongoQueryObj, { sort: { _id: 1 } }, function (err, doc) { 
         if (err) {
-            return callback(err);
+          console.error(err.stack || err)
+          return callback(err);
         }
 
         return callback(null, restoreKeys(doc.state));
@@ -91,15 +99,12 @@ MockFeedReader.prototype.sendNext = function () {
             return null; 
         }
 
-//console.log('####################' + (item._id) + '####################');
-var counter = 0;
-
         var state = restoreKeys(item.state);
 
-        //debugger;
+        // If no specific train was requested, send the listener the data.
         if (!requestedTrainID || !state) { return listener(state); }
-    
         
+        // A specific train was requested.
         // We need to pluck the parts of the message regarding the requested train.
         var focusedMessage = { header: state.header } ;
 
@@ -110,18 +115,11 @@ var counter = 0;
 
             if (trip_id === requestedTrainID) {
                 acc.push(entity);
-
-//if (entity && entity.trip_update && entity.trip_update.trip && entity.trip_update.trip.trip_id) {
-//console.log('**************** ' + (++counter) + '****************');
-//console.log(JSON.stringify(entity.trip_update.stop_time_update[0], null, 4));
-//}
             }
 
             return acc;
 
         }, focusedMessage.entity = []);
-
-//console.log('---------------------------------------------------');
 
         if (focusedMessage.entity.length) {
             return listener(focusedMessage);

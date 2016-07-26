@@ -1,3 +1,5 @@
+// This file re-routes all log files to analysis/logs
+
 'use strict' ;
 
 

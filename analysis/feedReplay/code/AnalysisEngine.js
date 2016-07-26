@@ -2,19 +2,23 @@
 
 
 var path = require('path') ,
-    ConverterService = require(path.join(__dirname, '/MockConverterService')) ,
+    mkdirp = require('mkdirp');
+
+mkdirp.sync(path.join(__dirname, '../logs'))
+mkdirp.sync(path.join(__dirname, '../analysis_out'))
+
+var ConverterService = require(path.join(__dirname, '/MockConverterService')) ,
     listener = require(path.join(__dirname, '/LocationTrackingAnalysis')) ;
-    //listener = require(path.join(__dirname, '/DumpBothGTFSrtAndSiri')) ;
+
 
 
 
 process.on('uncaughtException', (err) => {
-  console.log(`Caught exception: ${err}`);
+  console.log(err.stack || stack);
 });
 
 
 ConverterService.registerListener(listener) ;
 
 ConverterService.start() ;
-
 
