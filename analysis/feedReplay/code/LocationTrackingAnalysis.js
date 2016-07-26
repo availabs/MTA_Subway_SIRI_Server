@@ -390,10 +390,7 @@ function feedListener (err, gtfsrtJSON, siriJSON, converterCache) {
 module.exports = feedListener ;
 
 
-// NOTE: Uses process' exit event to trigger analysis.
-// TODO: Find a better way of doing this.
-process.on('exit', function () {
-    
+function finito () {
     var analysis = {
             assigningCoordinates : analyzeTripsWithCoords() ,
             lostTrains           : analyzeLostTrainOccurrences() ,
@@ -403,4 +400,10 @@ process.on('exit', function () {
         } ;
 
     require('fs').writeFileSync('LocationTrackingAnalysisResults.json', JSON.stringify(analysis, null, 4));
-});
+    process.exit()
+}
+
+// NOTE: Uses process' exit event to trigger analysis.
+// TODO: Find a better way of doing this.
+process.on('exit', finito)
+process.on('SIGINT', finito)

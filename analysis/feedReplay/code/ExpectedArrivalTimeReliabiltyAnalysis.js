@@ -99,10 +99,7 @@ const computeSummaryStats = (timeSpanArr) => {
   }
 }
 
-// NOTE: Uses process' exit event to trigger analysis.
-// TODO: Find a better way of doing this.
-process.on('exit', function () {
-    
+const finito = () => {
   var analysis = {
     weekday: {
       '6am_to_10am' : computeSummaryStats(etaChanges.weekday['6am_to_10am']),
@@ -118,4 +115,11 @@ process.on('exit', function () {
   } 
 
   require('fs').writeFileSync('ETA_ReliabilityAnalysisResults.json', JSON.stringify(analysis, null, 4))
-})
+  process.exit()
+}
+
+// NOTE: Uses process' exit event to trigger analysis.
+// TODO: Find a better way of doing this.
+process.on('exit', finito)
+process.on('SIGINT', finito)
+
