@@ -1,5 +1,5 @@
 data/*
 logs/*
 analysis_out/*
-analysis.json
+*Results.json
 *\.bak*

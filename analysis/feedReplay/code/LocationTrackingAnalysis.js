@@ -377,8 +377,6 @@ function feedListener (err, gtfsrtJSON, siriJSON, converterCache) {
             } else {
                 tripTrackingMap[key].push([nodeData]) ;
             }
-
-            //console.log(tripTrackingMap[key]) ;
         }) ;
     }());
 
@@ -386,12 +384,6 @@ function feedListener (err, gtfsrtJSON, siriJSON, converterCache) {
 
     prevCoordsMap = coordsMap ;
 
-        //stealthTrainKeys = Object.keys(stealthTrains) ;
-        //if (stealthTrainKeys.length) {
-            //console.log(stealthTrainKeys) ;
-        //}
-
-        //console.log(JSON.stringify(_.sample(tripTrackingMap), null, 4));
 }
 
 
@@ -410,5 +402,5 @@ process.on('exit', function () {
             speeds               : analyzeDistancesTraveled() ,
         } ;
 
-    require('fs').writeFileSync('analysis.json', JSON.stringify(analysis, null, 4));
+    require('fs').writeFileSync('LocationTrackingAnalysisResults.json', JSON.stringify(analysis, null, 4));
 });
