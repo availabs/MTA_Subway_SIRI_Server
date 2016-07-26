@@ -34,9 +34,9 @@ An Administrator Console is provided for convenience. To access the console, vis
 The adminKey is set in `config/server.json`. *You should change this key from the default value.*
 
 ## Analysis
-The `analysis/` directory contains code to perform analysis on GTFS-Realtime and/or Siri feeds.
-Achived GTFS-Realtime data can be fed through the converter, and, using the internal data structures 
-of the converter, detailed analysis of the transit system can be conducted.
+The `analysis/` directory contains code to perform analysis on the input GTFS-Realtime feed and/or 
+the output Siri feed.  Achived GTFS-Realtime data is fed through the converter and, 
+using the internal data structures of the converter, detailed analysis of the transit system can be conducted.
 
 The `analysis/feedReplay/code/MockConverterService.js` class provides access to all the
 internal data structures used in the GTFS-Realtime to Siri conversion process. These include:
@@ -52,6 +52,8 @@ pulls from the MongoDB archive to mock a GTFS-Feed that outputs messages as fast
 Two examples of analysis code are provided in this repository:
 + `analysis/feedReplay/code/ExpectedArrivalTimeReliabiltyAnalysis.js`
 + `analysis/feedReplay/code/LocationTrackingAnalysis.js`
+
+(Note: The `admin/get/server/state` route and the fact that the `MTA_Subway_GTFS-Realtime_to_SIRI_Converter/lib/caching/ConverterCache.js` exposes the internal data structures makes realtime analysis tools a not yet implemented possibility.)
 
 ## Associated Projects
 
